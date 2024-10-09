@@ -1,5 +1,5 @@
 name: course_player
-description: "A new Flutter project."
+description: "A mp3 player specially designed for courses."
 publish_to: 'none'
 version: 0.1.0
 
