@@ -1,3 +1,2 @@
-# course_player
-
-A new Flutter project.
+# CoursePlayer
+A mp3 player specially designed for listening to courses.
