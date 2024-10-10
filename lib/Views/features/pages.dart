@@ -1,4 +1,4 @@
-export 'HomePage/HomePage.dart';
-export 'ArtistPage/ArtistPage.dart';
-export 'SettingPage/SettingPage.dart';
-export 'CoursePage/CoursePage.dart';
+export 'HomePage/home_page.dart';
+export 'ArtistPage/artist_page.dart';
+export 'SettingPage/setting_page.dart';
+export 'CoursePage/course_page.dart';

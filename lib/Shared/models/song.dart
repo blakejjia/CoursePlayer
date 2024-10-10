@@ -5,10 +5,10 @@
 import 'models.dart';
 
 class Song {
-  final Artist artist;
+  final String artist; // TODO: 类型变成 Artist
   final String title;
   final Duration length;
   final String image; // TODO:变成 image
 
-  const Song(this.title, this.artist, this.length, this.image);
+  const Song( this.title, this.artist, this.length, this.image);
 }

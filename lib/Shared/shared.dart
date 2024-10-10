@@ -1,1 +1,3 @@
-export './models/models.dart';
+export 'models/models.dart';
+export 'components/components.dart';
+export 'providers/providers.dart';

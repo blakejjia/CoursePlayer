@@ -47,14 +47,14 @@ class CourseCard extends StatelessWidget {
               maxLines: 1,
               textAlign: TextAlign.center,
             )),
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          child: Text(playlist.description,
-              overflow: TextOverflow.ellipsis,
-              style: Theme.of(context).textTheme.bodyMedium,
-              maxLines: 2,
-              textAlign: TextAlign.center),
-        ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
+        //   child: Text(playlist, // TOODO: 显示 playlist.author
+        //       overflow: TextOverflow.ellipsis,
+        //       style: Theme.of(context).textTheme.bodyMedium,
+        //       maxLines: 2,
+        //       textAlign: TextAlign.center),
+        // ),
       ],
     );
   }
