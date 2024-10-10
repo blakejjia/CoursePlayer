@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  adaptive_components: ^0.0.10
+  go_router: ^14.3.0
 
 dev_dependencies:
   flutter_test:

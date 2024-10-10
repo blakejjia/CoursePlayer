@@ -1,7 +1,7 @@
-import 'package:course_player/Views/pages/ArtistPage.dart';
-import 'package:course_player/Views/pages/CoursePage.dart';
-import 'package:course_player/Views/pages/HomePage.dart';
-import 'package:course_player/Views/pages/SettingPage.dart';
+import 'package:course_player/Views/features/ArtistPage/ArtistPage.dart';
+import 'package:course_player/Views/features/CoursePage/CoursePage.dart';
+import 'package:course_player/Views/features/HomePage/HomePage.dart';
+import 'package:course_player/Views/features/SettingPage/SettingPage.dart';
 import 'package:flutter/material.dart';
 
 class MyApp extends StatefulWidget {
