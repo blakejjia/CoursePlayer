@@ -14,15 +14,16 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
+  int _currentIndex = 0;
   final PlaylistsProvider _playlistsProvider = PlaylistsProvider();
   bool _isLoading = true;
   List<Playlist> _playlists = [];
 
-@override
-void initState() {
-  super.initState();
-  _loadPlaylists();
-}
+  @override
+  void initState() {
+    super.initState();
+    _loadPlaylists();
+  }
 
   // 调用 loadPlaylists() 并更新 UI
   Future<void> _loadPlaylists() async {
@@ -39,8 +40,6 @@ void initState() {
       print('Error loading playlists: $e');
     }
   }
-
-  int _currentIndex = 0;
 
   @override
   Widget build(BuildContext context) {
