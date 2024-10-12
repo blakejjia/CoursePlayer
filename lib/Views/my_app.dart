@@ -3,8 +3,10 @@ import 'package:course_player/Shared/providers/playlistProvider.dart';
 import 'package:course_player/Views/features/ArtistPage/artist_page.dart';
 import 'package:course_player/Views/features/CoursePage/course_page.dart';
 import 'package:course_player/Views/features/HomePage/home_page.dart';
+import 'package:course_player/Views/features/PermissionGrantPage.dart';
 import 'package:course_player/Views/features/SettingPage/setting_page.dart';
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -17,12 +19,45 @@ class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
   final PlaylistsProvider _playlistsProvider = PlaylistsProvider();
   bool _isLoading = true;
+  bool _isPermissionChecked = false; // 标记是否已经检查了权限
+  bool _isPermissionGranted = true; // 默认认为权限已经授予，避免页面闪烁
   List<Playlist> _playlists = [];
 
   @override
   void initState() {
     super.initState();
-    _loadPlaylists();
+    _checkPermissionInBackground(); // 后台检查权限
+  }
+
+  // 后台检查权限
+  Future<void> _checkPermissionInBackground() async {
+    // 确保主界面先显示出来，然后再异步检查权限
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final status = await Permission.manageExternalStorage.status;
+      if (!status.isGranted) {
+        // 未授予权限
+        setState(() {
+          _isPermissionGranted = false;
+        });
+      } else {
+        // 权限已授予，加载播放列表
+        await _loadPlaylists();
+      }
+      setState(() {
+        _isPermissionChecked = true; // 权限检查完成
+      });
+    });
+  }
+
+  // 请求权限，并在用户通过时更新UI
+  Future<void> _requestPermission() async {
+    if (await Permission.manageExternalStorage.request().isGranted) {
+      setState(() {
+        _isPermissionGranted = true;
+        _isLoading = true; // 开始加载数据
+      });
+      _loadPlaylists(); // 加载播放列表
+    }
   }
 
   // 调用 loadPlaylists() 并更新 UI
@@ -51,6 +86,21 @@ class _MyAppState extends State<MyApp> {
       const ArtistPage(),
       const SettingPage(),
     ];
+
+    // 在权限未检查完毕之前，显示加载指示器
+    if (!_isPermissionChecked) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Loading...")),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // 如果权限没有被授予，则显示权限授予页面
+    if (!_isPermissionGranted) {
+      return PermissionGrantPage(onPermissionGranted: _requestPermission);
+    }
 
     return Scaffold(
       appBar: AppBar(

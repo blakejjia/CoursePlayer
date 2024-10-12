@@ -15,7 +15,6 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return SingleChildScrollView(
       child: Column(children: [
-        Text(widget.playlists.toString()), //TODO:删掉
         Recent(playlists: widget.playlists),
       ]),
     );

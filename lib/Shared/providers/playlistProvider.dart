@@ -9,15 +9,13 @@ class PlaylistsProvider {
 
   // 获得 playlists
   Future<void> loadPlaylists() async {
-    final directory = Directory('/storage/emulated/0/Music/VLC'); // TODO: 更多样的文件夹进入方式
+    final directory =
+        Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
     if (await directory.exists()) {
       for (var folder in directory.listSync().whereType<Directory>()) {
         // 遍历 playlist
         List<Song> songs = [];
-        print("hello");
-        print(folder.listSync());
         for (var file in folder.listSync().whereType<File>()) {
-          print(file.path);
           // 遍历 playlist 中的 song
           if (file.path.endsWith('.mp3')) {
             Tag? tag = await AudioTags.read(file.path);
@@ -26,7 +24,7 @@ class PlaylistsProvider {
                 tag.title ?? "Unknown Title",
                 tag.albumArtist ?? "Unknown Artist",
                 Duration(seconds: tag.duration ?? 0),
-                tag.pictures != null ? "" : "",   // TODO: add picture
+                tag.pictures != null ? "" : "", // TODO: add picture
               ));
             }
           }
