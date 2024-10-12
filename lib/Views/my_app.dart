@@ -1,10 +1,10 @@
 import 'package:course_player/Shared/models/playlist.dart';
 import 'package:course_player/Shared/providers/playlistProvider.dart';
-import 'package:course_player/Views/features/ArtistPage/artist_page.dart';
-import 'package:course_player/Views/features/CoursePage/course_page.dart';
-import 'package:course_player/Views/features/HomePage/home_page.dart';
-import 'package:course_player/Views/features/PermissionGrantPage.dart';
-import 'package:course_player/Views/features/SettingPage/setting_page.dart';
+import 'package:course_player/Views/features/MainPages/home_page.dart';
+import 'package:course_player/Views/features/conditionalPages/PermissionGrantPage.dart';
+import 'package:course_player/Views/features/MainPages/setting_page.dart';
+import 'package:course_player/Views/features/MainPages/artist_page.dart';
+import 'package:course_player/Views/features/MainPages/course_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

@@ -1,6 +1,26 @@
-import '../../../Shared/shared.dart';
-import 'package:course_player/Shared/models/playlist.dart';
+import 'package:course_player/Shared/models/models.dart';
+import 'package:course_player/Shared/shared.dart';
+import 'package:course_player/Views/features/HomePage/recent.dart';
 import 'package:flutter/material.dart';
+
+class HomePage extends StatefulWidget {
+  List<Playlist> playlists = [];
+  HomePage({super.key, required this.playlists});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      child: Column(children: [
+        Recent(playlists: widget.playlists),
+      ]),
+    );
+  }
+}
 
 class Recent extends StatefulWidget {
   final List<Playlist> playlists;
