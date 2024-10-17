@@ -1,4 +1,4 @@
-import 'package:course_player/Shared/models/playlist.dart';
+import 'package:course_player/Shared/models.dart';
 import 'package:flutter/material.dart';
 
 class CourseCard extends StatelessWidget {

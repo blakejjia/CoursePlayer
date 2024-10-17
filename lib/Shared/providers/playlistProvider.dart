@@ -1,14 +1,15 @@
+import 'dart:convert';
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/Shared/models/models.dart';
+import 'package:course_player/Shared/models.dart';
 import 'package:path/path.dart'; // 用于处理路径
 
 class PlaylistsProvider {
-  final List<Playlist> _playlists = [];
-  List<Playlist> get playlists => _playlists;
+
 
   // 获得 playlists
-  Future<void> loadPlaylists() async {
+  Future<List<Playlist>> loadPlaylists() async {
+    List<Playlist> _playlists = [];
     final directory =
         Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
     if (await directory.exists()) {
@@ -23,8 +24,8 @@ class PlaylistsProvider {
               songs.add(Song(
                 tag.title ?? "Unknown Title",
                 tag.albumArtist ?? "Unknown Artist",
-                Duration(seconds: tag.duration ?? 0),
-                tag.pictures != null ? "" : "", // TODO: add picture
+                tag.duration ?? 0,
+                tag.pictures.isNotEmpty ? utf8.decode(tag.pictures[0].bytes) : "", // TODO: add picture
               ));
             }
           }
@@ -35,12 +36,13 @@ class PlaylistsProvider {
           _playlists.add(Playlist(
             title: basename(folder.path),
             songs: songs,
-            cover: "cover here",
-          )); // TODO: add cover
+            cover: songs[0].image, // TODO: change cover
+          ));
         }
       }
     } else {
       throw Exception('Directory does not exist');
     }
+    return _playlists;
   }
 }

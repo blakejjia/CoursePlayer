@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class PermissionGrantPage extends StatelessWidget {
   final VoidCallback onPermissionGranted;
@@ -19,7 +20,10 @@ class PermissionGrantPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: onPermissionGranted,
+              onPressed: () {
+                Permission.manageExternalStorage.request();
+                onPermissionGranted();
+              },
               child: const Text("Grant Permission"),
             ),
           ],

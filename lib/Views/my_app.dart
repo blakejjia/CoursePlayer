@@ -1,10 +1,8 @@
-import 'package:course_player/Shared/models/playlist.dart';
-import 'package:course_player/Shared/providers/playlistProvider.dart';
-import 'package:course_player/Views/features/MainPages/home_page.dart';
-import 'package:course_player/Views/features/conditionalPages/PermissionGrantPage.dart';
-import 'package:course_player/Views/features/MainPages/setting_page.dart';
-import 'package:course_player/Views/features/MainPages/artist_page.dart';
-import 'package:course_player/Views/features/MainPages/course_page.dart';
+import 'package:course_player/Views/Pages/MainPages/artist_page.dart';
+import 'package:course_player/Views/Pages/MainPages/course_page.dart';
+import 'package:course_player/Views/Pages/MainPages/home_page.dart';
+import 'package:course_player/Views/Pages/MainPages/setting_page.dart';
+import 'package:course_player/Views/Pages/conditionalPages/PermissionGrantPage.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -17,11 +15,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   int _currentIndex = 0;
-  final PlaylistsProvider _playlistsProvider = PlaylistsProvider();
-  bool _isLoading = true;
-  bool _isPermissionChecked = false; // 标记是否已经检查了权限
-  bool _isPermissionGranted = true; // 默认认为权限已经授予，避免页面闪烁
-  List<Playlist> _playlists = [];
+  bool _isPermissionGranted = false;
 
   @override
   void initState() {
@@ -40,67 +34,27 @@ class _MyAppState extends State<MyApp> {
           _isPermissionGranted = false;
         });
       } else {
-        // 权限已授予，加载播放列表
-        await _loadPlaylists();
+        setState(() {
+          _isPermissionGranted = true;
+        });
       }
-      setState(() {
-        _isPermissionChecked = true; // 权限检查完成
-      });
     });
-  }
-
-  // 请求权限，并在用户通过时更新UI
-  Future<void> _requestPermission() async {
-    if (await Permission.manageExternalStorage.request().isGranted) {
-      setState(() {
-        _isPermissionGranted = true;
-        _isLoading = true; // 开始加载数据
-      });
-      _loadPlaylists(); // 加载播放列表
-    }
-  }
-
-  // 调用 loadPlaylists() 并更新 UI
-  Future<void> _loadPlaylists() async {
-    try {
-      await _playlistsProvider.loadPlaylists();
-      setState(() {
-        _playlists = _playlistsProvider.playlists;
-        _isLoading = false;
-      });
-    } catch (e) {
-      setState(() {
-        _isLoading = false;
-      });
-      print('Error loading playlists: $e');
-    }
   }
 
   @override
   Widget build(BuildContext context) {
+
+    // 如果权限没有被授予，则显示权限授予页面
+    if (!_isPermissionGranted) {
+      return PermissionGrantPage(onPermissionGranted: _checkPermissionInBackground);
+    }
+
     final List<Widget> _pages = [
-      _isLoading // 检查是否在加载
-          ? const Center(child: CircularProgressIndicator()) // 显示加载指示器
-          : HomePage(playlists: _playlists), // 将 playlists 作为参数传递
+      HomePage(),
       const CoursePage(),
       const ArtistPage(),
       const SettingPage(),
     ];
-
-    // 在权限未检查完毕之前，显示加载指示器
-    if (!_isPermissionChecked) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Loading...")),
-        body: const Center(
-          child: CircularProgressIndicator(),
-        ),
-      );
-    }
-
-    // 如果权限没有被授予，则显示权限授予页面
-    if (!_isPermissionGranted) {
-      return PermissionGrantPage(onPermissionGranted: _requestPermission);
-    }
 
     return Scaffold(
       appBar: AppBar(
