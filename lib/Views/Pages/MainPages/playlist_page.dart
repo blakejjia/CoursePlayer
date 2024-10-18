@@ -1,9 +1,8 @@
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/Providers/SongProvider.dart';
+import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
 import 'package:course_player/Views/components/playlist_card.dart';
-import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -21,31 +20,10 @@ class _CoursePageState extends State<CoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshIndicator(
-      onRefresh: _refreshData,
-      child: FutureBuilder<List<Playlist>>(
-        future: _songProvider.loadPlaylists(),
-        builder: (context, snapshot){
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            // 正在等待异步操作完成
-            return const Center(child: const CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            // 异步操作出错
-            return ListView(
-              children: [
-                Text('Error: ${snapshot.error}'),
-              ],
-            );
-          } else if (snapshot.hasData) {
-            // 异步操作成功完成
-            return CourseList(snapshot.data);
-          } else {
-            // 未执行到任何 Future 结果
-            return Text('No data');
-          }
-        },
-      ),
-    );
+    return RefreshFutureBuilder(
+        _refreshData, () => _songProvider.loadPlaylists(), child: (data) {
+      return CourseList(data);
+    });
   }
 }
 
@@ -55,9 +33,9 @@ class CourseList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (playlists==null || playlists!.isEmpty){
+    if (playlists == null || playlists!.isEmpty) {
       return Text("空空如也");
-    } else{
+    } else {
       return Column(children: [
         Text(
           "Courses",

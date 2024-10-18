@@ -22,11 +22,15 @@ class SongDAO{
 
     return result;
   }
+  // query song by playlist name
+  Future<List<Song>> getSongByPlaylist(String playlistName) async{
+    return await (db.select(db.songs)..where((tbl) => tbl.playlist.equals(playlistName))).get();
+  }
 }
 
 class ImageDAO{
   final AppDatabase db = GetIt.I<AppDatabase>();
 
-  Future<int> insertImage(ImagesCompanion image) => db.into(db.images).insert(image);
+  Future<int> insertImage(CoversCompanion image) => db.into(db.covers).insert(image);
 
 }

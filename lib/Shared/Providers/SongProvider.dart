@@ -3,7 +3,6 @@ import 'package:audiotags/audiotags.dart';
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/DAO/DAO.dart';
 import 'package:drift/drift.dart';
-import 'package:get_it/get_it.dart';
 import 'package:path/path.dart';
 
 class SongProvider {
@@ -21,12 +20,12 @@ class SongProvider {
             Tag? tag = await AudioTags.read(file.path);
             if (tag != null) {
               songDAO.insertSong(SongsCompanion(
-                title: Value(tag.title ?? "Unknown Title"),
+                title: Value(basename(file.path)),
                 artist: Value(tag.albumArtist ?? "Unknown Artist"),
                 length: Value(tag.duration ?? 0),
                 playlist: Value(basename(folder.path)),
                 path: Value(file.path),
-                image: Value(1), // TODO: add picture tag.pictures.isNotEmpty ? base64Encode(tag.pictures[0].bytes) : ""
+                imageId: Value(1), // TODO: add picture tag.pictures.isNotEmpty ? base64Encode(tag.pictures[0].bytes) : ""
               ));
             }
           }
@@ -37,12 +36,16 @@ class SongProvider {
 
   Future<List<Song>> loadSongFromDb() async =>  songDAO.getAllSongs();
 
-  Future<List<Playlist>> loadPlaylists() async{
+  Future<List<Playlist>> loadPlaylists() async{       // TODO: provide by playlist table
     List<String?> titles = await songDAO.getPlaylists();
     return titles
           .where((title) => title != null) // 过滤掉 null 值
-          .map((title) => Playlist(title: title!)) // 创建 Playlist 实例
+          .map((title) => Playlist(title: title!, author: "aaa", imageId: 0)) // 创建 Playlist 实例
           .toList(); // 转换为 List<Playlist>
+  }
+
+  Future<List<Song>> loadSongByPlaylist(Playlist playlist) async{
+    return songDAO.getSongByPlaylist(playlist.title);
   }
 
 }

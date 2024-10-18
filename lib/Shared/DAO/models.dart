@@ -7,26 +7,26 @@ class Songs extends Table{
   IntColumn get id => integer().autoIncrement()();
   TextColumn get artist => text()();
   TextColumn get title => text()();
-  TextColumn get playlist => text()();
+  TextColumn get playlist => text()(); // playlist Id
   IntColumn get length => integer()();
-  IntColumn get image => integer()(); // utf-8 encoded Uint8List
+  IntColumn get imageId => integer()(); // utf-8 encoded Uint8List
   TextColumn get path => text()();
 }
 
-@DataClassName("Image")
-class Images extends Table{
+@DataClassName("Cover")
+class Covers extends Table{
   IntColumn get id => integer().autoIncrement()();
   TextColumn get image => text()();
 }
 
-class Playlist{
-  final String title;
-  // TODO: final Image image;
-
-  Playlist({required this.title});
+@DataClassName("Playlist")
+class Playlists extends Table{
+  TextColumn get title => text()();
+  TextColumn get author => text()();
+  IntColumn get imageId => integer()();
 }
 
-@DriftDatabase(tables:[Songs, Images])
+@DriftDatabase(tables:[Songs, Covers,Playlists])
 class AppDatabase extends _$AppDatabase{
   AppDatabase() : super(_openConnection());
 
