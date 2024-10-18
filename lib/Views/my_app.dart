@@ -1,5 +1,5 @@
 import 'package:course_player/Views/Pages/MainPages/artist_page.dart';
-import 'package:course_player/Views/Pages/MainPages/course_page.dart';
+import 'package:course_player/Views/Pages/MainPages/playlist_page.dart';
 import 'package:course_player/Views/Pages/MainPages/home_page.dart';
 import 'package:course_player/Views/Pages/MainPages/setting_page.dart';
 import 'package:course_player/Views/Pages/conditionalPages/PermissionGrantPage.dart';
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     final List<Widget> _pages = [
-      HomePage(),
+      const HomePage(),
       const CoursePage(),
       const ArtistPage(),
       const SettingPage(),

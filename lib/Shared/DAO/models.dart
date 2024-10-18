@@ -19,6 +19,13 @@ class Images extends Table{
   TextColumn get image => text()();
 }
 
+class Playlist{
+  final String title;
+  // TODO: final Image image;
+
+  Playlist({required this.title});
+}
+
 @DriftDatabase(tables:[Songs, Images])
 class AppDatabase extends _$AppDatabase{
   AppDatabase() : super(_openConnection());

@@ -2,9 +2,10 @@ import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/providers/SongProvider.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({super.key});
+  const HomePage({super.key});
 
   @override
   State<HomePage> createState() => _HomePageState();

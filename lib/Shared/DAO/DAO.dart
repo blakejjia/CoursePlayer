@@ -1,9 +1,9 @@
 import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/main.dart';
+import 'package:get_it/get_it.dart';
 
 
 class SongDAO{
-  final AppDatabase db = getIt<AppDatabase>();
+  final AppDatabase db =  GetIt.I<AppDatabase>();
 
   // create
   Future<int> insertSong(SongsCompanion song) => db.into(db.songs).insert(song);
@@ -15,10 +15,17 @@ class SongDAO{
   Future<int> deleteSong(int id) => (db.delete(db.songs)..where((s) => s.id.equals(id))).go();
   // destroy
   Future<int> destroySongDb() => db.delete(db.songs).go();
+  // query for all playlists
+  Future<List<String?>> getPlaylists() async{
+    final query = db.selectOnly(db.songs, distinct: true)..addColumns([db.songs.playlist]);
+    final result = await query.map((row) => row.read(db.songs.playlist)).get();
+
+    return result;
+  }
 }
 
 class ImageDAO{
-  final AppDatabase db = getIt<AppDatabase>();
+  final AppDatabase db = GetIt.I<AppDatabase>();
 
   Future<int> insertImage(ImagesCompanion image) => db.into(db.images).insert(image);
 

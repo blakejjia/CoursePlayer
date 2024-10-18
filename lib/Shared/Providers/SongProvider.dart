@@ -2,15 +2,16 @@ import 'dart:io';
 import 'package:audiotags/audiotags.dart';
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/DAO/DAO.dart';
-import 'package:course_player/main.dart';
 import 'package:drift/drift.dart';
+import 'package:get_it/get_it.dart';
 import 'package:path/path.dart';
 
 class SongProvider {
+  SongDAO songDAO = SongDAO();
 
   // 获得 playlists
   Future<void> loadSongFromDictionary() async {
-    getIt<SongDAO>().destroySongDb();
+    songDAO.destroySongDb();
     final directory = Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
     if (await directory.exists()) {
       for (var folder in directory.listSync().whereType<Directory>()) {
@@ -19,7 +20,7 @@ class SongProvider {
           if (file.path.endsWith('.mp3')) {
             Tag? tag = await AudioTags.read(file.path);
             if (tag != null) {
-              getIt<SongDAO>().insertSong(SongsCompanion(
+              songDAO.insertSong(SongsCompanion(
                 title: Value(tag.title ?? "Unknown Title"),
                 artist: Value(tag.albumArtist ?? "Unknown Artist"),
                 length: Value(tag.duration ?? 0),
@@ -34,8 +35,14 @@ class SongProvider {
     }
   }
 
-  Future<List<Song>> loadSongFromDb() async{
-    return getIt<SongDAO>().getAllSongs();
+  Future<List<Song>> loadSongFromDb() async =>  songDAO.getAllSongs();
+
+  Future<List<Playlist>> loadPlaylists() async{
+    List<String?> titles = await songDAO.getPlaylists();
+    return titles
+          .where((title) => title != null) // 过滤掉 null 值
+          .map((title) => Playlist(title: title!)) // 创建 Playlist 实例
+          .toList(); // 转换为 List<Playlist>
   }
 
 }
