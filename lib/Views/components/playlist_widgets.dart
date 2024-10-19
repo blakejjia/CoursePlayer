@@ -76,3 +76,29 @@ class PlaylistCard extends StatelessWidget {
     );
   }
 }
+
+class PlaylistList extends StatelessWidget {
+  final Playlist playlist;
+  const PlaylistList(this.playlist, {super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MFutureBuilder(
+        () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(playlist),
+        child: (data) {
+      return ListTile(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OnePlaylist(playlist),
+            ),
+          );
+        },
+        leading: Image.memory(data!),
+        title: Text(playlist.title),
+        subtitle: Text(playlist.author),
+      );
+    });
+  }
+}

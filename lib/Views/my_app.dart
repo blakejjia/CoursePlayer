@@ -57,9 +57,6 @@ class _MyAppState extends State<MyApp> {
     ];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("courser"),
-      ),
       body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: (int index) {
