@@ -55,6 +55,17 @@ class CoversDao extends DatabaseAccessor<AppDatabase>{
     );
   }
 
+  // 创建新封面 withId
+  Future<int> createCoverWithId(int id,Uint8List coverData, String hash) async {
+    return await into(db.covers).insert(
+      CoversCompanion(
+        id: Value(id),
+        cover: Value(coverData),
+        hash: Value(hash),
+      ),
+    );
+  }
+
   // 根据ID读取封面
   Future<Cover?> getCoverById(int id) async {
     return await (select(db.covers)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
@@ -91,6 +102,8 @@ class CoversDao extends DatabaseAccessor<AppDatabase>{
   Future<List<Cover>> getAllCovers() async {
     return await select(db.covers).get();
   }
+
+  Future<int> destroyCoversDb() => db.delete(db.covers).go();
 }
 
 

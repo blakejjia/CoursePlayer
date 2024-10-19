@@ -1,4 +1,4 @@
-import 'package:course_player/Shared/Providers/SongProvider.dart';
+import 'package:course_player/Shared/Providers/load_from_file.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatefulWidget {
@@ -12,7 +12,7 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(onPressed: SongProvider().loadSongFromDictionary, child: const Text("重构索引")),
+      child: ElevatedButton(onPressed: loadFromFile().load, child: const Text("重构索引")),
     );
   }
 }

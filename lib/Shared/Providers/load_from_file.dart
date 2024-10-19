@@ -1,16 +1,16 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/DAO/DAO.dart';
 import 'package:course_player/main.dart';
 import 'package:drift/drift.dart';
+import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 
-class SongProvider {
-  SongDAO songDAO = getIt<SongDAO>();
+class loadFromFile{
 
   Future<int> _formatImage(List<Picture>? pictures) async {
+    // 格式化tag.pictures,转换成imageId，并在coverDAO中加上缺失的图片，默认返回0
     if (pictures == null || pictures.isEmpty) {
       return 0;
     }
@@ -23,23 +23,28 @@ class SongProvider {
   }
 
   String _formatAuthor(Set<String> authors) {
+    // 格式化playlist中song的作者，如果大于3就是群星
     if (authors.length < 3) {
-      // 将作者列表转为字符串，用空格隔开
       return authors.join(' ');
     } else {
-      // 如果作者数量大于等于 3，则返回 "群星"
       return "群星";
     }
   }
 
+  Future<int> _loadDefaultCover() async{
+    final coverData = await rootBundle.load('assets/default_cover.jpeg').then((data) => data.buffer.asUint8List());
+    return getIt<CoversDao>().createCoverWithId(0, coverData, sha256.convert(coverData).toString());
+  }
 
-  // 获得 playlists
-  Future<void> loadSongFromDictionary() async {
-    songDAO.destroySongDb();
+  Future<void> load() async {
+    getIt<SongDAO>().destroySongDb();
     getIt<PlaylistsDao>().destroyPlaylistDb();
+    getIt<CoversDao>().destroyCoversDb();
+    _loadDefaultCover();
     final directory =
-        Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
+    Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
 
+    // -------------setup 👆 --------------------------------
     if (await directory.exists()) {
       for (var folder in directory.listSync().whereType<Directory>()) {
         // 便利文件夹（Playlist）
@@ -60,7 +65,7 @@ class SongProvider {
                 _imageId = await _formatImage(tag.pictures);
               }
 
-              songDAO.insertSong(
+              getIt<SongDAO>().insertSong(
                 artist: tag.albumArtist ?? "Unknown Artist",
                 title: basename(file.path),
                 playlist: basename(folder.path),
@@ -75,15 +80,5 @@ class SongProvider {
             basename(folder.path), _formatAuthor(_authors), _imageId);
       }
     }
-  }
-
-  Future<List<Song>> loadSongFromDb() async => songDAO.getAllSongs();
-
-  Future<List<Playlist>> loadPlaylists() async {
-    return getIt<PlaylistsDao>().getAllPlaylists();
-  }
-
-  Future<List<Song>> loadSongByPlaylist(Playlist playlist) async {
-    return songDAO.getSongByPlaylist(playlist.title);
   }
 }

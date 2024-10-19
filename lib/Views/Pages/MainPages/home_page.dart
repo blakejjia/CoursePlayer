@@ -1,4 +1,4 @@
-import 'package:course_player/Shared/providers/SongProvider.dart';
+import 'package:course_player/Shared/Providers/load_from_db.dart';
 import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return RefreshFutureBuilder(
       _refreshData,
-      () => getIt<SongProvider>().loadPlaylists(),
+      () => getIt<loadFromDb>().getAllPlaylists(),
       child: (data) {
         return ListView(
           children: [

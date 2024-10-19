@@ -1,5 +1,5 @@
 import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/Providers/SongProvider.dart';
+import 'package:course_player/Shared/Providers/load_from_db.dart';
 import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
 import 'package:flutter/material.dart';
 
@@ -13,7 +13,7 @@ class one_playlist extends StatefulWidget {
 
 class _one_playlistState extends State<one_playlist> {
   late Playlist _playlist;
-  final SongProvider songProvider = SongProvider();
+  final loadFromDb songProvider = loadFromDb();
 
   // ---------- function sort ------------------
   List<Song> sortByTitle(List<Song> songs) {
@@ -36,7 +36,7 @@ class _one_playlistState extends State<one_playlist> {
     return Scaffold(
       appBar: AppBar(), //TODO: add some functions to app bar
       body: RefreshFutureBuilder(
-          _refreshFunction, () => songProvider.loadSongByPlaylist(_playlist),
+          _refreshFunction, () => songProvider.getSongsByPlaylist(_playlist),
           child: (data) => _SongList(data, widget.playlist)),
     );
   }
