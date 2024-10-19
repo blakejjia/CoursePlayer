@@ -1,19 +1,20 @@
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
+import 'package:course_player/Views/components/my_widgets.dart';
+import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
-class one_playlist extends StatefulWidget {
+class OnePlaylist extends StatefulWidget {
   final Playlist playlist;
-  const one_playlist(this.playlist, {super.key});
+  const OnePlaylist(this.playlist, {super.key});
 
   @override
-  State<one_playlist> createState() => _one_playlistState();
+  State<OnePlaylist> createState() => _OnePlaylistState();
 }
 
-class _one_playlistState extends State<one_playlist> {
+class _OnePlaylistState extends State<OnePlaylist> {
   late Playlist _playlist;
-  final loadFromDb songProvider = loadFromDb();
+  final LoadFromDb songProvider = LoadFromDb();
 
   // ---------- function sort ------------------
   List<Song> sortByTitle(List<Song> songs) {
@@ -35,7 +36,7 @@ class _one_playlistState extends State<one_playlist> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(), //TODO: add some functions to app bar
-      body: RefreshFutureBuilder(
+      body: MRefreshFutureBuilder(
           _refreshFunction, () => songProvider.getSongsByPlaylist(_playlist),
           child: (data) => _SongList(data, widget.playlist)),
     );
@@ -62,7 +63,7 @@ class _SongList extends StatelessWidget {
               if (index == 0) {
                 return _heading(context, playlist);
               } else {
-                return _SongTile(song: songs![index-1]);
+                return _SongTile(song: songs![index - 1]);
               }
             },
           ),
@@ -121,27 +122,31 @@ String _formatTitle(String title) {
 }
 
 Widget _heading(BuildContext context, Playlist playlist) {
-  return Column(
-    children: [
-      SizedBox(
-        width: MediaQuery.of(context).size.width / 2,
-        height: MediaQuery.of(context).size.width / 2,
-        child: Placeholder(), // TODO:Image
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
-        child: Text(
-          playlist.title,
-          style: Theme.of(context).textTheme.titleLarge,
+  return MFutureBuilder(
+      () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(playlist),
+      child: (data) {
+    return Column(
+      children: [
+        SizedBox(
+          width: MediaQuery.of(context).size.width / 2,
+          height: MediaQuery.of(context).size.width / 2,
+          child: Image.memory(data!),
         ),
-      ),
-      Padding(
-        padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-        child: Text(
-          playlist.author,
-          style: Theme.of(context).textTheme.bodyMedium,
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
+          child: Text(
+            playlist.title,
+            style: Theme.of(context).textTheme.titleLarge,
+          ),
         ),
-      ),
-    ],
-  );
+        Padding(
+          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+          child: Text(
+            playlist.author,
+            style: Theme.of(context).textTheme.bodyMedium,
+          ),
+        ),
+      ],
+    );
+  });
 }

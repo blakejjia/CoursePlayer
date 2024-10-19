@@ -109,7 +109,7 @@ class CoversDao extends DatabaseAccessor<AppDatabase>{
 
 @DriftAccessor(tables: [Playlists])
 class PlaylistsDao extends DatabaseAccessor<AppDatabase>{
-  PlaylistsDao(AppDatabase db) : super(db);
+  PlaylistsDao(super.db);
 
   // 创建新的播放列表
   Future<int> createPlaylist(String title, String author, int imageId) async {

@@ -1,7 +1,7 @@
-import 'dart:typed_data';
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/Providers/load_from_db.dart';
 import 'package:course_player/Views/Pages/conditionalPages/one_playlist.dart';
+import 'package:course_player/Views/components/my_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
@@ -14,52 +14,40 @@ class PlaylistCard extends StatelessWidget {
     return mCard(context, playList);
   }
 
+  // getIt<loadFromDb>().getCoverUint8ListByPlaylist(playlist)
   Widget mCard(BuildContext context, Playlist playlist) {
-    return FutureBuilder<Uint8List>(
-      future:
-          getIt<loadFromDb>().getCoverUint8ListByPlaylist(playlist),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          // 正在等待异步操作完成时显示进度条
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          // 如果加载出错显示错误信息
-          return Text('Error: ${snapshot.error}');
-        } else if (snapshot.hasData) {
-          return InkWell(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => one_playlist(playList),
-                ),
-              );
-            },
-            child: Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    height: 100,
-                    width: double.infinity,
-                    child: Image.memory(snapshot.data!),
-                  ),
-                  Padding(
-                    // course detail
-                    padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                    child: _courseDetail(context, playlist),
-                  ),
-                ],
-              ),
+    return MFutureBuilder(
+        () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(playlist),
+        child: (data) {
+      return InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => OnePlaylist(playList),
             ),
           );
-        } else {
-          // 如果没有任何数据返回
-          return const Center(child: Text('No data available'));
-        }
-      },
-    );
+        },
+        child: Card(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              SizedBox(
+                height: 100,
+                width: double.infinity,
+                child: Image.memory(data!),
+              ),
+              Padding(
+                // course detail
+                padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+                child: _courseDetail(context, playlist),
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
 
   Widget _courseDetail(BuildContext context, Playlist playlist) {

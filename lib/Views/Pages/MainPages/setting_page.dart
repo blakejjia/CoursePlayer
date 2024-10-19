@@ -12,7 +12,7 @@ class _SettingPageState extends State<SettingPage> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(onPressed: loadFromFile().load, child: const Text("重构索引")),
+      child: ElevatedButton(onPressed: LoadFromFile().load, child: const Text("重构索引")),
     );
   }
 }

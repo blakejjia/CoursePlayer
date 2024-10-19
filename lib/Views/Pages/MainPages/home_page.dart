@@ -1,5 +1,5 @@
 import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
+import 'package:course_player/Views/components/my_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
@@ -17,13 +17,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshFutureBuilder(
+    return MRefreshFutureBuilder(
       _refreshData,
-      () => getIt<loadFromDb>().getAllPlaylists(),
+      () => getIt<LoadFromDb>().getAllCovers(),
       child: (data) {
         return ListView(
           children: [
-            Text('Data: ' + data.toString()),
+            ...data!.map((cover)=> Text('Cover id: ${cover.id}, hash: ${cover.hash}'))
           ],
         );
       },

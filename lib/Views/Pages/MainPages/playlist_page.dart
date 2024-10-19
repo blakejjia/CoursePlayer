@@ -1,6 +1,6 @@
 import 'package:course_player/Shared/DAO/models.dart';
 import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/components/RefreshFutureBuilder.dart';
+import 'package:course_player/Views/components/my_widgets.dart';
 import 'package:course_player/Views/components/playlist_card.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
@@ -20,8 +20,8 @@ class _CoursePageState extends State<CoursePage> {
 
   @override
   Widget build(BuildContext context) {
-    return RefreshFutureBuilder(
-        _refreshData, () => getIt<loadFromDb>().getAllPlaylists(), child: (data) {
+    return MRefreshFutureBuilder(
+        _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(), child: (data) {
       return CourseList(data);
     });
   }

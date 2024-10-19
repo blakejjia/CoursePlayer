@@ -49,7 +49,7 @@ class _MyAppState extends State<MyApp> {
       return PermissionGrantPage(onPermissionGranted: _checkPermissionInBackground);
     }
 
-    final List<Widget> _pages = [
+    final List<Widget> pages = [
       const HomePage(),
       const CoursePage(),
       const ArtistPage(),
@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
       appBar: AppBar(
         title: const Text("courser"),
       ),
-      body: _pages[_currentIndex],
+      body: pages[_currentIndex],
       bottomNavigationBar: BottomNavigationBar(
         onTap: (int index) {
           setState(() {

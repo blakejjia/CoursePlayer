@@ -1,13 +1,12 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/Shared/DAO/DAO.dart';
+import 'package:course_player/Shared/DAO/dao.dart';
 import 'package:course_player/main.dart';
-import 'package:drift/drift.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 
-class loadFromFile{
+class LoadFromFile{
 
   Future<int> _formatImage(List<Picture>? pictures) async {
     // 格式化tag.pictures,转换成imageId，并在coverDAO中加上缺失的图片，默认返回0
@@ -32,7 +31,7 @@ class loadFromFile{
   }
 
   Future<int> _loadDefaultCover() async{
-    final coverData = await rootBundle.load('assets/default_cover.jpeg').then((data) => data.buffer.asUint8List());
+    final coverData = await rootBundle.load("assets/default_cover.jpeg").then((data) => data.buffer.asUint8List());
     return getIt<CoversDao>().createCoverWithId(0, coverData, sha256.convert(coverData).toString());
   }
 
@@ -48,8 +47,8 @@ class loadFromFile{
     if (await directory.exists()) {
       for (var folder in directory.listSync().whereType<Directory>()) {
         // 便利文件夹（Playlist）
-        Set<String> _authors = {}; // 使用 Set 来避免重复艺术家
-        int _imageId = 0; // 如果没有可用图片，那就是 0
+        Set<String> authors = {}; // 使用 Set 来避免重复艺术家
+        int imageId = 0; // 如果没有可用图片，那就是 0
         for (var file in folder.listSync().whereType<File>()) {
           // 遍历 playlist 中的 song
           if (file.path.endsWith('.mp3')) {
@@ -57,12 +56,12 @@ class loadFromFile{
             if (tag != null) {
               // 添加艺术家到列表
               if (tag.albumArtist != null) {
-                _authors.add(tag.albumArtist!);
+                authors.add(tag.albumArtist!);
               }
 
               // 设置封面图片 ID，只设置一次
-              if (_imageId == 0 && tag.pictures.isNotEmpty) {
-                _imageId = await _formatImage(tag.pictures);
+              if (imageId == 0 && tag.pictures.isNotEmpty) {
+                imageId = await _formatImage(tag.pictures);
               }
 
               getIt<SongDAO>().insertSong(
@@ -77,7 +76,7 @@ class loadFromFile{
           }
         }
         getIt<PlaylistsDao>().createPlaylist(
-            basename(folder.path), _formatAuthor(_authors), _imageId);
+            basename(folder.path), _formatAuthor(authors), imageId);
       }
     }
   }

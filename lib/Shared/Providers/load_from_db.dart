@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
 import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/DAO/DAO.dart';
+import 'package:course_player/Shared/DAO/dao.dart';
 import 'package:course_player/main.dart';
 
-class loadFromDb {
+class LoadFromDb {
   SongDAO songDAO = getIt<SongDAO>();
 
   Future<List<Song>> getAllSongs() async => songDAO.getAllSongs();
@@ -23,7 +23,8 @@ class loadFromDb {
 
   Future<Uint8List> getCoverUint8ListByPlaylist(Playlist playlist) async {
     Cover? cover = await getIt<CoversDao>().getCoverById(playlist.imageId);
-    Uint8List bytes = cover == null ? Uint8List(0) : cover.cover;
+    Cover? defaultCover = await getIt<CoversDao>().getCoverById(0);
+    Uint8List bytes = cover == null? defaultCover!.cover : cover.cover;
     return bytes;
   }
 }
