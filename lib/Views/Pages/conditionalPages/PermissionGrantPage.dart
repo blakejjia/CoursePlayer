@@ -20,8 +20,8 @@ class PermissionGrantPage extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {
-                Permission.manageExternalStorage.request();
+              onPressed: () async {
+                await Permission.manageExternalStorage.request();
                 onPermissionGranted();
               },
               child: const Text("Grant Permission"),
