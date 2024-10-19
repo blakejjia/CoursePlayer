@@ -9,11 +9,10 @@ class SettingPage extends StatefulWidget {
 }
 
 class _SettingPageState extends State<SettingPage> {
-  SongProvider songProvider = new SongProvider(); // cannot use getIt, don't know why
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: ElevatedButton(onPressed: songProvider.loadSongFromDictionary, child: Text("重构索引")),
+      child: ElevatedButton(onPressed: SongProvider().loadSongFromDictionary, child: const Text("重构索引")),
     );
   }
 }

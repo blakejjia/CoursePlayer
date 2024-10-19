@@ -21,25 +21,22 @@ class PlaylistCard extends StatelessWidget {
           ),
         );
       },
-      child: Padding(
-        padding: const EdgeInsets.only(right: 25),
-        child: Card(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              const SizedBox(
-                height: 100,
-                width: double.infinity,
-                child: Placeholder(),
-                // child: Image.network("https://itying.com/images/flutter/2.png", fit: BoxFit.cover,), // TODO:image
-              ),
-              Padding(   // course detail
-                padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: _courseDetail(context, playlist),
-              ),
-            ],
-          ),
+      child: Card(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(
+              height: 100,
+              width: double.infinity,
+              child: Placeholder(),
+              // child: Image.network("https://itying.com/images/flutter/2.png", fit: BoxFit.cover,), // TODO:image
+            ),
+            Padding(   // course detail
+              padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
+              child: _courseDetail(context, playlist),
+            ),
+          ],
         ),
       ),
     );

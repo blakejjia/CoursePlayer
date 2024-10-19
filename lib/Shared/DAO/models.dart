@@ -16,11 +16,13 @@ class Songs extends Table{
 @DataClassName("Cover")
 class Covers extends Table{
   IntColumn get id => integer().autoIncrement()();
-  TextColumn get image => text()();
+  BlobColumn get cover => blob()(); // 使用Blob存储图片的二进制数据
+  TextColumn get hash => text()(); // SHA256，使用Int存储
 }
 
 @DataClassName("Playlist")
 class Playlists extends Table{
+  IntColumn get id => integer().autoIncrement()();
   TextColumn get title => text()();
   TextColumn get author => text()();
   IntColumn get imageId => integer()();

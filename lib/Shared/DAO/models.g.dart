@@ -386,13 +386,18 @@ class $CoversTable extends Covers with TableInfo<$CoversTable, Cover> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _imageMeta = const VerificationMeta('image');
+  static const VerificationMeta _coverMeta = const VerificationMeta('cover');
   @override
-  late final GeneratedColumn<String> image = GeneratedColumn<String>(
-      'image', aliasedName, false,
+  late final GeneratedColumn<Uint8List> cover = GeneratedColumn<Uint8List>(
+      'cover', aliasedName, false,
+      type: DriftSqlType.blob, requiredDuringInsert: true);
+  static const VerificationMeta _hashMeta = const VerificationMeta('hash');
+  @override
+  late final GeneratedColumn<String> hash = GeneratedColumn<String>(
+      'hash', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [id, image];
+  List<GeneratedColumn> get $columns => [id, cover, hash];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -406,11 +411,17 @@ class $CoversTable extends Covers with TableInfo<$CoversTable, Cover> {
     if (data.containsKey('id')) {
       context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
     }
-    if (data.containsKey('image')) {
+    if (data.containsKey('cover')) {
       context.handle(
-          _imageMeta, image.isAcceptableOrUnknown(data['image']!, _imageMeta));
+          _coverMeta, cover.isAcceptableOrUnknown(data['cover']!, _coverMeta));
     } else if (isInserting) {
-      context.missing(_imageMeta);
+      context.missing(_coverMeta);
+    }
+    if (data.containsKey('hash')) {
+      context.handle(
+          _hashMeta, hash.isAcceptableOrUnknown(data['hash']!, _hashMeta));
+    } else if (isInserting) {
+      context.missing(_hashMeta);
     }
     return context;
   }
@@ -423,8 +434,10 @@ class $CoversTable extends Covers with TableInfo<$CoversTable, Cover> {
     return Cover(
       id: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      image: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}image'])!,
+      cover: attachedDatabase.typeMapping
+          .read(DriftSqlType.blob, data['${effectivePrefix}cover'])!,
+      hash: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}hash'])!,
     );
   }
 
@@ -436,20 +449,23 @@ class $CoversTable extends Covers with TableInfo<$CoversTable, Cover> {
 
 class Cover extends DataClass implements Insertable<Cover> {
   final int id;
-  final String image;
-  const Cover({required this.id, required this.image});
+  final Uint8List cover;
+  final String hash;
+  const Cover({required this.id, required this.cover, required this.hash});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
-    map['image'] = Variable<String>(image);
+    map['cover'] = Variable<Uint8List>(cover);
+    map['hash'] = Variable<String>(hash);
     return map;
   }
 
   CoversCompanion toCompanion(bool nullToAbsent) {
     return CoversCompanion(
       id: Value(id),
-      image: Value(image),
+      cover: Value(cover),
+      hash: Value(hash),
     );
   }
 
@@ -458,7 +474,8 @@ class Cover extends DataClass implements Insertable<Cover> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Cover(
       id: serializer.fromJson<int>(json['id']),
-      image: serializer.fromJson<String>(json['image']),
+      cover: serializer.fromJson<Uint8List>(json['cover']),
+      hash: serializer.fromJson<String>(json['hash']),
     );
   }
   @override
@@ -466,18 +483,21 @@ class Cover extends DataClass implements Insertable<Cover> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
-      'image': serializer.toJson<String>(image),
+      'cover': serializer.toJson<Uint8List>(cover),
+      'hash': serializer.toJson<String>(hash),
     };
   }
 
-  Cover copyWith({int? id, String? image}) => Cover(
+  Cover copyWith({int? id, Uint8List? cover, String? hash}) => Cover(
         id: id ?? this.id,
-        image: image ?? this.image,
+        cover: cover ?? this.cover,
+        hash: hash ?? this.hash,
       );
   Cover copyWithCompanion(CoversCompanion data) {
     return Cover(
       id: data.id.present ? data.id.value : this.id,
-      image: data.image.present ? data.image.value : this.image,
+      cover: data.cover.present ? data.cover.value : this.cover,
+      hash: data.hash.present ? data.hash.value : this.hash,
     );
   }
 
@@ -485,44 +505,56 @@ class Cover extends DataClass implements Insertable<Cover> {
   String toString() {
     return (StringBuffer('Cover(')
           ..write('id: $id, ')
-          ..write('image: $image')
+          ..write('cover: $cover, ')
+          ..write('hash: $hash')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, image);
+  int get hashCode => Object.hash(id, $driftBlobEquality.hash(cover), hash);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Cover && other.id == this.id && other.image == this.image);
+      (other is Cover &&
+          other.id == this.id &&
+          $driftBlobEquality.equals(other.cover, this.cover) &&
+          other.hash == this.hash);
 }
 
 class CoversCompanion extends UpdateCompanion<Cover> {
   final Value<int> id;
-  final Value<String> image;
+  final Value<Uint8List> cover;
+  final Value<String> hash;
   const CoversCompanion({
     this.id = const Value.absent(),
-    this.image = const Value.absent(),
+    this.cover = const Value.absent(),
+    this.hash = const Value.absent(),
   });
   CoversCompanion.insert({
     this.id = const Value.absent(),
-    required String image,
-  }) : image = Value(image);
+    required Uint8List cover,
+    required String hash,
+  })  : cover = Value(cover),
+        hash = Value(hash);
   static Insertable<Cover> custom({
     Expression<int>? id,
-    Expression<String>? image,
+    Expression<Uint8List>? cover,
+    Expression<String>? hash,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (image != null) 'image': image,
+      if (cover != null) 'cover': cover,
+      if (hash != null) 'hash': hash,
     });
   }
 
-  CoversCompanion copyWith({Value<int>? id, Value<String>? image}) {
+  CoversCompanion copyWith(
+      {Value<int>? id, Value<Uint8List>? cover, Value<String>? hash}) {
     return CoversCompanion(
       id: id ?? this.id,
-      image: image ?? this.image,
+      cover: cover ?? this.cover,
+      hash: hash ?? this.hash,
     );
   }
 
@@ -532,8 +564,11 @@ class CoversCompanion extends UpdateCompanion<Cover> {
     if (id.present) {
       map['id'] = Variable<int>(id.value);
     }
-    if (image.present) {
-      map['image'] = Variable<String>(image.value);
+    if (cover.present) {
+      map['cover'] = Variable<Uint8List>(cover.value);
+    }
+    if (hash.present) {
+      map['hash'] = Variable<String>(hash.value);
     }
     return map;
   }
@@ -542,7 +577,8 @@ class CoversCompanion extends UpdateCompanion<Cover> {
   String toString() {
     return (StringBuffer('CoversCompanion(')
           ..write('id: $id, ')
-          ..write('image: $image')
+          ..write('cover: $cover, ')
+          ..write('hash: $hash')
           ..write(')'))
         .toString();
   }
@@ -554,6 +590,15 @@ class $PlaylistsTable extends Playlists
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
   $PlaylistsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
   static const VerificationMeta _titleMeta = const VerificationMeta('title');
   @override
   late final GeneratedColumn<String> title = GeneratedColumn<String>(
@@ -571,7 +616,7 @@ class $PlaylistsTable extends Playlists
       'image_id', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns => [title, author, imageId];
+  List<GeneratedColumn> get $columns => [id, title, author, imageId];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -582,6 +627,9 @@ class $PlaylistsTable extends Playlists
       {bool isInserting = false}) {
     final context = VerificationContext();
     final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
     if (data.containsKey('title')) {
       context.handle(
           _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
@@ -604,11 +652,13 @@ class $PlaylistsTable extends Playlists
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => const {};
+  Set<GeneratedColumn> get $primaryKey => {id};
   @override
   Playlist map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
     return Playlist(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       title: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
       author: attachedDatabase.typeMapping
@@ -625,14 +675,19 @@ class $PlaylistsTable extends Playlists
 }
 
 class Playlist extends DataClass implements Insertable<Playlist> {
+  final int id;
   final String title;
   final String author;
   final int imageId;
   const Playlist(
-      {required this.title, required this.author, required this.imageId});
+      {required this.id,
+      required this.title,
+      required this.author,
+      required this.imageId});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
     map['title'] = Variable<String>(title);
     map['author'] = Variable<String>(author);
     map['image_id'] = Variable<int>(imageId);
@@ -641,6 +696,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
 
   PlaylistsCompanion toCompanion(bool nullToAbsent) {
     return PlaylistsCompanion(
+      id: Value(id),
       title: Value(title),
       author: Value(author),
       imageId: Value(imageId),
@@ -651,6 +707,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
       {ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Playlist(
+      id: serializer.fromJson<int>(json['id']),
       title: serializer.fromJson<String>(json['title']),
       author: serializer.fromJson<String>(json['author']),
       imageId: serializer.fromJson<int>(json['imageId']),
@@ -660,19 +717,23 @@ class Playlist extends DataClass implements Insertable<Playlist> {
   Map<String, dynamic> toJson({ValueSerializer? serializer}) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
       'title': serializer.toJson<String>(title),
       'author': serializer.toJson<String>(author),
       'imageId': serializer.toJson<int>(imageId),
     };
   }
 
-  Playlist copyWith({String? title, String? author, int? imageId}) => Playlist(
+  Playlist copyWith({int? id, String? title, String? author, int? imageId}) =>
+      Playlist(
+        id: id ?? this.id,
         title: title ?? this.title,
         author: author ?? this.author,
         imageId: imageId ?? this.imageId,
       );
   Playlist copyWithCompanion(PlaylistsCompanion data) {
     return Playlist(
+      id: data.id.present ? data.id.value : this.id,
       title: data.title.present ? data.title.value : this.title,
       author: data.author.present ? data.author.value : this.author,
       imageId: data.imageId.present ? data.imageId.value : this.imageId,
@@ -682,6 +743,7 @@ class Playlist extends DataClass implements Insertable<Playlist> {
   @override
   String toString() {
     return (StringBuffer('Playlist(')
+          ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('author: $author, ')
           ..write('imageId: $imageId')
@@ -690,65 +752,69 @@ class Playlist extends DataClass implements Insertable<Playlist> {
   }
 
   @override
-  int get hashCode => Object.hash(title, author, imageId);
+  int get hashCode => Object.hash(id, title, author, imageId);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Playlist &&
+          other.id == this.id &&
           other.title == this.title &&
           other.author == this.author &&
           other.imageId == this.imageId);
 }
 
 class PlaylistsCompanion extends UpdateCompanion<Playlist> {
+  final Value<int> id;
   final Value<String> title;
   final Value<String> author;
   final Value<int> imageId;
-  final Value<int> rowid;
   const PlaylistsCompanion({
+    this.id = const Value.absent(),
     this.title = const Value.absent(),
     this.author = const Value.absent(),
     this.imageId = const Value.absent(),
-    this.rowid = const Value.absent(),
   });
   PlaylistsCompanion.insert({
+    this.id = const Value.absent(),
     required String title,
     required String author,
     required int imageId,
-    this.rowid = const Value.absent(),
   })  : title = Value(title),
         author = Value(author),
         imageId = Value(imageId);
   static Insertable<Playlist> custom({
+    Expression<int>? id,
     Expression<String>? title,
     Expression<String>? author,
     Expression<int>? imageId,
-    Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
+      if (id != null) 'id': id,
       if (title != null) 'title': title,
       if (author != null) 'author': author,
       if (imageId != null) 'image_id': imageId,
-      if (rowid != null) 'rowid': rowid,
     });
   }
 
   PlaylistsCompanion copyWith(
-      {Value<String>? title,
+      {Value<int>? id,
+      Value<String>? title,
       Value<String>? author,
-      Value<int>? imageId,
-      Value<int>? rowid}) {
+      Value<int>? imageId}) {
     return PlaylistsCompanion(
+      id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
       imageId: imageId ?? this.imageId,
-      rowid: rowid ?? this.rowid,
     );
   }
 
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
     if (title.present) {
       map['title'] = Variable<String>(title.value);
     }
@@ -758,19 +824,16 @@ class PlaylistsCompanion extends UpdateCompanion<Playlist> {
     if (imageId.present) {
       map['image_id'] = Variable<int>(imageId.value);
     }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
     return map;
   }
 
   @override
   String toString() {
     return (StringBuffer('PlaylistsCompanion(')
+          ..write('id: $id, ')
           ..write('title: $title, ')
           ..write('author: $author, ')
-          ..write('imageId: $imageId, ')
-          ..write('rowid: $rowid')
+          ..write('imageId: $imageId')
           ..write(')'))
         .toString();
   }
@@ -980,11 +1043,13 @@ typedef $$SongsTableProcessedTableManager = ProcessedTableManager<
     PrefetchHooks Function()>;
 typedef $$CoversTableCreateCompanionBuilder = CoversCompanion Function({
   Value<int> id,
-  required String image,
+  required Uint8List cover,
+  required String hash,
 });
 typedef $$CoversTableUpdateCompanionBuilder = CoversCompanion Function({
   Value<int> id,
-  Value<String> image,
+  Value<Uint8List> cover,
+  Value<String> hash,
 });
 
 class $$CoversTableFilterComposer
@@ -999,8 +1064,11 @@ class $$CoversTableFilterComposer
   ColumnFilters<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnFilters(column));
 
-  ColumnFilters<String> get image => $composableBuilder(
-      column: $table.image, builder: (column) => ColumnFilters(column));
+  ColumnFilters<Uint8List> get cover => $composableBuilder(
+      column: $table.cover, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<String> get hash => $composableBuilder(
+      column: $table.hash, builder: (column) => ColumnFilters(column));
 }
 
 class $$CoversTableOrderingComposer
@@ -1015,8 +1083,11 @@ class $$CoversTableOrderingComposer
   ColumnOrderings<int> get id => $composableBuilder(
       column: $table.id, builder: (column) => ColumnOrderings(column));
 
-  ColumnOrderings<String> get image => $composableBuilder(
-      column: $table.image, builder: (column) => ColumnOrderings(column));
+  ColumnOrderings<Uint8List> get cover => $composableBuilder(
+      column: $table.cover, builder: (column) => ColumnOrderings(column));
+
+  ColumnOrderings<String> get hash => $composableBuilder(
+      column: $table.hash, builder: (column) => ColumnOrderings(column));
 }
 
 class $$CoversTableAnnotationComposer
@@ -1031,8 +1102,11 @@ class $$CoversTableAnnotationComposer
   GeneratedColumn<int> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get image =>
-      $composableBuilder(column: $table.image, builder: (column) => column);
+  GeneratedColumn<Uint8List> get cover =>
+      $composableBuilder(column: $table.cover, builder: (column) => column);
+
+  GeneratedColumn<String> get hash =>
+      $composableBuilder(column: $table.hash, builder: (column) => column);
 }
 
 class $$CoversTableTableManager extends RootTableManager<
@@ -1059,19 +1133,23 @@ class $$CoversTableTableManager extends RootTableManager<
               $$CoversTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            Value<String> image = const Value.absent(),
+            Value<Uint8List> cover = const Value.absent(),
+            Value<String> hash = const Value.absent(),
           }) =>
               CoversCompanion(
             id: id,
-            image: image,
+            cover: cover,
+            hash: hash,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
-            required String image,
+            required Uint8List cover,
+            required String hash,
           }) =>
               CoversCompanion.insert(
             id: id,
-            image: image,
+            cover: cover,
+            hash: hash,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
@@ -1093,16 +1171,16 @@ typedef $$CoversTableProcessedTableManager = ProcessedTableManager<
     Cover,
     PrefetchHooks Function()>;
 typedef $$PlaylistsTableCreateCompanionBuilder = PlaylistsCompanion Function({
+  Value<int> id,
   required String title,
   required String author,
   required int imageId,
-  Value<int> rowid,
 });
 typedef $$PlaylistsTableUpdateCompanionBuilder = PlaylistsCompanion Function({
+  Value<int> id,
   Value<String> title,
   Value<String> author,
   Value<int> imageId,
-  Value<int> rowid,
 });
 
 class $$PlaylistsTableFilterComposer
@@ -1114,6 +1192,9 @@ class $$PlaylistsTableFilterComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnFilters<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnFilters(column));
+
   ColumnFilters<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnFilters(column));
 
@@ -1133,6 +1214,9 @@ class $$PlaylistsTableOrderingComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  ColumnOrderings<int> get id => $composableBuilder(
+      column: $table.id, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get title => $composableBuilder(
       column: $table.title, builder: (column) => ColumnOrderings(column));
 
@@ -1152,6 +1236,9 @@ class $$PlaylistsTableAnnotationComposer
     super.$addJoinBuilderToRootComposer,
     super.$removeJoinBuilderFromRootComposer,
   });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
   GeneratedColumn<String> get title =>
       $composableBuilder(column: $table.title, builder: (column) => column);
 
@@ -1185,28 +1272,28 @@ class $$PlaylistsTableTableManager extends RootTableManager<
           createComputedFieldComposer: () =>
               $$PlaylistsTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
             Value<String> title = const Value.absent(),
             Value<String> author = const Value.absent(),
             Value<int> imageId = const Value.absent(),
-            Value<int> rowid = const Value.absent(),
           }) =>
               PlaylistsCompanion(
+            id: id,
             title: title,
             author: author,
             imageId: imageId,
-            rowid: rowid,
           ),
           createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
             required String title,
             required String author,
             required int imageId,
-            Value<int> rowid = const Value.absent(),
           }) =>
               PlaylistsCompanion.insert(
+            id: id,
             title: title,
             author: author,
             imageId: imageId,
-            rowid: rowid,
           ),
           withReferenceMapper: (p0) => p0
               .map((e) => (e.readTable(table), BaseReferences(db, table, e)))

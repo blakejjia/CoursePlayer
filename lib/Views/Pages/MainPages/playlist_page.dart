@@ -34,7 +34,7 @@ class CourseList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (playlists == null || playlists!.isEmpty) {
-      return Text("空空如也");
+      return const Center(child: Text("空空如也,请在settings中重构索引"));
     } else {
       return Column(children: [
         Text(
@@ -45,9 +45,6 @@ class CourseList extends StatelessWidget {
           child: GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2, // 设置2列
-              // crossAxisSpacing: 10, // 列之间的间距
-              // mainAxisSpacing: 10, // 行之间的间距
-              // childAspectRatio: 3 / 2, // 每个卡片的宽高比，根据需求调整
             ),
             itemCount: playlists!.length, // Playlist数量
             itemBuilder: (context, index) {
