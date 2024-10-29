@@ -1,21 +1,31 @@
-import 'package:course_player/data/models/dao.dart';
+import 'package:course_player/data/repositories/covers_repository.dart';
+import 'package:course_player/data/repositories/playlist_repository.dart';
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/data/repositories/song_repository.dart';
+import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
 import 'package:course_player/presentation/screens/my_app.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:path_provider/path_provider.dart';
 
 final getIt = GetIt.instance;
 
-void setup(){
+void setup() {
   getIt.registerSingleton<AppDatabase>(AppDatabase());
-  getIt.registerSingleton<SongDAO>(SongDAO(getIt<AppDatabase>()));
-  getIt.registerSingleton<CoversDao>(CoversDao(getIt<AppDatabase>()));
-  getIt.registerSingleton<PlaylistsDao>(PlaylistsDao(getIt<AppDatabase>()));
+  getIt.registerSingleton<SongRepository>(SongRepository(getIt<AppDatabase>()));
+  getIt.registerSingleton<CoversRepository>(CoversRepository(getIt<AppDatabase>()));
+  getIt.registerSingleton<PlaylistRepository>(PlaylistRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<LoadFromDb>(LoadFromDb());
 }
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  HydratedBloc.storage = await HydratedStorage.build(
+    storageDirectory: await getApplicationDocumentsDirectory(),
+  );
   setup();
   runApp(const MainApp());
 }
@@ -25,12 +35,18 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      routes: {
-        "/": (context) => const MyApp(),
-      },
-      initialRoute: "/",
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider<SettingsCubit>(
+            create: (context) => SettingsCubit()),
+      ],
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        routes: {
+          "/": (context) => const MyApp(),
+        },
+        initialRoute: "/",
+      ),
     );
   }
 }

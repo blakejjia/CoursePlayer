@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/data/models/dao.dart';
+import 'package:course_player/data/repositories/covers_repository.dart';
+import 'package:course_player/data/repositories/playlist_repository.dart';
+import 'package:course_player/data/repositories/song_repository.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -16,7 +18,7 @@ class LoadFromFile{
 
     Uint8List pictureBytes = pictures[0].bytes;
     String hash = sha256.convert(pictureBytes).toString();
-    CoversDao coversDao = getIt<CoversDao>();
+    CoversRepository coversDao = getIt<CoversRepository>();
     int? coverId = await coversDao.getCoverIdByHash(hash);
     return coverId ?? coversDao.createCover(pictureBytes, hash);
   }
@@ -32,13 +34,13 @@ class LoadFromFile{
 
   Future<int> _loadDefaultCover() async{
     final coverData = await rootBundle.load("assets/default_cover.jpeg").then((data) => data.buffer.asUint8List());
-    return getIt<CoversDao>().createCoverWithId(0, coverData, sha256.convert(coverData).toString());
+    return getIt<CoversRepository>().createCoverWithId(0, coverData, sha256.convert(coverData).toString());
   }
 
   Future<void> load() async {
-    getIt<SongDAO>().destroySongDb();
-    getIt<PlaylistsDao>().destroyPlaylistDb();
-    getIt<CoversDao>().destroyCoversDb();
+    getIt<SongRepository>().destroySongDb();
+    getIt<PlaylistRepository>().destroyPlaylistDb();
+    getIt<CoversRepository>().destroyCoversDb();
     _loadDefaultCover();
     final directory =
     Directory('/storage/emulated/0/courser'); // TODO: 更多样的文件夹进入方式
@@ -64,7 +66,7 @@ class LoadFromFile{
                 imageId = await _formatImage(tag.pictures);
               }
 
-              getIt<SongDAO>().insertSong(
+              getIt<SongRepository>().insertSong(
                 artist: tag.albumArtist ?? "Unknown Artist",
                 title: basename(file.path),
                 playlist: basename(folder.path),
@@ -75,7 +77,7 @@ class LoadFromFile{
             }
           }
         }
-        getIt<PlaylistsDao>().createPlaylist(
+        getIt<PlaylistRepository>().createPlaylist(
             basename(folder.path), _formatAuthor(authors), imageId);
       }
     }

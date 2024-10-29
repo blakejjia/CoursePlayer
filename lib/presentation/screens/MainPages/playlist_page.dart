@@ -1,9 +1,11 @@
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
 import 'package:course_player/presentation/widgets/my_widgets.dart';
 import 'package:course_player/presentation/widgets/playlist_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class CoursePage extends StatefulWidget {
   const CoursePage({super.key});
@@ -13,8 +15,6 @@ class CoursePage extends StatefulWidget {
 }
 
 class _CoursePageState extends State<CoursePage> {
-  bool _isGridView = true;
-
   Future<void> _refreshData() async {
     setState(() {});
   }
@@ -26,38 +26,36 @@ class _CoursePageState extends State<CoursePage> {
           title: const Text('Courser'),
           leading: const Icon(Icons.play_circle_filled),
           actions: [
-            PopupMenuButton(onSelected: (selection) {
-              setState(() {
-                selection == "GridView"
-                    ? _isGridView = true
-                    : _isGridView = false;
-              }); //TODO:排序here
-            }, itemBuilder: (BuildContext context) {
-              return [
-                const PopupMenuItem<String>(
-                  value: 'ListView',
-                  child: Text('显示为列表'),
-                ),
-                const PopupMenuItem<String>(
-                  value: 'GridView',
-                  child: Text('显示为卡片'),
-                ),
-              ];
-            })
+            BlocBuilder<SettingsCubit, SettingsState>(
+              builder: (context, state) {
+                return PopupMenuButton<String>(
+                  onSelected: (selection) {
+                    context.read<SettingsCubit>().changeView();
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                        value: 'ListView',
+                        child: Text(state.islistview ? '显示为列表' : '显示为网格'),
+                      ),
+                    ];
+                  },
+                );
+              },
+            ),
           ],
         ),
         body: MRefreshFutureBuilder(
             _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(),
             child: (data) {
-          return CourseList(data, isGridView: _isGridView,);
+          return CourseList(data);
         }));
   }
 }
 
 class CourseList extends StatelessWidget {
   final List<Playlist>? playlists;
-  final bool isGridView;
-  const CourseList(this.playlists, {super.key, required this.isGridView});
+  const CourseList(this.playlists, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -69,10 +67,12 @@ class CourseList extends StatelessWidget {
           "Courses",
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        Expanded(
-          child:
-              isGridView ? _showInCard(playlists!) : _showInList(playlists!),
-        ),
+        Expanded(child: BlocBuilder<SettingsCubit, SettingsState>(
+            builder: (context, state) {
+          return state.islistview
+              ? _showInCard(playlists!)
+              : _showInList(playlists!);
+        })),
       ]);
     }
   }
