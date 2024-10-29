@@ -1,7 +1,7 @@
-import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/components/my_widgets.dart';
-import 'package:course_player/Views/components/playlist_widgets.dart';
+import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/presentation/widgets/my_widgets.dart';
+import 'package:course_player/presentation/widgets/playlist_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
@@ -34,11 +34,11 @@ class _CoursePageState extends State<CoursePage> {
               }); //TODO:排序here
             }, itemBuilder: (BuildContext context) {
               return [
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'ListView',
                   child: Text('显示为列表'),
                 ),
-                PopupMenuItem<String>(
+                const PopupMenuItem<String>(
                   value: 'GridView',
                   child: Text('显示为卡片'),
                 ),

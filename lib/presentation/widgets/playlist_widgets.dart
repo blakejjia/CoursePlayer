@@ -1,7 +1,7 @@
-import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/Pages/conditionalPages/one_playlist.dart';
-import 'package:course_player/Views/components/my_widgets.dart';
+import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/presentation/screens/conditionalPages/one_playlist.dart';
+import 'package:course_player/presentation/widgets/my_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 

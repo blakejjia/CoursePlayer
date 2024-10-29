@@ -1,8 +1,8 @@
-import 'package:course_player/Views/Pages/MainPages/artist_page.dart';
-import 'package:course_player/Views/Pages/MainPages/playlist_page.dart';
-import 'package:course_player/Views/Pages/MainPages/home_page.dart';
-import 'package:course_player/Views/Pages/MainPages/setting_page.dart';
-import 'package:course_player/Views/Pages/conditionalPages/PermissionGrantPage.dart';
+import 'package:course_player/presentation/screens/MainPages/artist_page.dart';
+import 'package:course_player/presentation/screens/MainPages/home_page.dart';
+import 'package:course_player/presentation/screens/MainPages/playlist_page.dart';
+import 'package:course_player/presentation/screens/MainPages/setting_page.dart';
+import 'package:course_player/presentation/screens/conditionalPages/permission_grant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 

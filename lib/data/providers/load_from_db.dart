@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/DAO/dao.dart';
+import 'package:course_player/data/models/dao.dart';
+import 'package:course_player/data/models/models.dart';
 import 'package:course_player/main.dart';
 
 class LoadFromDb {

@@ -1,4 +1,4 @@
-import 'package:course_player/Shared/DAO/models.dart';
+import 'package:course_player/data/models/models.dart';
 import 'package:drift/drift.dart';
 
 @DriftAccessor(tables: [Songs])

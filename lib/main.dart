@@ -1,7 +1,7 @@
-import 'package:course_player/Shared/DAO/dao.dart';
-import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/my_app.dart';
+import 'package:course_player/data/models/dao.dart';
+import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/presentation/screens/my_app.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 

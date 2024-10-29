@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/Shared/DAO/dao.dart';
+import 'package:course_player/data/models/dao.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';

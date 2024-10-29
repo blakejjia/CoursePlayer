@@ -1,6 +1,6 @@
-import 'package:course_player/Shared/DAO/models.dart';
-import 'package:course_player/Shared/Providers/load_from_db.dart';
-import 'package:course_player/Views/components/my_widgets.dart';
+import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/presentation/widgets/my_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
@@ -46,7 +46,7 @@ class _OnePlaylistState extends State<OnePlaylist> {
 class _SongList extends StatelessWidget {
   final List<Song>? songs;
   final Playlist playlist;
-  const _SongList(this.songs, this.playlist, {super.key});
+  const _SongList(this.songs, this.playlist);
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +75,7 @@ class _SongList extends StatelessWidget {
 
 class _SongTile extends StatelessWidget {
   final Song song;
-  const _SongTile({super.key, required this.song});
+  const _SongTile({required this.song});
 
   @override
   Widget build(BuildContext context) {

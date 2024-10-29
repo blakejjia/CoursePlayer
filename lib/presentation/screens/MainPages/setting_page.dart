@@ -1,4 +1,4 @@
-import 'package:course_player/Shared/Providers/load_from_file.dart';
+import 'package:course_player/data/providers/load_from_file.dart';
 import 'package:flutter/material.dart';
 
 class SettingPage extends StatefulWidget {
