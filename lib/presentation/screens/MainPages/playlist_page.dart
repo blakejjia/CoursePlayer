@@ -1,7 +1,7 @@
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
-import 'package:course_player/presentation/widgets/my_widgets.dart';
+import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
+import 'package:course_player/presentation/widgets/future_builder.dart';
 import 'package:course_player/presentation/widgets/playlist_widgets.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
@@ -26,11 +26,11 @@ class _CoursePageState extends State<CoursePage> {
           title: const Text('Courser'),
           leading: const Icon(Icons.play_circle_filled),
           actions: [
-            BlocBuilder<SettingsCubit, SettingsState>(
+            BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
               builder: (context, state) {
                 return PopupMenuButton<String>(
                   onSelected: (selection) {
-                    context.read<SettingsCubit>().changeView();
+                    context.read<PlaylistPageCubit>().changeView();
                   },
                   itemBuilder: (BuildContext context) {
                     return [
@@ -67,7 +67,7 @@ class CourseList extends StatelessWidget {
           "Courses",
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        Expanded(child: BlocBuilder<SettingsCubit, SettingsState>(
+        Expanded(child: BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
             builder: (context, state) {
           return state.islistview
               ? _showInCard(playlists!)

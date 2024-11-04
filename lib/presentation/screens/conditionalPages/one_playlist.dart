@@ -1,6 +1,6 @@
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/presentation/widgets/my_widgets.dart';
+import 'package:course_player/presentation/widgets/future_builder.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 
@@ -113,8 +113,7 @@ String _formatDuration(int duration) {
 }
 
 String _formatTitle(String title) {
-  int lastDotIndex = title.lastIndexOf('.');
-  // 如果存在 '.', 则去掉末尾的后缀
+  int lastDotIndex = title.lastIndexOf('.');  // 如果存在 '.', 则去掉末尾的后缀
   if (lastDotIndex != -1) {
     return title.substring(0, lastDotIndex);
   }

@@ -3,6 +3,7 @@ import 'package:course_player/data/repositories/playlist_repository.dart';
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
 import 'package:course_player/data/repositories/song_repository.dart';
+import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
 import 'package:course_player/presentation/screens/my_app.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +17,10 @@ final getIt = GetIt.instance;
 void setup() {
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<SongRepository>(SongRepository(getIt<AppDatabase>()));
-  getIt.registerSingleton<CoversRepository>(CoversRepository(getIt<AppDatabase>()));
-  getIt.registerSingleton<PlaylistRepository>(PlaylistRepository(getIt<AppDatabase>()));
+  getIt.registerSingleton<CoversRepository>(
+      CoversRepository(getIt<AppDatabase>()));
+  getIt.registerSingleton<PlaylistRepository>(
+      PlaylistRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<LoadFromDb>(LoadFromDb());
 }
 
@@ -37,8 +40,10 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SettingsCubit>(
-            create: (context) => SettingsCubit()),
+        BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
+        BlocProvider<AudioPlayerBloc>(
+          create: (_) => AudioPlayerBloc(),
+        )
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

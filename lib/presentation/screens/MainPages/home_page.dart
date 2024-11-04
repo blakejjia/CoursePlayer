@@ -1,5 +1,5 @@
 import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/presentation/widgets/my_widgets.dart';
+import 'package:course_player/presentation/widgets/future_builder.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
 

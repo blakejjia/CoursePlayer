@@ -20,7 +20,10 @@ dependencies:
   flutter_bloc: ^8.1.6
   hydrated_bloc: ^9.1.5
   equatable: ^2.0.5
-  path_provider: ^2.1.4
+  path_provider: ^2.1.5
+  just_audio: ^0.9.42
+  audio_video_progress_bar: ^2.0.3
+  meta: ^1.15.0
 
 dev_dependencies:
   flutter_test:
@@ -33,4 +36,7 @@ flutter:
   uses-material-design: true
   assets:
     - "assets/default_cover.jpeg"
+    - assets/0.mp3
+    - assets/2.mp3
+    - assets/3.mp3
 

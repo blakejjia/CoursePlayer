@@ -1,9 +1,12 @@
+import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/presentation/screens/MainPages/artist_page.dart';
 import 'package:course_player/presentation/screens/MainPages/home_page.dart';
 import 'package:course_player/presentation/screens/MainPages/playlist_page.dart';
 import 'package:course_player/presentation/screens/MainPages/setting_page.dart';
+import 'package:course_player/presentation/screens/conditionalPages/audio_bottom_sheet.dart';
 import 'package:course_player/presentation/screens/conditionalPages/permission_grant_page.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class MyApp extends StatefulWidget {
@@ -43,42 +46,51 @@ class _MyAppState extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-
     // 如果权限没有被授予，则显示权限授予页面
     if (!_isPermissionGranted) {
-      return PermissionGrantPage(onPermissionGranted: _checkPermissionInBackground);
+      return PermissionGrantPage(
+          onPermissionGranted: _checkPermissionInBackground);
     }
 
     final List<Widget> pages = [
       const HomePage(),
-      const CoursePage(),
+      BlocProvider(
+        create: (context) => PlaylistPageCubit(),
+        child: const CoursePage(),
+      ),
       const ArtistPage(),
       const SettingPage(),
     ];
 
     return Scaffold(
       body: pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        onTap: (int index) {
-          setState(() {
-            _currentIndex = index;
-          });
-        },
-        currentIndex: _currentIndex,
-        items: const [
-          BottomNavigationBarItem(
-              icon: Icon(
-                Icons.home,
-              ),
-              label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.album), label: "Courses"),
-          BottomNavigationBarItem(icon: Icon(Icons.category), label: "Artists"),
-          BottomNavigationBarItem(
-              icon: Icon(Icons.settings), label: "Settings"),
+      bottomNavigationBar: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const AudioBottomSheet(),
+          BottomNavigationBar(
+            onTap: (int index) {
+              setState(() {
+                _currentIndex = index;
+              });
+            },
+            currentIndex: _currentIndex,
+            items: const [
+              BottomNavigationBarItem(
+                  icon: Icon(
+                    Icons.home,
+                  ),
+                  label: "Home"),
+              BottomNavigationBarItem(icon: Icon(Icons.album), label: "Courses"),
+              BottomNavigationBarItem(icon: Icon(Icons.category), label: "Artists"),
+              BottomNavigationBarItem(
+                  icon: Icon(Icons.settings), label: "Settings"),
+            ],
+            iconSize: 25,
+            fixedColor: Theme.of(context).colorScheme.primary,
+            type: BottomNavigationBarType.fixed,
+          ),
         ],
-        iconSize: 25,
-        fixedColor: Theme.of(context).colorScheme.primary,
-        type: BottomNavigationBarType.fixed,
       ),
     );
   }
