@@ -8,52 +8,76 @@ part 'audio_player_event.dart';
 part 'audio_player_state.dart';
 
 class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
-  final _audioPlayer = AudioPlayer();
+  final AudioPlayer audioPlayer;
   late StreamSubscription playerInfoStream;
 
-  AudioPlayerBloc() : super(AudioPlayerInitial()) {
-    _initializeAudioPlayer();
+  AudioPlayerBloc(this.audioPlayer) : super(AudioPlayerInitial()) {
+    playerInfoStream = audioPlayer.playbackEventStream.listen((playbackEvent) {
+      audioPlayer.positionStream.listen((position) {
+        audioPlayer.sequenceStateStream.listen((sequenceState) {
+          add(_UpdateState(
+            position,
+            playbackEvent,
+            sequenceState,
+            audioPlayer.duration,
+          ));
+        });
+      });
+    });
 
     on<_UpdateState>(_onUpdatePlayerEvent);
+    on<LocateAudio>(_onLocateAudio);
+
     on<PauseEvent>(_onPauseEvent);
     on<ContinueEvent>(_onContinueEvent);
-    on<PreviousEvent>((event, emit) {
-      _audioPlayer.hasPrevious ? _audioPlayer.seekToPrevious() : null;
-    });
-    on<NextEvent>((event, emit) {
-      _audioPlayer.hasNext ? _audioPlayer.seekToNext() : null;
-    });
+    on<PreviousEvent>(_onPreviousEvent);
+    on<NextEvent>(_onNextEvent);
     on<NextLoopMode>(_onNextLoopMode);
-    on<SwitchShuffleMode>(_onSwitchShuffleMode);
-    on<SeekToPosition>((event, emit) {
-      _audioPlayer.seek(event.position);
-    });
-    on<FinishedEvent>((event, emit) {
-      _audioPlayer.hasNext
-          ? _audioPlayer.seekToNext()
-          : _audioPlayer.seek(const Duration(seconds: 0));
-    });
-    on<LocateAudio>((event, emit) {
-      _audioPlayer.setAudioSource(
-        ConcatenatingAudioSource(
-          children: event.buffer.map((song) {
-            return AudioSource.file(song!.path); // 确保路径有效
-          }).toList(), // 将 Iterable 转换为 List
-        ),
-      );
-      _audioPlayer.seek(Duration.zero, index: event.index);
-      _audioPlayer.play();
-      emit(AudioPlayerPlaying(state.position, state.playbackEvent,
+    on<NextShuffleMode>(_onSwitchShuffleMode);
+    on<FinishedEvent>(_onFinished);
+    on<SeekToPosition>(_onSeekToPosition);
+  }
+
+  FutureOr<void> _onFinished(event, emit) {
+    audioPlayer.hasNext
+        ? audioPlayer.seekToNext()
+        : audioPlayer.seek(Duration.zero);
+  }
+
+  FutureOr<void> _onSeekToPosition(event, emit) {
+    audioPlayer.seek(event.position);
+  }
+
+  FutureOr<void> _onNextEvent(event, emit) {
+    audioPlayer.hasNext ? audioPlayer.seekToNext() : null;
+  }
+
+  FutureOr<void> _onPreviousEvent(event, emit) {
+    audioPlayer.hasPrevious ? audioPlayer.seekToPrevious() : null;
+  }
+
+  FutureOr<void> _onLocateAudio(event, emit) async {
+    await audioPlayer.setAudioSource(
+      ConcatenatingAudioSource(
+        children: event.buffer.map<AudioSource>((song) {
+          return AudioSource.file(song!.path); // 确保路径有效
+        }).toList(), // 将 Iterable 转换为 List
+      ),
+    );
+    audioPlayer.seek(Duration.zero, index: event.index);
+    audioPlayer.play();
+    if (state is AudioPlayerInitial) {
+      emit(AudioPlayerPlaying(Duration.zero, state.playbackEvent,
           state.sequenceState, state.totalTime));
-    });
+    }
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) {
     final enable = !state.sequenceState.shuffleModeEnabled;
     if (enable) {
-      _audioPlayer.shuffle();
+      audioPlayer.shuffle();
     }
-    _audioPlayer.setShuffleModeEnabled(enable);
+    audioPlayer.setShuffleModeEnabled(enable);
   }
 
   FutureOr<void> _onNextLoopMode(event, emit) {
@@ -63,17 +87,17 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
       LoopMode.one,
     ];
     final index = cycleModes.indexOf(state.sequenceState.loopMode);
-    _audioPlayer.setLoopMode(cycleModes[(index + 1) % cycleModes.length]);
+    audioPlayer.setLoopMode(cycleModes[(index + 1) % cycleModes.length]);
   }
 
   FutureOr<void> _onContinueEvent(event, emit) {
-    _audioPlayer.play();
+    audioPlayer.play();
     emit(AudioPlayerPlaying(state.position, state.playbackEvent,
         state.sequenceState, state.totalTime));
   }
 
   FutureOr<void> _onPauseEvent(event, emit) {
-    _audioPlayer.pause();
+    audioPlayer.pause();
     emit(AudioPlayerPause(state.position, state.playbackEvent,
         state.sequenceState, state.totalTime));
   }
@@ -87,25 +111,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     ));
   }
 
-  void _initializeAudioPlayer() {
-    playerInfoStream = _audioPlayer.playbackEventStream.listen((playbackEvent) {
-      _audioPlayer.positionStream.listen((position) {
-        _audioPlayer.sequenceStateStream.listen((sequenceState) {
-          add(_UpdateState(
-            position,
-            playbackEvent,
-            sequenceState,
-            _audioPlayer.duration,
-          ));
-        });
-      });
-    });
-  }
-
   @override
   Future<void> close() {
     playerInfoStream.cancel();
-    _audioPlayer.dispose();
+    audioPlayer.dispose();
     return super.close();
   }
 }

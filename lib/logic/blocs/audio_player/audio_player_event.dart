@@ -23,7 +23,7 @@ final class NextEvent extends AudioPlayerEvent {}
 
 final class NextLoopMode extends AudioPlayerEvent {}
 
-final class SwitchShuffleMode extends AudioPlayerEvent {}
+final class NextShuffleMode extends AudioPlayerEvent {}
 
 final class SeekToPosition extends AudioPlayerEvent {
   final Duration position;

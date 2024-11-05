@@ -4,35 +4,35 @@ import 'package:course_player/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../logic/blocs/audio_player/audio_player_bloc.dart';
 import '../../widgets/audio_bottom_sheet.dart';
 import '../../../logic/blocs/audio_info/audio_info_bloc.dart';
-import '../../../logic/blocs/one_playlist/one_playlist_bloc.dart';
 
 class AlbumSongsView extends StatelessWidget {
   const AlbumSongsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<OnePlaylistBloc, OnePlaylistState>(
+    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text(state.currentPlaylist?.title ?? ""),
+              title: Text(state.playlist?.title ?? ""),
             ),
             bottomNavigationBar: const AudioBottomSheet(),
-            body: switch (state.currentPlaylist) {
-              Playlist() => switch (state.songList) {
+            body: switch (state.playlist) {
+              Playlist() => switch (state.buffer) {
                   [...] => Column(children: [
                       Expanded(
                         child: ListView.builder(
-                          itemCount: state.songList!.length + 1, // Playlist数量
+                          itemCount: state.buffer!.length + 1,
                           itemBuilder: (context, index) {
                             if (index == 0) {
-                              return _heading(context, state.currentPlaylist!,
-                                  state.picture);
+                              return _heading(
+                                  context, state.playlist!, state.picture);
                             } else {
                               return _songTile(context, state,
-                                  state.songList![index - 1], index - 1);
+                                  state.buffer![index - 1], index - 1);
                             }
                           },
                         ),
@@ -52,46 +52,44 @@ class AlbumSongsView extends StatelessWidget {
 }
 
 Widget _songTile(
-    BuildContext context, OnePlaylistState state, Song song, int index) {
+    BuildContext context, AudioInfoState state, Song song, int index) {
   return InkWell(onTap: () {
-    context.read<AudioInfoBloc>().add(LocateSong(
-        state.currentPlaylist!, state.songList!, index, state.picture));
-    context.read<OnePlaylistBloc>().add(OnePlayListPlay(index));
+    context
+        .read<AudioInfoBloc>()
+        .add(AudioInfoLocateSong(state.playlist!, index));
+    context.read<AudioPlayerBloc>().add(LocateAudio(index, state.buffer!));
   }, child: Builder(builder: (context) {
-    if (state is OnePlaylistInAudio && state.currentIndex == index) {
-      // selected
-      return Container(
-        color: Theme.of(context).colorScheme.primaryFixed,
-        child: ListTile(
-          title: Text(_formatTitle(song.title)),
-          subtitle: Row(
-            children: [
-              Text(song.artist),
-              const SizedBox(
-                width: 20,
-              ),
-              Text(_formatDuration(song.length))
-            ],
-          ),
-          trailing: const Icon(Icons.more_vert),
-        ),
-      );
+    if (state is AudioInfoSong &&
+        state.index == index &&
+        state.indexPlaylist == state.playlist) {
+      return _songTileSelected(context, song);
     } else {
-      return ListTile(
-        title: Text(_formatTitle(song.title)),
-        subtitle: Row(
-          children: [
-            Text(song.artist),
-            const SizedBox(
-              width: 20,
-            ),
-            Text(_formatDuration(song.length))
-          ],
-        ),
-        trailing: const Icon(Icons.more_vert),
-      );
+      return _songTileNormal(song);
     }
   }));
+}
+
+Container _songTileSelected(BuildContext context, Song song) {
+  return Container(
+    color: Theme.of(context).colorScheme.primaryFixed,
+    child: _songTileNormal(song),
+  );
+}
+
+ListTile _songTileNormal(Song song) {
+  return ListTile(
+    title: Text(_formatTitle(song.title)),
+    subtitle: Row(
+      children: [
+        Text(song.artist),
+        const SizedBox(
+          width: 20,
+        ),
+        Text(_formatDuration(song.length))
+      ],
+    ),
+    trailing: const Icon(Icons.more_vert),
+  );
 }
 
 String _formatDuration(int duration) {

@@ -10,15 +10,18 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AudioInfoBloc, AudioInfoState>(builder: (context, state){
+    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
+        builder: (context, state) {
       return Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(state.playlist.toString()),
-          Text(state.index.toString()),
+          if (state is AudioInfoSong) // 使用集合 if 语法
+            Text(state.index.toString()),
+          if (state is AudioInfoSong) // 使用集合 if 语法
+            Text(state.indexPlaylist.toString()),
         ],
       );
     });

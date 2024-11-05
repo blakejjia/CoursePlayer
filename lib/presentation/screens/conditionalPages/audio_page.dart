@@ -123,7 +123,7 @@ class PlayerButtons extends StatelessWidget {
           ? Icon(Icons.shuffle,
           color: Theme.of(context).colorScheme.primaryFixed)
           : const Icon(Icons.shuffle),
-      onPressed: () => context.read<AudioPlayerBloc>().add(SwitchShuffleMode()),
+      onPressed: () => context.read<AudioPlayerBloc>().add(NextShuffleMode()),
     );
   }
 

@@ -1,16 +1,14 @@
-import 'package:course_player/logic/blocs/audio_info/audio_info_bloc.dart';
 import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
-import 'package:course_player/presentation/screens/MainPages/artist_page.dart';
-import 'package:course_player/presentation/screens/MainPages/home_page.dart';
-import 'package:course_player/presentation/screens/MainPages/playlist_page.dart';
-import 'package:course_player/presentation/screens/MainPages/setting_page.dart';
+import 'package:course_player/presentation/screens/pages/artist_page.dart';
+import 'package:course_player/presentation/screens/pages/home_page.dart';
+import 'package:course_player/presentation/screens/pages/playlist_page.dart';
+import 'package:course_player/presentation/screens/pages/setting_page.dart';
 import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
-import 'package:course_player/presentation/screens/conditionalPages/permission_grant_page.dart';
+import 'package:course_player/presentation/screens/oneTime/permission_grant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../logic/blocs/audio_player/audio_player_bloc.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
@@ -70,15 +68,6 @@ class _MyAppState extends State<MyApp> {
       bottomNavigationBar: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          BlocListener<AudioInfoBloc, AudioInfoState>(
-            listener: (context, state) {
-              //! AudioInfo Listener
-              context.read<AudioPlayerBloc>().add(LocateAudio(state.index, state.buffer));
-            },
-            child: const SizedBox(
-              height: 0,
-            ),
-          ),
           const AudioBottomSheet(),
           BottomNavigationBar(
             onTap: (int index) {

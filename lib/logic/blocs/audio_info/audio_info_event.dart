@@ -3,13 +3,21 @@ part of 'audio_info_bloc.dart';
 @immutable
 sealed class AudioInfoEvent {}
 
-final class LocateSong extends AudioInfoEvent {
-  final int index;
-  final Uint8List? image;
+final class AudioInfoLocatePlaylist extends AudioInfoEvent {
   final Playlist playlist;
-  final List<Song> songList;
 
-  LocateSong(this.playlist, this.songList, this.index, this.image);
+  AudioInfoLocatePlaylist(this.playlist);
 }
 
-final class AudioInfoNextSong extends AudioInfoEvent {}
+final class AudioInfoLocateSong extends AudioInfoEvent {
+  final int index;
+  final Playlist indexPlaylist;
+
+  AudioInfoLocateSong(this.indexPlaylist, this.index);
+}
+
+final class _AudioInfoUpdateIndex extends AudioInfoEvent{
+  final int index;
+
+  _AudioInfoUpdateIndex(this.index);
+}
