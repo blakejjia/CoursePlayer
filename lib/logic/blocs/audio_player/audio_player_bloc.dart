@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:course_player/data/models/models.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
@@ -31,6 +32,19 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
       _audioPlayer.hasNext
           ? _audioPlayer.seekToNext()
           : _audioPlayer.seek(const Duration(seconds: 0));
+    });
+    on<LocateAudio>((event, emit)  {
+       _audioPlayer.setAudioSource(
+        ConcatenatingAudioSource(
+          children: event.buffer.map((song) {
+            return AudioSource.file(song!.path); // 确保路径有效
+          }).toList(), // 将 Iterable 转换为 List
+        ),
+      );
+
+      _audioPlayer.play();
+      emit(AudioPlayerPlaying(state.position, state.playbackEvent,
+          state.sequenceState, state.totalTime));
     });
   }
 
@@ -74,13 +88,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   void _initializeAudioPlayer() {
-    // 设置音频资源
-    _audioPlayer.setAudioSource(ConcatenatingAudioSource(children: [
-      AudioSource.asset('assets/0.mp3'),
-      AudioSource.asset('assets/2.mp3'),
-      AudioSource.asset('assets/3.mp3'),
-    ]));
-
     playerInfoStream = _audioPlayer.playbackEventStream.listen((playbackEvent) {
       _audioPlayer.positionStream.listen((position) {
         _audioPlayer.sequenceStateStream.listen((sequenceState) {
@@ -98,6 +105,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   @override
   Future<void> close() {
     playerInfoStream.cancel();
+    _audioPlayer.dispose();
     return super.close();
   }
 }

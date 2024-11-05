@@ -1,7 +1,7 @@
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/logic/blocs/one_playlist/one_playlist_cubit.dart';
-import 'package:course_player/presentation/screens/conditionalPages/one_playlist.dart';
+import 'package:course_player/presentation/screens/conditionalPages/album_songs_view.dart';
+import 'package:course_player/logic/blocs/one_playlist/one_playlist_bloc.dart';
 import 'package:course_player/presentation/widgets/future_builder.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/material.dart';
@@ -23,13 +23,11 @@ class PlaylistCard extends StatelessWidget {
         child: (data) {
       return InkWell(
         onTap: () {
+          context.read<OnePlaylistBloc>().add(OnePlayListSelected(playlist));
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider<OnePlaylistCubit>(
-                create: (context) => OnePlaylistCubit(),
-                child: OnePlaylist(playList),
-              ),
+              builder: (_) => const AlbumSongsView(),
             ),
           );
         },
@@ -93,13 +91,11 @@ class PlaylistList extends StatelessWidget {
         child: (data) {
       return ListTile(
         onTap: () {
+          context.read<OnePlaylistBloc>().add(OnePlayListSelected(playlist));
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => BlocProvider<OnePlaylistCubit>(
-                create: (context) => OnePlaylistCubit(),
-                child: OnePlaylist(playlist),
-              ),
+              builder: (_) => const AlbumSongsView(),
             ),
           );
         },

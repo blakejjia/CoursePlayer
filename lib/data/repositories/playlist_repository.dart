@@ -23,9 +23,8 @@ class PlaylistRepository extends DatabaseAccessor<AppDatabase>{
 
   Future<int> destroyPlaylistDb() => db.delete(db.playlists).go();
 
-  // 根据 ID 获取播放列表
-  Future<Playlist?> getPlaylistById(int id) async {
-    return await (select(db.playlists)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  Future<Playlist?> getPlaylistByName(String name) async {
+    return await (select(db.playlists)..where((tbl) => tbl.title.equals(name))).getSingleOrNull();
   }
 
   // 删除播放列表

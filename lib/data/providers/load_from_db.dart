@@ -15,10 +15,6 @@ class LoadFromDb {
     return getIt<PlaylistRepository>().getAllPlaylists();
   }
 
-  Future<List<Cover>> getAllCovers() async {
-    return getIt<CoversRepository>().getAllCovers();
-  }
-
   Future<List<Song>> getSongsByPlaylist(Playlist playlist) async {
     return songDAO.getSongByPlaylist(playlist.title);
   }
@@ -28,5 +24,9 @@ class LoadFromDb {
     Cover? defaultCover = await getIt<CoversRepository>().getCoverById(0);
     Uint8List bytes = cover == null? defaultCover!.cover : cover.cover;
     return bytes;
+  }
+
+  Future<Playlist?> getPlaylistByName(String playlist) async {
+    return getIt<PlaylistRepository>().getPlaylistByName(playlist);
   }
 }

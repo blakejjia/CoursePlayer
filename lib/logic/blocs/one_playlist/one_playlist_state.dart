@@ -1,47 +1,22 @@
-part of 'one_playlist_cubit.dart';
+part of 'one_playlist_bloc.dart';
 
-class OnePlaylistState {
-  final int sortBy;
+@immutable
+sealed class OnePlaylistState {
+  final Playlist? currentPlaylist;
+  final List<Song>? songList;
+  final Uint8List? picture;
 
-//<editor-fold desc="Data Methods">
-  const OnePlaylistState({
-    required this.sortBy,
-  });
+  const OnePlaylistState(this.currentPlaylist, this.songList, this.picture);
+}
 
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is OnePlaylistState &&
-          runtimeType == other.runtimeType &&
-          sortBy == other.sortBy);
+final class OnePlaylistIdle extends OnePlaylistState {
+  // after user selected a playlist and go into playlist Page
+  const OnePlaylistIdle(super.currentPlaylist, super.songList, super.picture);
+}
 
-  @override
-  int get hashCode => sortBy.hashCode;
-
-  @override
-  String toString() {
-    return 'OnePlaylistState{' ' sortBy: $sortBy,' '}';
-  }
-
-  OnePlaylistState copyWith({
-    int? sortBy,
-  }) {
-    return OnePlaylistState(
-      sortBy: sortBy ?? this.sortBy,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'sortBy': sortBy,
-    };
-  }
-
-  factory OnePlaylistState.fromMap(Map<String, dynamic> map) {
-    return OnePlaylistState(
-      sortBy: map['sortBy'] as int,
-    );
-  }
-
-//</editor-fold>
+final class OnePlaylistInAudio extends OnePlaylistState {
+  // after user clicked on one audio to play it.
+  final int index;
+  const OnePlaylistInAudio(
+      super.currentPlaylist, super.songList, super.picture, this.index);
 }
