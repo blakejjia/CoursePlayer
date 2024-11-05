@@ -72,8 +72,8 @@ class _MyAppState extends State<MyApp> {
         children: [
           BlocListener<AudioInfoBloc, AudioInfoState>(
             listener: (context, state) {
-              //! AudioInfo => AudioPlayer
-              context.read<AudioPlayerBloc>().add(LocateAudio(0, state.buffer));
+              //! AudioInfo Listener
+              context.read<AudioPlayerBloc>().add(LocateAudio(state.index, state.buffer));
             },
             child: const SizedBox(
               height: 0,

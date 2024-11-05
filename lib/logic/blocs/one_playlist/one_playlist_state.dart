@@ -16,7 +16,11 @@ final class OnePlaylistIdle extends OnePlaylistState {
 
 final class OnePlaylistInAudio extends OnePlaylistState {
   // after user clicked on one audio to play it.
-  final int index;
+  final int currentIndex;
   const OnePlaylistInAudio(
-      super.currentPlaylist, super.songList, super.picture, this.index);
+    this.currentIndex,
+    Playlist? currentPlaylist,
+    List<Song>? songList,
+    Uint8List? picture,
+  ) : super(currentPlaylist, songList, picture);
 }

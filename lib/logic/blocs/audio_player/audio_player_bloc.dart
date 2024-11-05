@@ -33,15 +33,15 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
           ? _audioPlayer.seekToNext()
           : _audioPlayer.seek(const Duration(seconds: 0));
     });
-    on<LocateAudio>((event, emit)  {
-       _audioPlayer.setAudioSource(
+    on<LocateAudio>((event, emit) {
+      _audioPlayer.setAudioSource(
         ConcatenatingAudioSource(
           children: event.buffer.map((song) {
             return AudioSource.file(song!.path); // 确保路径有效
           }).toList(), // 将 Iterable 转换为 List
         ),
       );
-
+      _audioPlayer.seek(Duration.zero, index: event.index);
       _audioPlayer.play();
       emit(AudioPlayerPlaying(state.position, state.playbackEvent,
           state.sequenceState, state.totalTime));

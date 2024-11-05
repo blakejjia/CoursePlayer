@@ -11,11 +11,9 @@ class AudioBottomSheet extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () => showModalBottomSheet(
-        backgroundColor: Colors.amber,
         context: context,
         isScrollControlled: true, // 让 BottomSheet 覆盖整个屏幕
         builder: (ctx) => Container(
-          color: Colors.white54,
           alignment: Alignment.center,
           child: const AudioPage(),
         ),
@@ -35,7 +33,7 @@ Widget _bottomSheet(BuildContext context) {
       return Column(
         children: [
           ...switch (state) {
-            AudioPlayerInitial() => [const Text("hello")], //TODO: remove this
+            AudioPlayerInitial() => [],
             AudioPlayerPlaying() || AudioPlayerPause() => [
                 SizedBox(
                   height: 3,

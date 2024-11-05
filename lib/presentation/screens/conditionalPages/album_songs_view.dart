@@ -13,10 +13,7 @@ class AlbumSongsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<OnePlaylistBloc, OnePlaylistState>(
-      listener: (context, state) {
-        // TODO: implement listener
-      },
+    return BlocBuilder<OnePlaylistBloc, OnePlaylistState>(
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
@@ -34,8 +31,8 @@ class AlbumSongsView extends StatelessWidget {
                               return _heading(context, state.currentPlaylist!,
                                   state.picture);
                             } else {
-                              return _songTile(
-                                  context, state.songList![index - 1], index);
+                              return _songTile(context, state,
+                                  state.songList![index - 1], index - 1);
                             }
                           },
                         ),
@@ -54,23 +51,47 @@ class AlbumSongsView extends StatelessWidget {
   }
 }
 
-Widget _songTile(BuildContext context, Song song, int index) {
-  return InkWell(
-    onTap: () => context.read<AudioInfoBloc>().add(LocateSong(index)),
-    child: ListTile(
-      title: Text(_formatTitle(song.title)),
-      subtitle: Row(
-        children: [
-          Text(song.artist),
-          const SizedBox(
-            width: 20,
+Widget _songTile(
+    BuildContext context, OnePlaylistState state, Song song, int index) {
+  return InkWell(onTap: () {
+    context.read<AudioInfoBloc>().add(LocateSong(
+        state.currentPlaylist!, state.songList!, index, state.picture));
+    context.read<OnePlaylistBloc>().add(OnePlayListPlay(index));
+  }, child: Builder(builder: (context) {
+    if (state is OnePlaylistInAudio && state.currentIndex == index) {
+      // selected
+      return Container(
+        color: Theme.of(context).colorScheme.primaryFixed,
+        child: ListTile(
+          title: Text(_formatTitle(song.title)),
+          subtitle: Row(
+            children: [
+              Text(song.artist),
+              const SizedBox(
+                width: 20,
+              ),
+              Text(_formatDuration(song.length))
+            ],
           ),
-          Text(_formatDuration(song.length))
-        ],
-      ),
-      trailing: const Icon(Icons.more_vert),
-    ),
-  );
+          trailing: const Icon(Icons.more_vert),
+        ),
+      );
+    } else {
+      return ListTile(
+        title: Text(_formatTitle(song.title)),
+        subtitle: Row(
+          children: [
+            Text(song.artist),
+            const SizedBox(
+              width: 20,
+            ),
+            Text(_formatDuration(song.length))
+          ],
+        ),
+        trailing: const Icon(Icons.more_vert),
+      );
+    }
+  }));
 }
 
 String _formatDuration(int duration) {
