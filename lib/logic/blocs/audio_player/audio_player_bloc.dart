@@ -12,18 +12,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   late StreamSubscription playerInfoStream;
 
   AudioPlayerBloc(this.audioPlayer) : super(AudioPlayerInitial()) {
-    playerInfoStream = audioPlayer.playbackEventStream.listen((playbackEvent) {
-      audioPlayer.positionStream.listen((position) {
-        audioPlayer.sequenceStateStream.listen((sequenceState) {
-          add(_UpdateState(
-            position,
-            playbackEvent,
-            sequenceState,
-            audioPlayer.duration,
-          ));
-        });
-      });
-    });
+    _initBloc();
 
     on<_UpdateState>(_onUpdatePlayerEvent);
     on<LocateAudio>(_onLocateAudio);
@@ -36,6 +25,24 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<NextShuffleMode>(_onSwitchShuffleMode);
     on<FinishedEvent>(_onFinished);
     on<SeekToPosition>(_onSeekToPosition);
+  }
+
+  void _initBloc() {
+    playerInfoStream = audioPlayer.playbackEventStream.listen((playbackEvent) {
+      audioPlayer.positionStream.listen((position) {
+        audioPlayer.sequenceStateStream.listen((sequenceState) {
+          audioPlayer.playerStateStream.listen((playerState) {
+            add(_UpdateState(
+              position,
+              playbackEvent,
+              sequenceState,
+              playerState,
+              audioPlayer.duration,
+            ));
+          });
+        });
+      });
+    });
   }
 
   FutureOr<void> _onFinished(event, emit) {
@@ -68,7 +75,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     audioPlayer.play();
     if (state is AudioPlayerInitial) {
       emit(AudioPlayerPlaying(Duration.zero, state.playbackEvent,
-          state.sequenceState, state.totalTime));
+          state.sequenceState, state.playerState, state.totalTime));
     }
   }
 
@@ -92,14 +99,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   FutureOr<void> _onContinueEvent(event, emit) {
     audioPlayer.play();
-    emit(AudioPlayerPlaying(state.position, state.playbackEvent,
-        state.sequenceState, state.totalTime));
   }
 
   FutureOr<void> _onPauseEvent(event, emit) {
     audioPlayer.pause();
-    emit(AudioPlayerPause(state.position, state.playbackEvent,
-        state.sequenceState, state.totalTime));
   }
 
   FutureOr<void> _onUpdatePlayerEvent(event, emit) {
@@ -107,6 +110,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
       position: event.position,
       playbackEvent: event.playbackEvent,
       sequenceState: event.sequenceState,
+      playerState: event.playerState,
       totalTime: event.totalTime,
     ));
   }

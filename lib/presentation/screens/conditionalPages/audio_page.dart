@@ -1,4 +1,3 @@
-
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +22,6 @@ class AudioPage extends StatelessWidget {
   }
 }
 
-
 class PlayInfos extends StatelessWidget {
   const PlayInfos({super.key});
 
@@ -31,32 +29,31 @@ class PlayInfos extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         builder: (context, state) {
-          return Column(
-            children: [
-              Text(
-                "sequence state: \n loop mode: ${state.sequenceState.loopMode} \n shuffleModeEnabled: ${state.sequenceState.shuffleModeEnabled}",
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "playbackEventStream: \n ${state.playbackEvent.processingState}, \n updateTime=${state.playbackEvent.updateTime}, \n updatePosition=${state.playbackEvent.updatePosition}, \n bufferedPosition=${state.playbackEvent.bufferedPosition}, \n duration=${state.playbackEvent.duration}, \n currentIndex=${state.playbackEvent.currentIndex}",
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Text(
-                "position stream: ${state.position}",
-                textAlign: TextAlign.center,
-              ),
-            ],
-          );
-        });
+      return Column(
+        children: [
+          Text(
+            "sequence state: \n loop mode: ${state.sequenceState.loopMode} \n shuffleModeEnabled: ${state.sequenceState.shuffleModeEnabled}",
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            "playbackEventStream: \n ${state.playbackEvent.processingState}, \n updateTime=${state.playbackEvent.updateTime}, \n updatePosition=${state.playbackEvent.updatePosition}, \n bufferedPosition=${state.playbackEvent.bufferedPosition}, \n duration=${state.playbackEvent.duration}, \n currentIndex=${state.playbackEvent.currentIndex}",
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(
+            height: 10,
+          ),
+          Text(
+            "position stream: ${state.position}",
+            textAlign: TextAlign.center,
+          ),
+        ],
+      );
+    });
   }
 }
-
 
 class PlayerButtons extends StatelessWidget {
   const PlayerButtons({super.key});
@@ -79,40 +76,18 @@ class PlayerButtons extends StatelessWidget {
     );
   }
 
-  Widget _playPauseButton(AudioPlayerState playerState, BuildContext context) {
-    final processingState = playerState.playbackEvent.processingState;
-    if (processingState == ProcessingState.loading ||
-        processingState == ProcessingState.buffering) {
-      // not ready but loading
-      return Container(
-        margin: const EdgeInsets.all(8.0),
-        width: 64.0,
-        height: 64.0,
-        child: const CircularProgressIndicator(),
-      );
-    } else if (playerState is AudioPlayerPause) {
-      // playing
+  Widget _playPauseButton(AudioPlayerState state, BuildContext context) {
+    if (!state.playerState.playing) {
       return IconButton(
         icon: const Icon(Icons.play_arrow),
         iconSize: 64.0,
         onPressed: () => context.read<AudioPlayerBloc>().add(ContinueEvent()),
       );
-    } else if (processingState != ProcessingState.completed) {
-      // not complete, not playing, not loading
+    } else {
       return IconButton(
         icon: const Icon(Icons.pause),
         iconSize: 64.0,
         onPressed: () => context.read<AudioPlayerBloc>().add(PauseEvent()),
-      );
-    } else {
-      // complete
-      return IconButton(
-        icon: const Icon(Icons.replay),
-        iconSize: 64.0,
-        onPressed: () =>
-            context.read<AudioPlayerBloc>().add(FinishedEvent()), // TODO:改掉
-        // onPressed: () => audioPlayer.seek(Duration.zero,
-        //     index: audioPlayer.effectiveIndices?.first),
       );
     }
   }
@@ -121,7 +96,7 @@ class PlayerButtons extends StatelessWidget {
     return IconButton(
       icon: state.sequenceState.shuffleModeEnabled
           ? Icon(Icons.shuffle,
-          color: Theme.of(context).colorScheme.primaryFixed)
+              color: Theme.of(context).colorScheme.primaryFixed)
           : const Icon(Icons.shuffle),
       onPressed: () => context.read<AudioPlayerBloc>().add(NextShuffleMode()),
     );
@@ -148,19 +123,18 @@ class PlayerButtons extends StatelessWidget {
           icon: const Icon(Icons.repeat),
           onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode())),
       LoopMode.one => IconButton(
-        icon: Icon(Icons.repeat_one,
-            color: Theme.of(context).colorScheme.primaryFixed),
-        onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
-      ),
+          icon: Icon(Icons.repeat_one,
+              color: Theme.of(context).colorScheme.primaryFixed),
+          onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
+        ),
       LoopMode.all => IconButton(
-        icon: Icon(Icons.repeat,
-            color: Theme.of(context).colorScheme.primaryFixed),
-        onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
-      ),
+          icon: Icon(Icons.repeat,
+              color: Theme.of(context).colorScheme.primaryFixed),
+          onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
+        ),
     };
   }
 }
-
 
 class PlayerProgressBar extends StatelessWidget {
   const PlayerProgressBar({super.key});

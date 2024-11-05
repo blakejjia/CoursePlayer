@@ -5,66 +5,60 @@ sealed class AudioPlayerState {
   final Duration position;
   final PlaybackEvent playbackEvent;
   final SequenceState sequenceState;
+  final PlayerState playerState;
   final Duration totalTime;
 
-  const AudioPlayerState(
-      this.position, this.playbackEvent, this.sequenceState, this.totalTime);
+  const AudioPlayerState(this.position, this.playbackEvent, this.sequenceState,
+      this.playerState, this.totalTime);
 
   AudioPlayerState copyWith({
     Duration? position,
-    dynamic playbackEvent,
-    dynamic sequenceState,
+    PlaybackEvent? playbackEvent,
+    SequenceState? sequenceState,
+    PlayerState? playerState,
     Duration? totalTime,
   });
 }
 
 final class AudioPlayerInitial extends AudioPlayerState {
   AudioPlayerInitial()
-      : super(const Duration(), PlaybackEvent(),
-            SequenceState([], 0, [0], false, LoopMode.off), const Duration());
+      : super(
+            const Duration(),
+            PlaybackEvent(),
+            SequenceState([], 0, [0], false, LoopMode.off),
+            PlayerState(false, ProcessingState.idle),
+            const Duration());
 
   @override
   AudioPlayerInitial copyWith(
-      {Duration? position, playbackEvent, sequenceState,Duration? totalTime}) {
+      {Duration? position,
+      playbackEvent,
+      sequenceState,
+      playerState,
+      Duration? totalTime}) {
     return AudioPlayerInitial();
   }
+
+
 }
 
 final class AudioPlayerPlaying extends AudioPlayerState {
   const AudioPlayerPlaying(super.position, super.playbackEvent,
-      super.sequenceState, super.totalTime);
+      super.sequenceState, super.playerState, super.totalTime);
 
   @override
   AudioPlayerPlaying copyWith({
     Duration? position,
-    dynamic playbackEvent,
-    dynamic sequenceState,
+    PlaybackEvent? playbackEvent,
+    SequenceState? sequenceState,
+    PlayerState? playerState,
     Duration? totalTime,
   }) {
     return AudioPlayerPlaying(
       position ?? this.position,
       playbackEvent ?? this.playbackEvent,
       sequenceState ?? this.sequenceState,
-      totalTime ?? this.totalTime,
-    );
-  }
-}
-
-final class AudioPlayerPause extends AudioPlayerState {
-  const AudioPlayerPause(super.position, super.playbackEvent,
-      super.sequenceState, super.totalTime);
-
-  @override
-  AudioPlayerPause copyWith({
-    Duration? position,
-    dynamic playbackEvent,
-    dynamic sequenceState,
-    Duration? totalTime,
-  }) {
-    return AudioPlayerPause(
-      position ?? this.position,
-      playbackEvent ?? this.playbackEvent,
-      sequenceState ?? this.sequenceState,
+      playerState ?? this.playerState,
       totalTime ?? this.totalTime,
     );
   }

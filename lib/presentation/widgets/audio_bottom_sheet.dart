@@ -28,7 +28,7 @@ class AudioBottomSheet extends StatelessWidget {
             ),
           );
         } else {
-          return SizedBox();
+          return const SizedBox();
         }
       },
     );
@@ -42,8 +42,7 @@ Widget _bottomSheet(BuildContext context, AudioInfoState audioInfoState) {
         children: [
           ...switch (audioPlayerState) {
             AudioPlayerInitial() => [],
-            AudioPlayerPlaying() ||
-            AudioPlayerPause() =>
+            AudioPlayerPlaying() =>
               _content(audioPlayerState, audioInfoState, context),
           }
         ],
@@ -81,7 +80,7 @@ Row _trailing(AudioPlayerState audioPlayerState, BuildContext context) {
   return Row(
     mainAxisSize: MainAxisSize.min,
     children: [
-      audioPlayerState is AudioPlayerPlaying
+      audioPlayerState.playerState.playing
           ? IconButton(
               icon: const Icon(Icons.pause),
               iconSize: 40,

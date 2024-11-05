@@ -7,10 +7,11 @@ final class _UpdateState extends AudioPlayerEvent {
   final Duration position;
   final PlaybackEvent playbackEvent;
   final SequenceState? sequenceState;
+  final PlayerState playerState;
   final Duration? totalTime;
 
   _UpdateState(
-      this.position, this.playbackEvent, this.sequenceState, this.totalTime);
+      this.position, this.playbackEvent, this.sequenceState, this.playerState,this.totalTime);
 }
 
 final class PauseEvent extends AudioPlayerEvent {}
