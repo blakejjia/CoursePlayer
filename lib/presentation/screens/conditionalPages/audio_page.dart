@@ -1,8 +1,8 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
+import 'package:course_player/logic/blocs/audio_info/audio_info_bloc.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 
 class AudioPage extends StatelessWidget {
   const AudioPage({super.key});
@@ -27,28 +27,17 @@ class PlayInfos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
         builder: (context, state) {
       return Column(
         children: [
-          Text(
-            "sequence state: \n loop mode: ${state.sequenceState.loopMode} \n shuffleModeEnabled: ${state.sequenceState.shuffleModeEnabled}",
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "playbackEventStream: \n ${state.playbackEvent.processingState}, \n updateTime=${state.playbackEvent.updateTime}, \n updatePosition=${state.playbackEvent.updatePosition}, \n bufferedPosition=${state.playbackEvent.bufferedPosition}, \n duration=${state.playbackEvent.duration}, \n currentIndex=${state.playbackEvent.currentIndex}",
-            textAlign: TextAlign.center,
-          ),
-          const SizedBox(
-            height: 10,
-          ),
-          Text(
-            "position stream: ${state.position}",
-            textAlign: TextAlign.center,
-          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              (state as AudioInfoSong).indexBuffer[state.index].title,
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+          )
         ],
       );
     });
@@ -61,15 +50,24 @@ class PlayerButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+      buildWhen: (prev, current) {
+        if (prev.runtimeType != current.runtimeType) {
+          return true;
+        } else if (prev.speed != current.speed ||
+            prev.playerState != current.playerState) {
+          return true;
+        }
+        return false;
+      },
       builder: (context, state) {
         return Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            _shuffleButton(state, context),
+            _replay10Button(context),
             _previousButton(context),
             _playPauseButton(state, context),
             _nextButton(context),
-            _repeatButton(state, context),
+            _speedButton(state, context),
           ],
         );
       },
@@ -79,60 +77,70 @@ class PlayerButtons extends StatelessWidget {
   Widget _playPauseButton(AudioPlayerState state, BuildContext context) {
     if (!state.playerState.playing) {
       return IconButton(
-        icon: const Icon(Icons.play_arrow),
+        icon: const Icon(Icons.play_arrow_rounded),
         iconSize: 64.0,
         onPressed: () => context.read<AudioPlayerBloc>().add(ContinueEvent()),
       );
     } else {
       return IconButton(
-        icon: const Icon(Icons.pause),
+        icon: const Icon(Icons.pause_rounded),
         iconSize: 64.0,
         onPressed: () => context.read<AudioPlayerBloc>().add(PauseEvent()),
       );
     }
   }
 
-  Widget _shuffleButton(AudioPlayerState state, BuildContext context) {
+  Widget _replay10Button(BuildContext context) {
     return IconButton(
-      icon: state.sequenceState.shuffleModeEnabled
-          ? Icon(Icons.shuffle,
-              color: Theme.of(context).colorScheme.primaryFixed)
-          : const Icon(Icons.shuffle),
-      onPressed: () => context.read<AudioPlayerBloc>().add(NextShuffleMode()),
+        onPressed: () => context.read<AudioPlayerBloc>().add(Replay10()),
+        icon: const Icon(
+          Icons.replay_10_rounded,
+          size: 30,
+        ));
+  }
+
+  Widget _speedButton(AudioPlayerState state, BuildContext context) {
+    double currentSpeed = state.speed;
+    List<double> speedOptions = [1.0, 1.5, 1.7, 1.8, 2.0];
+    int currentIndex = speedOptions.indexOf(currentSpeed);
+    double proposedSpeed =
+        speedOptions[(currentIndex + 1) % speedOptions.length];
+
+    return InkWell(
+      onTap: () => context.read<AudioPlayerBloc>().add(SetSpeed(proposedSpeed)),
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: [
+            const Icon(
+              Icons.speed_rounded,
+              size: 24,
+            ),
+            Text(currentSpeed.toString()),
+          ],
+        ),
+      ),
     );
   }
 
   Widget _previousButton(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.skip_previous),
+      icon: const Icon(
+        Icons.fast_rewind_rounded,
+        size: 40,
+      ),
       onPressed: () => context.read<AudioPlayerBloc>().add(PreviousEvent()),
     );
   }
 
   Widget _nextButton(BuildContext context) {
     return IconButton(
-      icon: const Icon(Icons.skip_next),
+      icon: const Icon(
+        Icons.fast_forward_rounded,
+        size: 40,
+      ),
       onPressed: () => context.read<AudioPlayerBloc>().add(NextEvent()),
     );
-  }
-
-  Widget _repeatButton(AudioPlayerState state, BuildContext context) {
-    // context.read<AudioPlayerBloc>().add(NextLoopMode());
-    return switch (state.sequenceState.loopMode) {
-      LoopMode.off => IconButton(
-          icon: const Icon(Icons.repeat),
-          onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode())),
-      LoopMode.one => IconButton(
-          icon: Icon(Icons.repeat_one,
-              color: Theme.of(context).colorScheme.primaryFixed),
-          onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
-        ),
-      LoopMode.all => IconButton(
-          icon: Icon(Icons.repeat,
-              color: Theme.of(context).colorScheme.primaryFixed),
-          onPressed: () => context.read<AudioPlayerBloc>().add(NextLoopMode()),
-        ),
-    };
   }
 }
 
@@ -148,7 +156,7 @@ class PlayerProgressBar extends StatelessWidget {
           return ProgressBar(
             progress: state.position,
             buffered: state.playbackEvent.bufferedPosition,
-            total: state.totalTime,
+            total: state.playbackEvent.duration ?? Duration.zero,
             onSeek: (newPosition) => context
                 .read<AudioPlayerBloc>()
                 .add(SeekToPosition(newPosition)),

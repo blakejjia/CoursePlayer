@@ -78,6 +78,7 @@ Widget _songTile(
   }));
 }
 
+// when selected, song tile look like this
 Container _songTileSelected(BuildContext context, Song song) {
   return Container(
     color: Theme.of(context).colorScheme.primaryFixed,
@@ -85,6 +86,7 @@ Container _songTileSelected(BuildContext context, Song song) {
   );
 }
 
+// when not selected, song tile look like this
 ListTile _songTileNormal(Song song) {
   return ListTile(
     title: Text(_formatTitle(song.title)),

@@ -9,9 +9,10 @@ final class _UpdateState extends AudioPlayerEvent {
   final SequenceState? sequenceState;
   final PlayerState playerState;
   final Duration? totalTime;
+  final double speed;
 
-  _UpdateState(
-      this.position, this.playbackEvent, this.sequenceState, this.playerState,this.totalTime);
+  _UpdateState(this.position, this.speed, this.playbackEvent,
+      this.sequenceState, this.playerState, this.totalTime);
 }
 
 final class PauseEvent extends AudioPlayerEvent {}
@@ -40,3 +41,11 @@ final class LocateAudio extends AudioPlayerEvent {
 
   LocateAudio(this.index, this.buffer);
 }
+
+final class SetSpeed extends AudioPlayerEvent {
+  final double speed;
+
+  SetSpeed(this.speed);
+}
+
+final class Replay10 extends AudioPlayerEvent {}

@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:course_player/data/models/models.dart';
+import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -16,26 +16,32 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     _initBloc();
 
     on<_UpdateState>(_onUpdatePlayerEvent);
-    on<LocateAudio>(_onLocateAudio);
 
+    on<SetSpeed>(_onSetSpeed);
+    on<LocateAudio>(_onLocateAudio);
+    on<Replay10>(_onReplay10);
     on<PauseEvent>(_onPauseEvent);
     on<ContinueEvent>(_onContinueEvent);
     on<PreviousEvent>(_onPreviousEvent);
     on<NextEvent>(_onNextEvent);
     on<NextLoopMode>(_onNextLoopMode);
     on<NextShuffleMode>(_onSwitchShuffleMode);
+
     on<FinishedEvent>(_onFinished);
     on<SeekToPosition>(_onSeekToPosition);
   }
 
   void _initBloc() {
-    playerInfoStream = CombineLatestStream.combine4(
+    playerInfoStream = CombineLatestStream.combine5(
       audioPlayer.playbackEventStream,
       audioPlayer.positionStream,
       audioPlayer.sequenceStateStream,
       audioPlayer.playerStateStream,
-      (playbackEvent, position, sequenceState, playerState) => _UpdateState(
+      audioPlayer.speedStream,
+      (playbackEvent, position, sequenceState, playerState, speed) =>
+          _UpdateState(
         position,
+        speed,
         playbackEvent,
         sequenceState,
         playerState,
@@ -46,6 +52,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         .listen((updateStateEvent) {
       add(updateStateEvent);
     });
+  }
+
+  FutureOr<void> _onSetSpeed(event, emit) {
+    audioPlayer.setSpeed(event.speed);
   }
 
   FutureOr<void> _onFinished(event, emit) {
@@ -66,6 +76,18 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     audioPlayer.hasPrevious ? audioPlayer.seekToPrevious() : null;
   }
 
+  void _onReplay10(event, emit) async {
+    if (state is AudioPlayerPlaying) {
+      Duration? currentPosition = audioPlayer.position;
+      // ignore: prefer_const_constructors
+      Duration newPosition = currentPosition - Duration(seconds: 10);
+      if (newPosition < Duration.zero) {
+        newPosition = Duration.zero;
+      }
+      await audioPlayer.seek(newPosition);
+    }
+  }
+
   FutureOr<void> _onLocateAudio(event, emit) async {
     await audioPlayer.setAudioSource(
       ConcatenatingAudioSource(
@@ -74,14 +96,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         }).toList(), // 将 Iterable 转换为 List
       ),
     );
-    await Future.wait([
-      audioPlayer.seek(Duration.zero, index: event.index),
-      audioPlayer.play(),
-    ]);
     if (state is AudioPlayerInitial) {
-      emit(AudioPlayerPlaying(Duration.zero, state.playbackEvent,
-          state.sequenceState, state.playerState, state.totalTime));
+      emit(AudioPlayerPlaying(Duration.zero, state.speed, state.playbackEvent,
+          state.sequenceState, state.playerState));
     }
+    await audioPlayer.seek(Duration.zero, index: event.index);
+    await audioPlayer.play();
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) {
@@ -113,10 +133,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   FutureOr<void> _onUpdatePlayerEvent(event, emit) {
     emit(state.copyWith(
       position: event.position,
+      speed: event.speed,
       playbackEvent: event.playbackEvent,
       sequenceState: event.sequenceState,
       playerState: event.playerState,
-      totalTime: event.totalTime,
     ));
   }
 
