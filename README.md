@@ -18,7 +18,5 @@ A mp3 player specially designed for listening to courses.
 This project based on flutter and developed by Blake Jia from 2024 9th October. The second ever software I have developed. 
 
 # small goals
-1. audio player speed control 
-2. support for earbuds control 
-3. widget and notification in notification menu
-4. 
+1. support for earbuds control 
+2. widget and notification in notification menu
