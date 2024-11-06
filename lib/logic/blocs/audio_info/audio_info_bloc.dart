@@ -6,6 +6,7 @@ import 'package:course_player/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 import '../../../data/providers/load_from_db.dart';
 
@@ -26,15 +27,15 @@ class AudioInfoBloc extends Bloc<AudioInfoEvent, AudioInfoState> {
   FutureOr<void> _onUpdateIndex(event, emit) {
     if (state is AudioInfoSong) {
       final songState = state as AudioInfoSong;
-      // 使用 copyWith 来更新 index
       emit(songState.copyWith(index: event.index));
     }
   }
 
   void initBloc() {
     streamSubscription = _audioPlayer.playbackEventStream
-        .map((playBackEvent) => playBackEvent.currentIndex) // 只提取 currentIndex
-        .distinct() // 仅当 currentIndex 变化时才发出事件
+        .map((playBackEvent) => playBackEvent.currentIndex)
+        .distinct()
+        .debounceTime(const Duration(milliseconds: 100)) // 添加防抖
         .listen((currentIndex) {
       if (currentIndex != null) {
         add(_AudioInfoUpdateIndex(currentIndex));

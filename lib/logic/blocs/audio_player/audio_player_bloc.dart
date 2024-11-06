@@ -3,6 +3,7 @@ import 'package:course_player/data/models/models.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:bloc/bloc.dart';
 import 'package:meta/meta.dart';
+import 'package:rxdart/rxdart.dart';
 
 part 'audio_player_event.dart';
 part 'audio_player_state.dart';
@@ -28,20 +29,22 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   void _initBloc() {
-    playerInfoStream = audioPlayer.playbackEventStream.listen((playbackEvent) {
-      audioPlayer.positionStream.listen((position) {
-        audioPlayer.sequenceStateStream.listen((sequenceState) {
-          audioPlayer.playerStateStream.listen((playerState) {
-            add(_UpdateState(
-              position,
-              playbackEvent,
-              sequenceState,
-              playerState,
-              audioPlayer.duration,
-            ));
-          });
-        });
-      });
+    playerInfoStream = CombineLatestStream.combine4(
+      audioPlayer.playbackEventStream,
+      audioPlayer.positionStream,
+      audioPlayer.sequenceStateStream,
+      audioPlayer.playerStateStream,
+      (playbackEvent, position, sequenceState, playerState) => _UpdateState(
+        position,
+        playbackEvent,
+        sequenceState,
+        playerState,
+        audioPlayer.duration,
+      ),
+    )
+        .debounceTime(const Duration(milliseconds: 100))
+        .listen((updateStateEvent) {
+      add(updateStateEvent);
     });
   }
 
@@ -71,8 +74,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         }).toList(), // 将 Iterable 转换为 List
       ),
     );
-    audioPlayer.seek(Duration.zero, index: event.index);
-    audioPlayer.play();
+    await Future.wait([
+      audioPlayer.seek(Duration.zero, index: event.index),
+      audioPlayer.play(),
+    ]);
     if (state is AudioPlayerInitial) {
       emit(AudioPlayerPlaying(Duration.zero, state.playbackEvent,
           state.sequenceState, state.playerState, state.totalTime));

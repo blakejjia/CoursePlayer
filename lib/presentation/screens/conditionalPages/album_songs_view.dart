@@ -14,6 +14,19 @@ class AlbumSongsView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AudioInfoBloc, AudioInfoState>(
+      buildWhen: (prev, current) {
+        if (prev.playlist != current.playlist) {
+          return true;
+        } else if (prev.runtimeType != current.runtimeType) {
+          return true;
+        } else if (prev is AudioInfoSong &&
+            current is AudioInfoSong &&
+            prev.index != current.index) {
+          return true;
+        } else {
+          return false;
+        }
+      },
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
@@ -22,22 +35,18 @@ class AlbumSongsView extends StatelessWidget {
             bottomNavigationBar: const AudioBottomSheet(),
             body: switch (state.playlist) {
               Playlist() => switch (state.buffer) {
-                  [...] => Column(children: [
-                      Expanded(
-                        child: ListView.builder(
-                          itemCount: state.buffer!.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index == 0) {
-                              return _heading(
-                                  context, state.playlist!, state.picture);
-                            } else {
-                              return _songTile(context, state,
-                                  state.buffer![index - 1], index - 1);
-                            }
-                          },
-                        ),
-                      ),
-                    ]),
+                  [...] => ListView.builder(
+                    itemCount: state.buffer!.length + 1,
+                    itemBuilder: (context, index) {
+                      if (index == 0) {
+                        return _heading(
+                            context, state.playlist!, state.picture);
+                      } else {
+                        return _songTile(context, state,
+                            state.buffer![index - 1], index - 1);
+                      }
+                    },
+                  ),
                   null => const Center(
                       child: Text("空空如也"),
                     ),
