@@ -20,3 +20,5 @@ This project based on flutter and developed by Blake Jia from 2024 9th October. 
 # small goals
 1. support for earbuds control 
 2. widget and notification in notification menu
+3. can share this mp3 with sb. else 
+4. keep alive in background
