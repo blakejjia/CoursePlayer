@@ -24,8 +24,6 @@ class MyAudioHandler extends BaseAudioHandler {
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenForDurationChanges();
-    // _listenForCurrentSongIndexChanges();
-    // _listenForSequenceStateChanges();
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {

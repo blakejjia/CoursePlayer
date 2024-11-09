@@ -62,7 +62,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   FutureOr<void> _onSetSpeed(event, emit) {
-    audioHandler.setSpeed(event.speed);
+    double currentSpeed = event.speed;
+    List<double> speedOptions = [1.0, 1.5, 1.7, 1.8, 2.0];
+    int currentIndex = speedOptions.indexOf(currentSpeed);
+    double proposedSpeed =
+        speedOptions[(currentIndex + 1) % speedOptions.length];
+    audioHandler.setSpeed(proposedSpeed);
   }
 
   FutureOr<void> _onFinished(event, emit) {
@@ -105,8 +110,16 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) {
-    audioHandler
-        .setShuffleMode(AudioServiceShuffleMode.all); //TODO:点击变换shuffle mode
+    AudioServiceShuffleMode currentShuffleMode =
+        state.playbackState.shuffleMode;
+    if (currentShuffleMode == AudioServiceShuffleMode.none) {
+      currentShuffleMode = AudioServiceShuffleMode.all;
+    } else {
+      currentShuffleMode = AudioServiceShuffleMode.none;
+    }
+
+    // 设置新的 ShuffleMode
+    audioHandler.setShuffleMode(currentShuffleMode);
   }
 
   FutureOr<void> _onContinueEvent(event, emit) {

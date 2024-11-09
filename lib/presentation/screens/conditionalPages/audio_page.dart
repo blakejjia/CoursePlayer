@@ -98,15 +98,8 @@ class PlayerButtons extends StatelessWidget {
   }
 
   Widget _speedButton(AudioPlayerState state, BuildContext context) {
-    //TODO: 逻辑放到bloc里面！
-    double currentSpeed = state.playbackState.speed;
-    List<double> speedOptions = [1.0, 1.5, 1.7, 1.8, 2.0];
-    int currentIndex = speedOptions.indexOf(currentSpeed);
-    double proposedSpeed =
-        speedOptions[(currentIndex + 1) % speedOptions.length];
-
     return InkWell(
-      onTap: () => context.read<AudioPlayerBloc>().add(SetSpeed(proposedSpeed)),
+      onTap: () => context.read<AudioPlayerBloc>().add(SetSpeed(state.playbackState.speed)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -115,7 +108,7 @@ class PlayerButtons extends StatelessWidget {
               Icons.speed_rounded,
               size: 24,
             ),
-            Text(currentSpeed.toString()),
+            Text(state.playbackState.speed.toString()),
           ],
         ),
       ),

@@ -53,11 +53,18 @@ Future<void> load(String path) async {
   }
 }
 
-// Handling one playlist
+// Handling one playlist, 默认一个顶层folder对应一个playlist
 Future<void> _processOnePlaylist(Directory folder) async {
-  //TODO: might be many directories under same playlist
-  List<File> files = folder.listSync().whereType<File>().toList();
-
+  List<File> files = await (Directory directory) async {
+    List<File> files = [];
+    await for (var entity
+        in directory.list(recursive: true, followLinks: false)) {
+      if (entity is File) {
+        files.add(entity);
+      }
+    }
+    return files;
+  }(folder);
   await _processFiles(files, folder);
 }
 
