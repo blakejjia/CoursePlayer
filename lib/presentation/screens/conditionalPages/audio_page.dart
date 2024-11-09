@@ -51,10 +51,8 @@ class PlayerButtons extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
       buildWhen: (prev, current) {
-        if (prev.runtimeType != current.runtimeType) {
-          return true;
-        } else if (prev.speed != current.speed ||
-            prev.playerState != current.playerState) {
+        if (prev.playbackState.speed != current.playbackState.speed ||
+            prev.playbackState.playing != current.playbackState.playing) {
           return true;
         }
         return false;
@@ -75,24 +73,24 @@ class PlayerButtons extends StatelessWidget {
   }
 
   Widget _playPauseButton(AudioPlayerState state, BuildContext context) {
-    if (!state.playerState.playing) {
-      return IconButton(
-        icon: const Icon(Icons.play_arrow_rounded),
-        iconSize: 64.0,
-        onPressed: () => context.read<AudioPlayerBloc>().add(ContinueEvent()),
-      );
-    } else {
+    if (state.playbackState.playing) {
       return IconButton(
         icon: const Icon(Icons.pause_rounded),
         iconSize: 64.0,
         onPressed: () => context.read<AudioPlayerBloc>().add(PauseEvent()),
+      );
+    } else {
+      return IconButton(
+        icon: const Icon(Icons.play_arrow_rounded),
+        iconSize: 64.0,
+        onPressed: () => context.read<AudioPlayerBloc>().add(ContinueEvent()),
       );
     }
   }
 
   Widget _replay10Button(BuildContext context) {
     return IconButton(
-        onPressed: () => context.read<AudioPlayerBloc>().add(Replay10()),
+        onPressed: () => context.read<AudioPlayerBloc>().add(Rewind()),
         icon: const Icon(
           Icons.replay_10_rounded,
           size: 30,
@@ -100,7 +98,8 @@ class PlayerButtons extends StatelessWidget {
   }
 
   Widget _speedButton(AudioPlayerState state, BuildContext context) {
-    double currentSpeed = state.speed;
+    //TODO: 逻辑放到bloc里面！
+    double currentSpeed = state.playbackState.speed;
     List<double> speedOptions = [1.0, 1.5, 1.7, 1.8, 2.0];
     int currentIndex = speedOptions.indexOf(currentSpeed);
     double proposedSpeed =
@@ -154,9 +153,9 @@ class PlayerProgressBar extends StatelessWidget {
       child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         builder: (context, state) {
           return ProgressBar(
-            progress: state.position,
-            buffered: state.playbackEvent.bufferedPosition,
-            total: state.playbackEvent.duration ?? Duration.zero,
+            progress: state.playbackState.position,
+            buffered: state.playbackState.bufferedPosition,
+            total: state.mediaItem.duration ?? Duration.zero,
             onSeek: (newPosition) => context
                 .read<AudioPlayerBloc>()
                 .add(SeekToPosition(newPosition)),

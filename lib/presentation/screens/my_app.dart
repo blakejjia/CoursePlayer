@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
         child: const CoursePage(),
       ),
       const ArtistPage(),
-      const SettingPage(),
+       const SettingPage(),
     ];
 
     return Scaffold(

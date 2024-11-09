@@ -2,9 +2,9 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:course_player/data/models/models.dart';
+import 'package:course_player/logic/services/audio_service.dart';
 import 'package:course_player/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:just_audio/just_audio.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
@@ -14,10 +14,10 @@ part 'audio_info_event.dart';
 part 'audio_info_state.dart';
 
 class AudioInfoBloc extends Bloc<AudioInfoEvent, AudioInfoState> {
-  final AudioPlayer _audioPlayer;
   late StreamSubscription streamSubscription;
+  late MyAudioHandler audioHandler;
 
-  AudioInfoBloc(this._audioPlayer) : super(const AudioInfoIdle()) {
+  AudioInfoBloc() : super(const AudioInfoIdle()) {
     initBloc();
     on<AudioInfoLocatePlaylist>(_onLocatePlaylist);
     on<AudioInfoLocateSong>(_onLocateSong);
@@ -32,10 +32,15 @@ class AudioInfoBloc extends Bloc<AudioInfoEvent, AudioInfoState> {
   }
 
   void initBloc() {
-    streamSubscription = _audioPlayer.playbackEventStream
-        .map((playBackEvent) => playBackEvent.currentIndex)
-        .distinct()
-        .debounceTime(const Duration(milliseconds: 100)) // 添加防抖
+    audioHandler = getIt<MyAudioHandler>();
+    streamSubscription = audioHandler.queue
+        .map((queue) {
+      // 获取播放队列中当前的 index
+      final currentIndex = queue.indexWhere((item) => item.id == audioHandler.mediaItem.value?.id);
+      return currentIndex >= 0 ? currentIndex : null;
+    })
+        .distinct()  // 去重处理
+        .debounceTime(const Duration(milliseconds: 100))  // 添加防抖
         .listen((currentIndex) {
       if (currentIndex != null) {
         add(_AudioInfoUpdateIndex(currentIndex));

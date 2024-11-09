@@ -52,7 +52,7 @@ Widget _content(AudioInfoState audioInfoState, BuildContext context) {
     children: [
       BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         buildWhen: (prev, current) {
-          if (prev.position != current.position) {
+          if (prev.playbackState.position != current.playbackState.position) {
             return true;
           }
           return false;
@@ -61,8 +61,10 @@ Widget _content(AudioInfoState audioInfoState, BuildContext context) {
           return SizedBox(
             height: 3,
             child: LinearProgressIndicator(
-              value: (state.playbackEvent.duration != null && state.playbackEvent.duration!.inSeconds > 0)
-                  ? (state.position.inSeconds / state.playbackEvent.duration!.inSeconds)
+              value: (state.mediaItem.duration != null &&
+                      state.mediaItem.duration!.inSeconds > 0)
+                  ? (state.playbackState.position.inSeconds /
+                      state.mediaItem.duration!.inSeconds)
                   : 0,
             ),
           );
@@ -84,19 +86,11 @@ Widget _content(AudioInfoState audioInfoState, BuildContext context) {
 
 Widget _trailing(BuildContext context) {
   return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-    buildWhen: (prev, current) {
-      if (prev.runtimeType != current.runtimeType) {
-        return true;
-      } else if (prev.playerState != current.playerState) {
-        return true;
-      }
-      return false;
-    },
     builder: (context, state) {
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          state.playerState.playing
+          state.playbackState.playing
               ? IconButton(
                   icon: const Icon(Icons.pause_rounded),
                   iconSize: 40,

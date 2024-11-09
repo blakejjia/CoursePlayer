@@ -4,15 +4,10 @@ part of 'audio_player_bloc.dart';
 sealed class AudioPlayerEvent {}
 
 final class _UpdateState extends AudioPlayerEvent {
-  final Duration position;
-  final PlaybackEvent playbackEvent;
-  final SequenceState? sequenceState;
-  final PlayerState playerState;
-  final Duration? totalTime;
-  final double speed;
+  final PlaybackState playbackState;
+  final MediaItem? mediaItem;
 
-  _UpdateState(this.position, this.speed, this.playbackEvent,
-      this.sequenceState, this.playerState, this.totalTime);
+  _UpdateState(this.mediaItem, this.playbackState);
 }
 
 final class PauseEvent extends AudioPlayerEvent {}
@@ -48,4 +43,4 @@ final class SetSpeed extends AudioPlayerEvent {
   SetSpeed(this.speed);
 }
 
-final class Replay10 extends AudioPlayerEvent {}
+final class Rewind extends AudioPlayerEvent {}
