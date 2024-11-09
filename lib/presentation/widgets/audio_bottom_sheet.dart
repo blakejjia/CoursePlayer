@@ -15,8 +15,7 @@ class AudioBottomSheet extends StatelessWidget {
           return true;
         } else if (prev is AudioInfoSong &&
             current is AudioInfoSong &&
-            (prev.index != current.index ||
-                prev.indexPlaylist != current.indexPlaylist)) {
+            (prev.song != current.song)) {
           return true;
         } else {
           return false;
@@ -72,9 +71,7 @@ Widget _content(AudioInfoState audioInfoState, BuildContext context) {
       ),
       ListTile(
         title: Text(
-          (audioInfoState as AudioInfoSong)
-              .indexBuffer[audioInfoState.index]
-              .title,
+          (audioInfoState as AudioInfoSong).song.title,
           maxLines: 2,
           overflow: TextOverflow.ellipsis,
         ),

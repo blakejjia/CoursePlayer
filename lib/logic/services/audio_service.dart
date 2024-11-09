@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:rxdart/rxdart.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   return await AudioService.init(
@@ -25,18 +24,17 @@ class MyAudioHandler extends BaseAudioHandler {
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
     _listenForDurationChanges();
-    _listenForCurrentSongIndexChanges();
-    _listenForSequenceStateChanges();
+    // _listenForCurrentSongIndexChanges();
+    // _listenForSequenceStateChanges();
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
-    _player.playbackEventStream
-        .debounceTime(Duration(milliseconds: 100))
-        .listen((PlaybackEvent event) {
+    _player.positionStream.listen((_) {
+      final playing = _player.playing;
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,
-          if (_player.playing) MediaControl.pause else MediaControl.play,
+          if (playing) MediaControl.pause else MediaControl.play,
           MediaControl.stop,
           MediaControl.skipToNext,
         ],
@@ -59,78 +57,22 @@ class MyAudioHandler extends BaseAudioHandler {
         shuffleMode: (_player.shuffleModeEnabled)
             ? AudioServiceShuffleMode.all
             : AudioServiceShuffleMode.none,
-        playing: _player.playing,
+        playing: playing,
         updatePosition: _player.position,
         bufferedPosition: _player.bufferedPosition,
         speed: _player.speed,
-        queueIndex: event.currentIndex,
+        queueIndex: _player.playbackEvent.currentIndex,
       ));
     });
   }
 
   void _listenForDurationChanges() {
-    _player.durationStream.listen((duration) {
-      var index = _player.currentIndex;
-      final newQueue = queue.value;
-      if (index == null || newQueue.isEmpty) return;
-      if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices!.indexOf(index);
-      }
-      final oldMediaItem = newQueue[index];
-      final newMediaItem = oldMediaItem.copyWith(duration: duration);
-      newQueue[index] = newMediaItem;
-      queue.add(newQueue);
-      mediaItem.add(newMediaItem);
-    });
-  }
-
-  void _listenForCurrentSongIndexChanges() {
     _player.currentIndexStream.listen((index) {
-      final playlist = queue.value;
-      if (index == null || playlist.isEmpty) return;
-      if (_player.shuffleModeEnabled) {
-        index = _player.shuffleIndices!.indexOf(index);
-      }
-      final currentItem = playlist[index];
-      mediaItem.add(currentItem);
+      if (index == null || queue.value.isEmpty) return;
+      final currentMediaItem = queue.value[index];
+      mediaItem.add(currentMediaItem);
     });
   }
-
-  void _listenForSequenceStateChanges() {
-    _player.sequenceStateStream.listen((SequenceState? sequenceState) {
-      final sequence = sequenceState?.effectiveSequence;
-      if (sequence == null || sequence.isEmpty) return;
-
-      final items = sequence
-          .where((source) => source.tag != null) // 过滤掉 tag 为 null 的项
-          .map((source) => source.tag as MediaItem)
-          .toList();
-
-      queue.add(items);
-    });
-  }
-
-  // @override
-  // Future<void> addQueueItems(List<MediaItem> mediaItems) async {
-  //   // manage Just Audio
-  //   final audioSource = mediaItems.map(_createAudioSource);
-  //   _playlist.addAll(audioSource.toList());
-  //
-  //   // notify system
-  //   final newQueue = queue.value..addAll(mediaItems);
-  //   queue.add(newQueue);
-  // }
-  //
-  // @override
-  // Future<void> addQueueItem(MediaItem mediaItem) async {
-  //   // manage Just Audio
-  //   final audioSource = _createAudioSource(mediaItem);
-  //   _playlist.add(audioSource);
-  //
-  //   // notify system
-  //   final newQueue = queue.value..add(mediaItem);
-  //   queue.add(newQueue);
-  // }
 
   @override
   Future<void> play() => _player.play();
@@ -146,6 +88,14 @@ class MyAudioHandler extends BaseAudioHandler {
 
   @override
   Future<void> skipToPrevious() => _player.seekToPrevious();
+
+  @override
+  Future<void> rewind() async {
+    final currentPosition = _player.position;
+    final rewindPosition = currentPosition - const Duration(seconds: 10);
+    await _player
+        .seek(rewindPosition >= Duration.zero ? rewindPosition : Duration.zero);
+  }
 
   @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
@@ -173,7 +123,8 @@ class MyAudioHandler extends BaseAudioHandler {
     }
   }
 
-  Future<void> locateAudio(List<String> paths, int index) async {
+  Future<void> locateAudio(
+      List<MediaItem> mediaItems, List<String> paths, int index) async {
     final playlist = ConcatenatingAudioSource(
       children: paths.map((path) => AudioSource.file(path)).toList(),
     );
@@ -182,6 +133,8 @@ class MyAudioHandler extends BaseAudioHandler {
 
     await _player.seek(Duration.zero, index: index);
     await _player.play();
+
+    queue.add(mediaItems);
   }
 
   @override

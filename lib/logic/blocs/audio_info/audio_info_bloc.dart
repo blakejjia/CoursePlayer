@@ -2,11 +2,11 @@ import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/repositories/song_repository.dart';
 import 'package:course_player/logic/services/audio_service.dart';
 import 'package:course_player/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
-import 'package:rxdart/rxdart.dart';
 
 import '../../../data/providers/load_from_db.dart';
 
@@ -21,41 +21,32 @@ class AudioInfoBloc extends Bloc<AudioInfoEvent, AudioInfoState> {
     initBloc();
     on<AudioInfoLocatePlaylist>(_onLocatePlaylist);
     on<AudioInfoLocateSong>(_onLocateSong);
-    on<_AudioInfoUpdateIndex>(_onUpdateIndex);
+    on<_AudioInfoUpdate>(_onUpdateIndex);
   }
 
   FutureOr<void> _onUpdateIndex(event, emit) {
     if (state is AudioInfoSong) {
       final songState = state as AudioInfoSong;
-      emit(songState.copyWith(index: event.index));
+      emit(songState.copyWith(song: event.song));
     }
   }
 
   void initBloc() {
     audioHandler = getIt<MyAudioHandler>();
-    streamSubscription = audioHandler.queue
-        .map((queue) {
-      // 获取播放队列中当前的 index
-      final currentIndex = queue.indexWhere((item) => item.id == audioHandler.mediaItem.value?.id);
-      return currentIndex >= 0 ? currentIndex : null;
-    })
-        .distinct()  // 去重处理
-        .debounceTime(const Duration(milliseconds: 100))  // 添加防抖
-        .listen((currentIndex) {
-      if (currentIndex != null) {
-        add(_AudioInfoUpdateIndex(currentIndex));
+    streamSubscription = audioHandler.mediaItem.asyncMap((mediaItem) async {
+      final currentMediaItemId = mediaItem?.id ?? "0";
+      return await getIt<SongRepository>()
+          .getSongById(int.parse(currentMediaItemId));
+    }).listen((song) {
+      if (song != null) {
+        add(_AudioInfoUpdate(song));
       }
     });
   }
 
   FutureOr<void> _onLocateSong(event, emit) {
-    if (state is AudioInfoSong &&
-        (state as AudioInfoSong).indexPlaylist == state.playlist) {
-      add(_AudioInfoUpdateIndex(event.index));
-    } else {
-      emit(AudioInfoSong(state.playlist!, state.buffer!, event.index,
-          state.playlist, state.buffer, state.picture));
-    }
+    emit(
+        AudioInfoSong(event.song, state.playlist, state.buffer, state.picture));
   }
 
   FutureOr<void> _onLocatePlaylist(event, emit) async {

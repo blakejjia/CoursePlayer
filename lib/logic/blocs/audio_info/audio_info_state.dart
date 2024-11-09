@@ -18,24 +18,18 @@ final class AudioInfoPlaylist extends AudioInfoState {
 }
 
 final class AudioInfoSong extends AudioInfoState {
-  final int index;
-  final Playlist indexPlaylist;
-  final List<Song> indexBuffer;
+  final Song song;
 
-  const AudioInfoSong(this.indexPlaylist, this.indexBuffer, this.index, super.playlist, super.buffer, super.picture);
+  const AudioInfoSong(this.song, super.playlist, super.buffer, super.picture);
   // copyWith method
   AudioInfoSong copyWith({
-    int? index,
-    Playlist? indexPlaylist,
-    List<Song>? indexBuffer,
+    Song? song,
     Playlist? playlist,
     List<Song>? buffer,
     Uint8List? picture,
   }) {
     return AudioInfoSong(
-      indexPlaylist ?? this.indexPlaylist,
-      indexBuffer ?? this.indexBuffer,
-      index ?? this.index,
+      song ?? this.song,
       playlist ?? this.playlist,
       buffer ?? this.buffer,
       picture ?? this.picture,

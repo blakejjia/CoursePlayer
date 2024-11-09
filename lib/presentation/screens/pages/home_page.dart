@@ -14,27 +14,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<AudioInfoBloc, AudioInfoState>(
         builder: (context, state) {
-      return Column(
+      return const Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(state.playlist.toString()),
-          if (state is AudioInfoSong) // 使用集合 if 语法
-            Text(state.index.toString()),
-          if (state is AudioInfoSong) // 使用集合 if 语法
-            Text(state.indexPlaylist.toString()),
-        ],
+        children: [],
       );
     });
-    //   MRefreshFutureBuilder(
-    //   _refreshData,
-    //   () => getIt<LoadFromDb>().getAllCovers(),
-    //   child: (data) {
-    //     return ListView(
-    //       children: [
-    //         ...data!.map((cover)=> Text('Cover id: ${cover.id}, hash: ${cover.hash}'))
-    //       ],
-    //     );
-    //   },
-    // );
   }
 }

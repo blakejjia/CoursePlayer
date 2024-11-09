@@ -10,14 +10,13 @@ final class AudioInfoLocatePlaylist extends AudioInfoEvent {
 }
 
 final class AudioInfoLocateSong extends AudioInfoEvent {
-  final int index;
-  final Playlist indexPlaylist;
+  final Song song;
 
-  AudioInfoLocateSong(this.indexPlaylist, this.index);
+  AudioInfoLocateSong(this.song);
 }
 
-final class _AudioInfoUpdateIndex extends AudioInfoEvent{
-  final int index;
+final class _AudioInfoUpdate extends AudioInfoEvent{
+  final Song song;
 
-  _AudioInfoUpdateIndex(this.index);
+  _AudioInfoUpdate(this.song);
 }

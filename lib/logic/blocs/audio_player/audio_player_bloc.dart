@@ -87,6 +87,18 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   Future<void> _onLocateAudio(event, emit) async {
     await audioHandler.locateAudio(
+      event.buffer
+          .whereType<Song>()
+          .map((song) => MediaItem(
+                id: song.id.toString(),
+                title: song.title,
+                album: song.playlist,
+                artist: song.artist,
+                genre: null,
+                duration: Duration(seconds: song.length),
+              ))
+          .cast<MediaItem>()
+          .toList(),
       event.buffer.map((song) => song!.path).toList().cast<String>(),
       event.index,
     );

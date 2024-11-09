@@ -21,7 +21,7 @@ class AlbumSongsView extends StatelessWidget {
           return true;
         } else if (prev is AudioInfoSong &&
             current is AudioInfoSong &&
-            prev.index != current.index) {
+            prev.song != current.song) {
           return true;
         } else {
           return false;
@@ -36,17 +36,17 @@ class AlbumSongsView extends StatelessWidget {
             body: switch (state.playlist) {
               Playlist() => switch (state.buffer) {
                   [...] => ListView.builder(
-                    itemCount: state.buffer!.length + 1,
-                    itemBuilder: (context, index) {
-                      if (index == 0) {
-                        return _heading(
-                            context, state.playlist!, state.picture);
-                      } else {
-                        return _songTile(context, state,
-                            state.buffer![index - 1], index - 1);
-                      }
-                    },
-                  ),
+                      itemCount: state.buffer!.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return _heading(
+                              context, state.playlist!, state.picture);
+                        } else {
+                          return _songTile(context, state,
+                              state.buffer![index - 1], index - 1);
+                        }
+                      },
+                    ),
                   null => const Center(
                       child: Text("空空如也"),
                     ),
@@ -63,14 +63,11 @@ class AlbumSongsView extends StatelessWidget {
 Widget _songTile(
     BuildContext context, AudioInfoState state, Song song, int index) {
   return InkWell(onTap: () {
-    context
-        .read<AudioInfoBloc>()
-        .add(AudioInfoLocateSong(state.playlist!, index));
+    context.read<AudioInfoBloc>().add(AudioInfoLocateSong(song));
     context.read<AudioPlayerBloc>().add(LocateAudio(index, state.buffer!));
   }, child: Builder(builder: (context) {
     if (state is AudioInfoSong &&
-        state.index == index &&
-        state.indexPlaylist == state.playlist) {
+        state.song.id == song.id) {
       return _songTileSelected(context, song);
     } else {
       return _songTileNormal(song);

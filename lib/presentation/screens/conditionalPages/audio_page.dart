@@ -34,7 +34,7 @@ class PlayInfos extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Text(
-              (state as AudioInfoSong).indexBuffer[state.index].title,
+              (state as AudioInfoSong).song.title,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           )
