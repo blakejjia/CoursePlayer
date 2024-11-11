@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
+import 'package:rxdart/rxdart.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   return await AudioService.init(
@@ -23,7 +24,7 @@ class MyAudioHandler extends BaseAudioHandler {
 
   MyAudioHandler() {
     _notifyAudioHandlerAboutPlaybackEvents();
-    _listenForDurationChanges();
+    _listenForMediaItemChanges();
   }
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
@@ -64,10 +65,14 @@ class MyAudioHandler extends BaseAudioHandler {
     });
   }
 
-  void _listenForDurationChanges() {
-    _player.currentIndexStream.listen((index) {
-      if (index == null || queue.value.isEmpty) return;
-      final currentMediaItem = queue.value[index];
+  void _listenForMediaItemChanges() {
+    Rx.combineLatest2<int?, List<MediaItem>, MediaItem?>(
+      _player.currentIndexStream,
+      queue,
+      (index, queueList) {
+        return queueList[index!];
+      },
+    ).listen((currentMediaItem) {
       mediaItem.add(currentMediaItem);
     });
   }
@@ -121,15 +126,15 @@ class MyAudioHandler extends BaseAudioHandler {
     }
   }
 
-  Future<void> locateAudio(
-      List<MediaItem> mediaItems, List<String> paths, int index) async {
+  Future<void> locateAudio(List<MediaItem> mediaItems, List<String> paths,
+      int? index, int? position) async {
     final playlist = ConcatenatingAudioSource(
       children: paths.map((path) => AudioSource.file(path)).toList(),
     );
 
     await _player.setAudioSource(playlist);
-
-    await _player.seek(Duration.zero, index: index);
+    await _player.seek(Duration(milliseconds: position ?? 0),
+        index: index ?? 0);
     await _player.play();
 
     queue.add(mediaItems);

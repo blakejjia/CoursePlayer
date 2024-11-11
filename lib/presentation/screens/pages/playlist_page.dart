@@ -30,13 +30,13 @@ class _CoursePageState extends State<CoursePage> {
               builder: (context, state) {
                 return PopupMenuButton<String>(
                   onSelected: (selection) {
-                    context.read<PlaylistPageCubit>().changeView();
+                    context.read<PlaylistPageCubit>().playListPageChangeView();
                   },
                   itemBuilder: (BuildContext context) {
                     return [
                       PopupMenuItem<String>(
                         value: 'ListView',
-                        child: Text(state.islistview ? '显示为列表' : '显示为网格'),
+                        child: Text(state.isGridView ? '显示为列表' : '显示为网格'),
                       ),
                     ];
                   },
@@ -46,8 +46,9 @@ class _CoursePageState extends State<CoursePage> {
           ],
         ),
         body: MRefreshFutureBuilder(
-            _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(),
-            child: (data) {
+            //TODO:转移进bloc
+            _refreshData,
+            () => getIt<LoadFromDb>().getAllPlaylists(), child: (data) {
           return CourseList(data);
         }));
   }
@@ -67,12 +68,15 @@ class CourseList extends StatelessWidget {
           "Courses",
           style: Theme.of(context).textTheme.titleLarge,
         ),
-        Expanded(child: BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
-            builder: (context, state) {
-          return state.islistview
-              ? _showInCard(playlists!)
-              : _showInList(playlists!);
-        })),
+        Expanded(
+            child: BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+                buildWhen: (prev, current) =>
+                    prev.isGridView != current.isGridView,
+                builder: (context, state) {
+                  return state.isGridView
+                      ? _showInCard(playlists!)
+                      : _showInList(playlists!);
+                })),
       ]);
     }
   }

@@ -1,5 +1,4 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
-import 'package:course_player/logic/blocs/audio_info/audio_info_bloc.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -27,14 +26,14 @@ class PlayInfos extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
+    return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         builder: (context, state) {
       return Column(
         children: [
           Padding(
             padding: const EdgeInsets.all(10.0),
             child: Text(
-              (state as AudioInfoSong).song.title,
+              state.mediaItem.title,
               style: Theme.of(context).textTheme.titleMedium,
             ),
           )

@@ -1,4 +1,3 @@
-import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/presentation/screens/pages/artist_page.dart';
 import 'package:course_player/presentation/screens/pages/home_page.dart';
 import 'package:course_player/presentation/screens/pages/playlist_page.dart';
@@ -6,7 +5,6 @@ import 'package:course_player/presentation/screens/pages/setting_page.dart';
 import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
 import 'package:course_player/presentation/screens/oneTime/permission_grant_page.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 
@@ -55,10 +53,7 @@ class _MyAppState extends State<MyApp> {
 
     final List<Widget> pages = [
       const HomePage(),
-      BlocProvider(
-        create: (context) => PlaylistPageCubit(),
-        child: const CoursePage(),
-      ),
+      const CoursePage(),
       const ArtistPage(),
        const SettingPage(),
     ];

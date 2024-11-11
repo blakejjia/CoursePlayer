@@ -31,10 +31,11 @@ final class SeekToPosition extends AudioPlayerEvent {
 final class FinishedEvent extends AudioPlayerEvent {}
 
 final class LocateAudio extends AudioPlayerEvent {
-  final int index;
-  final List<Song?> buffer;
+  final int? index;
+  final List<Song>? buffer;
+  final int? position;
 
-  LocateAudio(this.index, this.buffer);
+  LocateAudio(this.index, this.buffer, this.position);
 }
 
 final class SetSpeed extends AudioPlayerEvent {

@@ -61,55 +61,55 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     ));
   }
 
-  FutureOr<void> _onSetSpeed(event, emit) {
+  FutureOr<void> _onSetSpeed(event, emit) async {
     double currentSpeed = event.speed;
     List<double> speedOptions = [1.0, 1.5, 1.7, 1.8, 2.0];
     int currentIndex = speedOptions.indexOf(currentSpeed);
     double proposedSpeed =
         speedOptions[(currentIndex + 1) % speedOptions.length];
-    audioHandler.setSpeed(proposedSpeed);
+    await audioHandler.setSpeed(proposedSpeed);
   }
 
-  FutureOr<void> _onFinished(event, emit) {
-    audioHandler.skipToNext();
+  FutureOr<void> _onFinished(event, emit) async {
+    await audioHandler.skipToNext();
   }
 
-  FutureOr<void> _onSeekToPosition(event, emit) {
-    audioHandler.seek(event.position);
+  FutureOr<void> _onSeekToPosition(event, emit) async {
+    await audioHandler.seek(event.position);
   }
 
-  FutureOr<void> _onNextEvent(event, emit) {
-    audioHandler.skipToNext();
+  FutureOr<void> _onNextEvent(event, emit) async {
+    await audioHandler.skipToNext();
   }
 
-  FutureOr<void> _onPreviousEvent(event, emit) {
-    audioHandler.skipToPrevious();
+  FutureOr<void> _onPreviousEvent(event, emit) async {
+    await audioHandler.skipToPrevious();
   }
 
   void _onRewind(event, emit) async {
-    audioHandler.rewind();
+    await audioHandler.rewind();
   }
 
   Future<void> _onLocateAudio(event, emit) async {
     await audioHandler.locateAudio(
-      event.buffer
-          .whereType<Song>()
-          .map((song) => MediaItem(
-                id: song.id.toString(),
-                title: song.title,
-                album: song.playlist,
-                artist: song.artist,
-                genre: null,
-                duration: Duration(seconds: song.length),
-              ))
-          .cast<MediaItem>()
-          .toList(),
-      event.buffer.map((song) => song!.path).toList().cast<String>(),
-      event.index,
-    );
+        event.buffer
+            .whereType<Song>()
+            .map((song) => MediaItem(
+                  id: song.id.toString(),
+                  title: song.title,
+                  album: song.playlist,
+                  artist: song.artist,
+                  genre: null,
+                  duration: Duration(seconds: song.length),
+                ))
+            .cast<MediaItem>()
+            .toList(),
+        event.buffer.map((song) => song!.path).toList().cast<String>(),
+        event.index,
+        event.position);
   }
 
-  FutureOr<void> _onSwitchShuffleMode(event, emit) {
+  FutureOr<void> _onSwitchShuffleMode(event, emit) async {
     AudioServiceShuffleMode currentShuffleMode =
         state.playbackState.shuffleMode;
     if (currentShuffleMode == AudioServiceShuffleMode.none) {
@@ -119,20 +119,20 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     }
 
     // 设置新的 ShuffleMode
-    audioHandler.setShuffleMode(currentShuffleMode);
+    await audioHandler.setShuffleMode(currentShuffleMode);
   }
 
-  FutureOr<void> _onContinueEvent(event, emit) {
-    audioHandler.play();
+  FutureOr<void> _onContinueEvent(event, emit) async {
+    await audioHandler.play();
   }
 
-  FutureOr<void> _onPauseEvent(event, emit) {
-    audioHandler.pause();
+  FutureOr<void> _onPauseEvent(event, emit) async {
+    await audioHandler.pause();
   }
 
   @override
-  Future<void> close() {
-    playerInfoStream.cancel();
+  Future<void> close() async {
+    await playerInfoStream.cancel();
     return super.close();
   }
 }

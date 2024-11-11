@@ -1,36 +1,21 @@
-import 'dart:typed_data';
-
 import 'package:course_player/data/models/models.dart';
+import 'package:course_player/logic/blocs/album_page/album_page_bloc.dart';
+import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
+import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../logic/blocs/audio_player/audio_player_bloc.dart';
-import '../../widgets/audio_bottom_sheet.dart';
-import '../../../logic/blocs/audio_info/audio_info_bloc.dart';
 
 class AlbumSongsView extends StatelessWidget {
   const AlbumSongsView({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
-      buildWhen: (prev, current) {
-        if (prev.playlist != current.playlist) {
-          return true;
-        } else if (prev.runtimeType != current.runtimeType) {
-          return true;
-        } else if (prev is AudioInfoSong &&
-            current is AudioInfoSong &&
-            prev.song != current.song) {
-          return true;
-        } else {
-          return false;
-        }
-      },
+    return BlocBuilder<AlbumPageBloc, AlbumPageState>(
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
-              title: Text(state.playlist?.title ?? ""),
+              title: Text(state.playlist?.title ?? "unknown playlist"),
             ),
             bottomNavigationBar: const AudioBottomSheet(),
             body: switch (state.playlist) {
@@ -39,8 +24,7 @@ class AlbumSongsView extends StatelessWidget {
                       itemCount: state.buffer!.length + 1,
                       itemBuilder: (context, index) {
                         if (index == 0) {
-                          return _heading(
-                              context, state.playlist!, state.picture);
+                          return _heading(context, state);
                         } else {
                           return _songTile(context, state,
                               state.buffer![index - 1], index - 1);
@@ -61,13 +45,16 @@ class AlbumSongsView extends StatelessWidget {
 }
 
 Widget _songTile(
-    BuildContext context, AudioInfoState state, Song song, int index) {
+    BuildContext context, AlbumPageState audioInfoState, Song song, int index) {
   return InkWell(onTap: () {
-    context.read<AudioInfoBloc>().add(AudioInfoLocateSong(song));
-    context.read<AudioPlayerBloc>().add(LocateAudio(index, state.buffer!));
-  }, child: Builder(builder: (context) {
-    if (state is AudioInfoSong &&
-        state.song.id == song.id) {
+    context
+        .read<AudioPlayerBloc>()
+        .add(LocateAudio(index, audioInfoState.buffer!, null));
+  }, child:
+
+      /// check if the tile is selected or not
+      BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
+    if (song.id == int.parse(state.mediaItem.id)) {
       return _songTileSelected(context, song);
     } else {
       return _songTileNormal(song);
@@ -75,7 +62,7 @@ Widget _songTile(
   }));
 }
 
-// when selected, song tile look like this
+/// when selected, song tile look like this
 Container _songTileSelected(BuildContext context, Song song) {
   return Container(
     color: Theme.of(context).colorScheme.primaryFixed,
@@ -83,7 +70,7 @@ Container _songTileSelected(BuildContext context, Song song) {
   );
 }
 
-// when not selected, song tile look like this
+/// when not selected, song tile look like this
 ListTile _songTileNormal(Song song) {
   return ListTile(
     title: Text(_formatTitle(song.title)),
@@ -102,14 +89,11 @@ ListTile _songTileNormal(Song song) {
 
 String _formatDuration(int duration) {
   String twoDigits(int n) => n.toString().padLeft(2, '0');
-
-  // 计算小时、分钟和秒
   int hours = duration ~/ 3600;
   int minutes = (duration % 3600) ~/ 60;
   int seconds = duration % 60;
   String twoDigitMinutes = twoDigits(minutes);
   String twoDigitSeconds = twoDigits(seconds);
-
   if (hours > 0) {
     return "${twoDigits(hours)}:$twoDigitMinutes:$twoDigitSeconds";
   } else {
@@ -118,37 +102,51 @@ String _formatDuration(int duration) {
 }
 
 String _formatTitle(String title) {
-  int lastDotIndex = title.lastIndexOf('.'); // 如果存在 '.', 则去掉末尾的后缀
+  int lastDotIndex = title.lastIndexOf('.');
   if (lastDotIndex != -1) {
     return title.substring(0, lastDotIndex);
   }
   return title;
 }
 
-Widget _heading(BuildContext context, Playlist playlist, Uint8List? picture) {
+Widget _heading(BuildContext context, AlbumPageState state) {
   return Column(
     children: [
       SizedBox(
         width: MediaQuery.of(context).size.width / 2,
         height: MediaQuery.of(context).size.width / 2,
-        child: picture != null
-            ? Image.memory(picture)
+        child: state.picture != null
+            ? Image.memory(state.picture!)
             : Image.asset("assets/default_cover.jpeg"),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
         child: Text(
-          playlist.title,
+          state.playlist!.title,
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         child: Text(
-          playlist.author,
+          state.playlist!.author,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
+      ElevatedButton(
+          onPressed: () {
+            // [index, positionInMilliSeconds]
+            List<int>? playHistory = context
+                .read<PlaylistPageCubit>()
+                .state
+                .playHistory[state.playlist!.id];
+            int? index = playHistory?[0];
+            int? position = playHistory?[1];
+            context
+                .read<AudioPlayerBloc>()
+                .add(LocateAudio(index, state.buffer!, position));
+          },
+          child: const Text("继续播放")),
     ],
   );
 }

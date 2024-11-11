@@ -3,8 +3,8 @@ import 'package:course_player/data/repositories/playlist_repository.dart';
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
 import 'package:course_player/data/repositories/song_repository.dart';
-import 'package:course_player/logic/blocs/audio_info/audio_info_bloc.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
 import 'package:course_player/logic/services/audio_service.dart';
 import 'package:course_player/presentation/screens/my_app.dart';
@@ -13,6 +13,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
+
+import 'logic/blocs/album_page/album_page_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -48,7 +50,8 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
-        BlocProvider<AudioInfoBloc>(create: (_) => AudioInfoBloc()),
+        BlocProvider<AlbumPageBloc>(create: (_) => AlbumPageBloc()),
+        BlocProvider<PlaylistPageCubit>(create: (_)=>PlaylistPageCubit()),
       ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,

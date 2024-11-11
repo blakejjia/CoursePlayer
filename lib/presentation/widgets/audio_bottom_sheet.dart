@@ -1,5 +1,6 @@
-import 'package:course_player/logic/blocs/audio_info/audio_info_bloc.dart';
+import 'package:course_player/logic/blocs/album_page/album_page_bloc.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/presentation/screens/conditionalPages/audio_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -9,104 +10,99 @@ class AudioBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AudioInfoBloc, AudioInfoState>(
-      buildWhen: (prev, current) {
-        if (prev.runtimeType != current.runtimeType) {
-          return true;
-        } else if (prev is AudioInfoSong &&
-            current is AudioInfoSong &&
-            (prev.song != current.song)) {
-          return true;
-        } else {
-          return false;
-        }
-      },
-      builder: (context, state) {
-        if (state is AudioInfoSong) {
-          return InkWell(
-            onTap: () => showModalBottomSheet(
-              context: context,
-              isScrollControlled: true, // 让 BottomSheet 覆盖整个屏幕
-              builder: (ctx) => Container(
-                alignment: Alignment.center,
-                child: const AudioPage(),
-              ),
-            ),
-            child: Container(
-              color: Theme.of(context).colorScheme.surface,
-              height: 71,
-              child: _content(state, context),
-            ),
-          );
-        } else {
-          return const SizedBox();
-        }
-      },
+    return InkWell(
+      onTap: () => showModalBottomSheet(
+        context: context,
+        isScrollControlled: true,
+        builder: (ctx) => Container(
+          alignment: Alignment.center,
+          child: const AudioPage(),
+        ),
+      ),
+      child: Container(
+        color: Theme.of(context).colorScheme.surface,
+        height: 71,
+        child: _content(context),
+      ),
     );
   }
 }
 
-Widget _content(AudioInfoState audioInfoState, BuildContext context) {
+Widget _content(BuildContext context) {
   return Column(
     children: [
-      BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-        buildWhen: (prev, current) {
-          if (prev.playbackState.position != current.playbackState.position) {
-            return true;
-          }
-          return false;
-        },
-        builder: (context, state) {
-          return SizedBox(
-            height: 3,
-            child: LinearProgressIndicator(
+      SizedBox(
+        height: 3,
+
+        /// build LinearProgressIndicator
+        child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+          buildWhen: (prev, current) =>
+              prev.playbackState.position != current.playbackState.position,
+          builder: (context, state) {
+            /// here, update SongProgress database
+            int playlistId =
+                context.read<AlbumPageBloc>().state.playlist?.id ?? 0;
+            context.read<PlaylistPageCubit>().playListCubitUpdateSongProgress(
+                playlistId,
+                state.playbackState.queueIndex ?? 0,
+                state.playbackState.position.inMilliseconds);
+            return LinearProgressIndicator(
               value: (state.mediaItem.duration != null &&
                       state.mediaItem.duration!.inSeconds > 0)
                   ? (state.playbackState.position.inSeconds /
                       state.mediaItem.duration!.inSeconds)
                   : 0,
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
       ListTile(
-        title: Text(
-          (audioInfoState as AudioInfoSong).song.title,
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
+        /// build title
+        title: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+          buildWhen: (prev, curr) =>
+              prev.mediaItem.title != curr.mediaItem.title,
+          builder: (context, state) {
+            return Text(
+              state.mediaItem.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            );
+          },
         ),
-        trailing: _trailing(context),
+
+        /// build trailing
+        trailing: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+          buildWhen: (prev, curr) =>
+              prev.playbackState.playing != curr.playbackState.playing,
+          builder: (context, state) {
+            return Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                state.playbackState.playing
+                    ? IconButton(
+                        icon: const Icon(Icons.pause_rounded),
+                        iconSize: 40,
+                        onPressed: () =>
+                            context.read<AudioPlayerBloc>().add(PauseEvent()),
+                      )
+                    : IconButton(
+                        icon: const Icon(Icons.play_arrow_rounded),
+                        iconSize: 40,
+                        onPressed: () => context
+                            .read<AudioPlayerBloc>()
+                            .add(ContinueEvent()),
+                      ),
+                IconButton(
+                  icon: const Icon(Icons.fast_forward_rounded),
+                  iconSize: 40,
+                  onPressed: () =>
+                      context.read<AudioPlayerBloc>().add(NextEvent()),
+                ),
+              ],
+            );
+          },
+        ),
       )
     ],
-  );
-}
-
-Widget _trailing(BuildContext context) {
-  return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-    builder: (context, state) {
-      return Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          state.playbackState.playing
-              ? IconButton(
-                  icon: const Icon(Icons.pause_rounded),
-                  iconSize: 40,
-                  onPressed: () =>
-                      context.read<AudioPlayerBloc>().add(PauseEvent()),
-                )
-              : IconButton(
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  iconSize: 40,
-                  onPressed: () =>
-                      context.read<AudioPlayerBloc>().add(ContinueEvent()),
-                ),
-          IconButton(
-            icon: const Icon(Icons.fast_forward_rounded),
-            iconSize: 40,
-            onPressed: () => context.read<AudioPlayerBloc>().add(NextEvent()),
-          ),
-        ],
-      );
-    },
   );
 }

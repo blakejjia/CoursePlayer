@@ -1,49 +1,47 @@
 part of 'playlist_page_cubit.dart';
 
 class PlaylistPageState extends Equatable {
-  final bool islistview;
+  final bool isGridView;
+  // {
+  //  playlistId:
+  //    [index, positionInMilliSeconds]
+  //  }
+  final Map<int, List<int>> playHistory;
 
-//<editor-fold desc="Data Methods">
-  const PlaylistPageState({
-    required this.islistview,
-  });
-
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-          (other is PlaylistPageState &&
-              runtimeType == other.runtimeType &&
-              islistview == other.islistview);
-
-  @override
-  int get hashCode => islistview.hashCode;
+  const PlaylistPageState(
+      {required this.isGridView, required this.playHistory});
 
   @override
   String toString() {
-    return 'SettingsState{ islistview: $islistview,}';
+    return 'SettingsState{isListView: $isGridView, playHistory: $playHistory}';
   }
 
   PlaylistPageState copyWith({
-    bool? isListView,
+    bool? isGridView,
+    Map<int, List<int>>? playHistory,
   }) {
     return PlaylistPageState(
-      islistview: isListView ?? islistview,
+      isGridView: isGridView ?? this.isGridView,
+      playHistory: playHistory ?? this.playHistory,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'islistview': islistview,
-    };
+    return {'isGridView': isGridView, 'playHistory': playHistory};
   }
 
   factory PlaylistPageState.fromMap(Map<String, dynamic> map) {
     return PlaylistPageState(
-      islistview: map['islistview'] as bool,
+      isGridView: map['isGridView'] as bool,
+      playHistory: (map['playHistory'] as Map<String, dynamic>).map(
+        (key, value) => MapEntry(
+          int.parse(key), // 将键从 String 转为 int
+          List<int>.from(value), // 将值转为 List<int>
+        ),
+      ),
     );
   }
 
   @override
-  List<Object> get props => [islistview];
-//</editor-fold>
+  List<Object> get props => [isGridView, playHistory];
 }
