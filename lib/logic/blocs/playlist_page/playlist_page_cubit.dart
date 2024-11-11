@@ -5,7 +5,7 @@ part 'playlist_page_state.dart';
 
 class PlaylistPageCubit extends HydratedCubit<PlaylistPageState> {
   PlaylistPageCubit()
-      : super(const PlaylistPageState(isGridView: true, playHistory: {}));
+      : super(const PlaylistPageState(isGridView: false, playHistory: {}));
 
   void playListPageChangeView() =>
       emit(state.copyWith(isGridView: !state.isGridView));

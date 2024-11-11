@@ -19,10 +19,15 @@ class AudioBottomSheet extends StatelessWidget {
           child: const AudioPage(),
         ),
       ),
-      child: Container(
-        color: Theme.of(context).colorScheme.surface,
-        height: 71,
-        child: _content(context),
+      child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+        builder: (context, state) {
+          if (state.mediaItem.title == "unknown") return const SizedBox();
+          return Container(
+            color: Theme.of(context).colorScheme.surface,
+            height: 71,
+            child: _content(context),
+          );
+        },
       ),
     );
   }

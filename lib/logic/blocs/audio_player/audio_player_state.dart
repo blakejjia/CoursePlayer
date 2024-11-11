@@ -1,6 +1,6 @@
 part of 'audio_player_bloc.dart';
 
- class AudioPlayerState {
+class AudioPlayerState {
   final MediaItem mediaItem;
   final PlaybackState playbackState;
 

@@ -66,11 +66,16 @@ class MyAudioHandler extends BaseAudioHandler {
   }
 
   void _listenForMediaItemChanges() {
+    int bufferedIndex = 0;
+    _player.currentIndexStream.listen((int? index) {
+      bufferedIndex = index ?? 0;
+    });
     Rx.combineLatest2<int?, List<MediaItem>, MediaItem?>(
       _player.currentIndexStream,
       queue,
       (index, queueList) {
-        return queueList[index!];
+        if (queueList.isEmpty) return null;
+        return queueList[bufferedIndex];
       },
     ).listen((currentMediaItem) {
       mediaItem.add(currentMediaItem);
@@ -128,6 +133,7 @@ class MyAudioHandler extends BaseAudioHandler {
 
   Future<void> locateAudio(List<MediaItem> mediaItems, List<String> paths,
       int? index, int? position) async {
+    queue.add(mediaItems);
     final playlist = ConcatenatingAudioSource(
       children: paths.map((path) => AudioSource.file(path)).toList(),
     );
@@ -136,8 +142,6 @@ class MyAudioHandler extends BaseAudioHandler {
     await _player.seek(Duration(milliseconds: position ?? 0),
         index: index ?? 0);
     await _player.play();
-
-    queue.add(mediaItems);
   }
 
   @override

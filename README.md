@@ -18,4 +18,3 @@ This project based on flutter and developed by Blake Jia from 2024 9th October. 
 
 # small goals
 1. can share this mp3 with sb. else 
-2. sort by name & number
