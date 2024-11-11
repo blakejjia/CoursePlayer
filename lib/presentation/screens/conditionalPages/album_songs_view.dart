@@ -46,20 +46,24 @@ class AlbumSongsView extends StatelessWidget {
 
 Widget _songTile(
     BuildContext context, AlbumPageState audioInfoState, Song song, int index) {
-  return InkWell(onTap: () {
-    context
-        .read<AudioPlayerBloc>()
-        .add(LocateAudio(index, audioInfoState.buffer!, null));
-  }, child:
+  return InkWell(
+      onTap: () {
+        context
+            .read<AudioPlayerBloc>()
+            .add(LocateAudio(index, audioInfoState.buffer!, null));
+      },
+      child:
 
-      /// check if the tile is selected or not
-      BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
-    if (song.id == int.parse(state.mediaItem.id)) {
-      return _songTileSelected(context, song);
-    } else {
-      return _songTileNormal(song);
-    }
-  }));
+          /// check if the tile is selected or not
+          BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+              buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
+              builder: (context, state) {
+                if (song.id == int.parse(state.mediaItem.id)) {
+                  return _songTileSelected(context, song);
+                } else {
+                  return _songTileNormal(song);
+                }
+              }));
 }
 
 /// when selected, song tile look like this

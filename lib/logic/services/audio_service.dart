@@ -68,7 +68,7 @@ class MyAudioHandler extends BaseAudioHandler {
   void _listenForMediaItemChanges() {
     int bufferedIndex = 0;
     _player.currentIndexStream.listen((int? index) {
-      bufferedIndex = index ?? 0;
+      bufferedIndex = index ?? bufferedIndex;
     });
     Rx.combineLatest2<int?, List<MediaItem>, MediaItem?>(
       _player.currentIndexStream,

@@ -11,25 +11,19 @@ class AudioBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => showModalBottomSheet(
-        context: context,
-        isScrollControlled: true,
-        builder: (ctx) => Container(
-          alignment: Alignment.center,
-          child: const AudioPage(),
-        ),
-      ),
-      child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-        builder: (context, state) {
-          if (state.mediaItem.title == "unknown") return const SizedBox();
-          return Container(
-            color: Theme.of(context).colorScheme.surface,
-            height: 71,
-            child: _content(context),
-          );
-        },
-      ),
-    );
+        onTap: () => showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              builder: (ctx) => Container(
+                alignment: Alignment.center,
+                child: const AudioPage(),
+              ),
+            ),
+        child: Container(
+          color: Theme.of(context).colorScheme.surface,
+          height: 71,
+          child: _content(context),
+        ));
   }
 }
 
@@ -40,10 +34,8 @@ Widget _content(BuildContext context) {
         height: 3,
 
         /// build LinearProgressIndicator
-        child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-          buildWhen: (prev, current) =>
-              prev.playbackState.position != current.playbackState.position,
-          builder: (context, state) {
+        child: BlocConsumer<AudioPlayerBloc, AudioPlayerState>(
+          listener: (context, state) {
             /// here, update SongProgress database
             int playlistId =
                 context.read<AlbumPageBloc>().state.playlist?.id ?? 0;
@@ -51,6 +43,8 @@ Widget _content(BuildContext context) {
                 playlistId,
                 state.playbackState.queueIndex ?? 0,
                 state.playbackState.position.inMilliseconds);
+          },
+          builder: (context, state) {
             return LinearProgressIndicator(
               value: (state.mediaItem.duration != null &&
                       state.mediaItem.duration!.inSeconds > 0)

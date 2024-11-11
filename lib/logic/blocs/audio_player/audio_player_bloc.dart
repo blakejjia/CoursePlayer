@@ -98,8 +98,10 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
                   id: song.id.toString(),
                   title: song.title,
                   album: song.playlist,
+                  displayDescription: song.path, /// this is the path
                   artist: song.artist,
                   genre: null,
+
                   duration: Duration(seconds: song.length),
                 ))
             .cast<MediaItem>()

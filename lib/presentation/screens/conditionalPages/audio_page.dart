@@ -2,17 +2,18 @@ import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:share_plus/share_plus.dart';
 
 class AudioPage extends StatelessWidget {
   const AudioPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
+    return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          PlayInfos(),
+          _playInfos(context),
           PlayerProgressBar(),
           PlayerButtons(),
         ],
@@ -21,26 +22,19 @@ class AudioPage extends StatelessWidget {
   }
 }
 
-class PlayInfos extends StatelessWidget {
-  const PlayInfos({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-        builder: (context, state) {
-      return Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(10.0),
-            child: Text(
-              state.mediaItem.title,
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-          )
-        ],
+Widget _playInfos(BuildContext context) {
+  return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+    buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
+    builder: (context, state) {
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Text(
+          state.mediaItem.title,
+          style: Theme.of(context).textTheme.titleMedium,
+        ),
       );
-    });
-  }
+    },
+  );
 }
 
 class PlayerButtons extends StatelessWidget {
@@ -49,13 +43,9 @@ class PlayerButtons extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-      buildWhen: (prev, current) {
-        if (prev.playbackState.speed != current.playbackState.speed ||
-            prev.playbackState.playing != current.playbackState.playing) {
-          return true;
-        }
-        return false;
-      },
+      buildWhen: (prev, current) =>
+          prev.playbackState.speed != current.playbackState.speed ||
+          prev.playbackState.playing != current.playbackState.playing,
       builder: (context, state) {
         return Row(
           mainAxisSize: MainAxisSize.min,
@@ -65,9 +55,39 @@ class PlayerButtons extends StatelessWidget {
             _playPauseButton(state, context),
             _nextButton(context),
             _speedButton(state, context),
+            _shareButton(state, context),
           ],
         );
       },
+    );
+  }
+
+  Widget _shareButton(AudioPlayerState state, BuildContext context) {
+    return IconButton(
+      onPressed: () {
+        if (state.mediaItem.displayDescription == null) {
+          showDialog(
+            //TODO:用的多的话可以extract出来
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                content: Text("找不到要分享的内容"),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text("确定"),
+                  ),
+                ],
+              );
+            },
+          );
+        } else {
+          Share.shareXFiles([XFile(state.mediaItem.displayDescription!)]);
+        }
+      },
+      icon: const Icon(Icons.ios_share_rounded, size: 30),
     );
   }
 
@@ -98,7 +118,9 @@ class PlayerButtons extends StatelessWidget {
 
   Widget _speedButton(AudioPlayerState state, BuildContext context) {
     return InkWell(
-      onTap: () => context.read<AudioPlayerBloc>().add(SetSpeed(state.playbackState.speed)),
+      onTap: () => context
+          .read<AudioPlayerBloc>()
+          .add(SetSpeed(state.playbackState.speed)),
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Column(
@@ -143,6 +165,8 @@ class PlayerProgressBar extends StatelessWidget {
     return SizedBox(
       width: 0.8 * MediaQuery.of(context).size.width,
       child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+        buildWhen: (prev, curr) =>
+            prev.playbackState.position != curr.playbackState.position,
         builder: (context, state) {
           return ProgressBar(
             progress: state.playbackState.position,
