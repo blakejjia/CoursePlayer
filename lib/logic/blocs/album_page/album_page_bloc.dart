@@ -35,18 +35,13 @@ List<Song> sortSongsByTitle(List<Song> songs) {
   List<Song> sortedSongs = List.from(songs);
 
   sortedSongs.sort((a, b) {
-    // 正则提取前缀（匹配字母开头的两个字符，如"hf"或"xs"等）
-    final prefixPattern = RegExp(r'^[a-zA-Z]{2}');
-    String prefixA = prefixPattern.stringMatch(a.title.toLowerCase()) ?? "";
-    String prefixB = prefixPattern.stringMatch(b.title.toLowerCase()) ?? "";
-
-    // 比较前缀，确保相同前缀的歌曲排在一起
-    int prefixComparison = prefixA.compareTo(prefixB);
-    if (prefixComparison != 0) {
-      return prefixComparison;
+    // 按照 artist 排序，确保相同 artist 的歌曲排在一起
+    int artistComparison = a.artist.compareTo(b.artist);
+    if (artistComparison != 0) {
+      return artistComparison;
     }
 
-    // 如果前缀相同，检查发刊词和欢迎词，优先排序包含这两个词的项
+    // 检查发刊词和欢迎词，优先排序包含这两个词的项
     bool aContainsPreface = a.title.contains("发刊") || a.title.contains("欢迎词");
     bool bContainsPreface = b.title.contains("发刊") || b.title.contains("欢迎词");
 
@@ -68,32 +63,7 @@ List<Song> sortSongsByTitle(List<Song> songs) {
 List<Song> cleanSongTitles(List<Song> songs) {
   List<Song> cleanedSongs = List.from(songs);
 
-  // Step 1: 找出超过70%标题中开头或结尾的常见字符
-  String findCommonSubstring(List<Song> songs) {
-    Map<String, int> substringCount = {};
-
-    for (var song in songs) {
-      // 提取开头和结尾的非数字字符
-      final pattern = RegExp(r'^[a-zA-Z]+|[a-zA-Z]+$');
-      final matches = pattern.allMatches(song.title);
-
-      for (var match in matches) {
-        String substring = match.group(0)!;
-        substringCount[substring] = (substringCount[substring] ?? 0) + 1;
-      }
-    }
-
-    // 找出出现频率超过70%的字符串
-    int threshold = (songs.length * 0.7).ceil();
-    for (var entry in substringCount.entries) {
-      if (entry.value >= threshold) {
-        return entry.key;
-      }
-    }
-    return '';
-  }
-
-  String commonSubstring = findCommonSubstring(songs);
+  String commonSubstring = _findCommonSubstring(songs);
 
   // Step 2: 清理每个歌曲的title
   return cleanedSongs.map((song) {
@@ -127,4 +97,28 @@ List<Song> cleanSongTitles(List<Song> songs) {
       path: song.path,
     );
   }).toList();
+}
+
+String _findCommonSubstring(List<Song> songs) {
+  Map<String, int> substringCount = {};
+
+  for (var song in songs) {
+    // 提取开头和结尾的非数字字符
+    final pattern = RegExp(r'^[a-zA-Z]+|[a-zA-Z]+$');
+    final matches = pattern.allMatches(song.title);
+
+    for (var match in matches) {
+      String substring = match.group(0)!;
+      substringCount[substring] = (substringCount[substring] ?? 0) + 1;
+    }
+  }
+
+  // 找出出现频率超过70%的字符串
+  int threshold = (songs.length * 0.7).ceil();
+  for (var entry in substringCount.entries) {
+    if (entry.value >= threshold) {
+      return entry.key;
+    }
+  }
+  return '';
 }
