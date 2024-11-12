@@ -36,7 +36,8 @@ class InfoPage extends StatelessWidget {
             ),
             Text(
               "P.S. 如果以后添加了文件，请在设置中重构索引\n"
-              "我们会自动把文件夹视为课程名，文件名视为该课标题",
+              "我们会自动把文件夹视为课程名，文件名视为该课标题\n"
+              "Small Tip. 左上角标点一下可以续播哦",
               textAlign: TextAlign.center,
               style: TextStyle(color: Theme.of(context).hintColor),
             ),

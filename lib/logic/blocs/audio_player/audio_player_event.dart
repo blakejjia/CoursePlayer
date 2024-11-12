@@ -32,10 +32,10 @@ final class FinishedEvent extends AudioPlayerEvent {}
 
 final class LocateAudio extends AudioPlayerEvent {
   final int index;
-  final List<Song>? buffer;
+  final int playlistId;
   final int position;
 
-  LocateAudio(this.index, this.buffer, this.position);
+  LocateAudio(this.index, this.playlistId, this.position);
 }
 
 final class SetSpeed extends AudioPlayerEvent {

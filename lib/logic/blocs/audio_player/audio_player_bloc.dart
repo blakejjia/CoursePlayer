@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:course_player/data/models/models.dart';
+import 'package:course_player/data/providers/load_from_db.dart';
 import 'package:course_player/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
@@ -16,8 +17,8 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   late StreamSubscription playerInfoStream;
 
   AudioPlayerBloc()
-      : super(AudioPlayerState(
-            const MediaItem(id: "0", title: "not playing"), PlaybackState())) {
+      : super(AudioPlayerState(const MediaItem(id: "0", title: "not playing"),
+            PlaybackState(), 0)) {
     _initBloc();
 
     on<_UpdateState>(_onUpdateState);
@@ -91,24 +92,26 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   Future<void> _onLocateAudio(event, emit) async {
+    List<Song>? songs =
+        await getIt<LoadFromDb>().getSongsByPlaylistId(event.playlistId);
     await audioHandler.locateAudio(
-        event.buffer
+        songs!
             .whereType<Song>()
             .map((song) => MediaItem(
                   id: song.id.toString(),
                   title: song.title,
                   album: song.playlist,
-                  displayDescription: song.path, /// this is the path
+                  displayDescription: song.path,
                   artist: song.artist,
                   genre: null,
-
                   duration: Duration(seconds: song.length),
                 ))
             .cast<MediaItem>()
             .toList(),
-        event.buffer.map((song) => song!.path).toList().cast<String>(),
+        songs.map((song) => song.path).toList().cast<String>(),
         event.index,
         event.position);
+    emit(state.copyWith(currentPlaylist: event.playlistId));
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) async {

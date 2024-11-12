@@ -31,11 +31,10 @@ class _CoursePageState extends State<CoursePage> {
               List<int>? playHistory =
                   context.read<PlaylistPageCubit>().state.latestPlayed;
               if (playHistory == null) return;
-              List<Song>? songs = await getIt<LoadFromDb>()
-                  .getSongsByPlaylistId(playHistory[0]);
+
               context
                   .read<AudioPlayerBloc>()
-                  .add(LocateAudio(playHistory[1], songs, playHistory[2]));
+                  .add(LocateAudio(playHistory[1], playHistory[0], playHistory[2]));
             },
           ),
           actions: [

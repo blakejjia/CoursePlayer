@@ -1,4 +1,3 @@
-import 'package:course_player/logic/blocs/album_page/album_page_bloc.dart';
 import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/presentation/screens/conditionalPages/audio_page.dart';
@@ -37,10 +36,8 @@ Widget _content(BuildContext context) {
         child: BlocConsumer<AudioPlayerBloc, AudioPlayerState>(
           listener: (context, state) {
             /// here, update SongProgress database
-            int playlistId =
-                context.read<AlbumPageBloc>().state.playlist.id;
             context.read<PlaylistPageCubit>().playListCubitUpdateSongProgress(
-                playlistId,
+              state.currentPlaylistId,
                 state.playbackState.queueIndex ?? 0,
                 state.playbackState.position.inMilliseconds);
           },

@@ -25,8 +25,8 @@ class AlbumSongsView extends StatelessWidget {
                   if (index == 0) {
                     return _heading(context, state);
                   } else {
-                    return _songTile(
-                        context, state, state.buffer![index - 1], index - 1);
+                    return _songTile(context, state.playlist,
+                        state.buffer![index - 1], index - 1);
                   }
                 },
               ),
@@ -41,12 +41,10 @@ class AlbumSongsView extends StatelessWidget {
 }
 
 Widget _songTile(
-    BuildContext context, AlbumPageState audioInfoState, Song song, int index) {
+    BuildContext context, Playlist playlist, Song song, int index) {
   return InkWell(
       onTap: () {
-        context
-            .read<AudioPlayerBloc>()
-            .add(LocateAudio(index, audioInfoState.buffer!, 0));
+        context.read<AudioPlayerBloc>().add(LocateAudio(index, playlist.id, 0));
       },
       child:
 
@@ -147,7 +145,7 @@ Widget _heading(BuildContext context, AlbumPageState state) {
                 onPressed: () {
                   context
                       .read<AudioPlayerBloc>()
-                      .add(LocateAudio(index, state.buffer!, position));
+                      .add(LocateAudio(index, state.playlist.id, position));
                 },
                 child: Text(index == 0 ? "开始播放" : "继续播放:第$index节"));
           }),
