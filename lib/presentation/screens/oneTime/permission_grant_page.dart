@@ -9,13 +9,13 @@ class PermissionGrantPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Permission Required")),
+      appBar: AppBar(title: const Text("给予权限")),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              "This app requires access to storage to function properly.",
+              "作为一个播放器，需要访问文件哦~",
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 20),
@@ -24,7 +24,7 @@ class PermissionGrantPage extends StatelessWidget {
                 await Permission.manageExternalStorage.request();
                 onPermissionGranted();
               },
-              child: const Text("Grant Permission"),
+              child: const Text("获取文件访问权限"),
             ),
           ],
         ),

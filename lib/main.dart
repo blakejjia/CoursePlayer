@@ -26,6 +26,7 @@ Future<void> setup() async {
   );
 
   // getIt
+  getIt.registerSingleton<SettingsCubit>(SettingsCubit());
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<SongRepository>(SongRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<CoversRepository>(
@@ -48,17 +49,26 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SettingsCubit>(create: (_) => SettingsCubit()),
+        BlocProvider<SettingsCubit>(create: (_) => getIt<SettingsCubit>()),
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
         BlocProvider<AlbumPageBloc>(create: (_) => AlbumPageBloc()),
-        BlocProvider<PlaylistPageCubit>(create: (_)=>PlaylistPageCubit()),
+        BlocProvider<PlaylistPageCubit>(create: (_) => PlaylistPageCubit()),
       ],
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        routes: {
-          "/": (context) => const MyApp(),
+      child: BlocBuilder<SettingsCubit, SettingsState>(
+        buildWhen: (prev, curr) => prev.seedColor != curr.seedColor,
+        builder: (context, state) {
+          return MaterialApp(
+            theme: ThemeData(
+              colorSchemeSeed: Color(state.seedColor),
+              useMaterial3: true,
+            ),
+            debugShowCheckedModeBanner: false,
+            routes: {
+              "/": (context) => const MyApp(),
+            },
+            initialRoute: "/",
+          );
         },
-        initialRoute: "/",
       ),
     );
   }

@@ -12,9 +12,12 @@ class PlaylistPageCubit extends HydratedCubit<PlaylistPageState> {
 
   void playListCubitUpdateSongProgress(
       int playlistId, int index, int position) {
+    if (playlistId == 0) return;
     final newPlayHistory = Map<int, List<int>>.from(state.playHistory);
     newPlayHistory[playlistId] = [index, position];
-    emit(state.copyWith(playHistory: newPlayHistory));
+    emit(state.copyWith(
+        playHistory: newPlayHistory,
+        latestPlayed: [playlistId, index, position]));
   }
 
   @override

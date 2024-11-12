@@ -27,6 +27,10 @@ class PlaylistRepository extends DatabaseAccessor<AppDatabase>{
     return await (select(db.playlists)..where((tbl) => tbl.title.equals(name))).getSingleOrNull();
   }
 
+  Future<Playlist?> getPlaylistById(int id) async {
+    return await (select(db.playlists)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+  }
+
   // 删除播放列表
   Future<int> deletePlaylist(int id) async {
     return await (delete(db.playlists)..where((tbl) => tbl.id.equals(id))).go();

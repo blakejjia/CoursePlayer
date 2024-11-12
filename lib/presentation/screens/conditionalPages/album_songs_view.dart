@@ -14,31 +14,27 @@ class AlbumSongsView extends StatelessWidget {
     return BlocBuilder<AlbumPageBloc, AlbumPageState>(
       builder: (context, state) {
         return Scaffold(
-            appBar: AppBar(
-              title: Text(state.playlist?.title ?? "unknown playlist"),
-            ),
-            bottomNavigationBar: const AudioBottomSheet(),
-            body: switch (state.playlist) {
-              Playlist() => switch (state.buffer) {
-                  [...] => ListView.builder(
-                      itemCount: state.buffer!.length + 1,
-                      itemBuilder: (context, index) {
-                        if (index == 0) {
-                          return _heading(context, state);
-                        } else {
-                          return _songTile(context, state,
-                              state.buffer![index - 1], index - 1);
-                        }
-                      },
-                    ),
-                  null => const Center(
-                      child: Text("空空如也"),
-                    ),
+          appBar: AppBar(
+            title: Text(state.playlist.title),
+          ),
+          bottomNavigationBar: const AudioBottomSheet(),
+          body: switch (state.buffer) {
+            [...] => ListView.builder(
+                itemCount: state.buffer!.length + 1,
+                itemBuilder: (context, index) {
+                  if (index == 0) {
+                    return _heading(context, state);
+                  } else {
+                    return _songTile(
+                        context, state, state.buffer![index - 1], index - 1);
+                  }
                 },
-              null => const Center(
-                  child: Text("请选择一个播放列表"),
-                ),
-            });
+              ),
+            null => const Center(
+                child: Text("空空如也"),
+              ),
+          },
+        );
       },
     );
   }
@@ -50,7 +46,7 @@ Widget _songTile(
       onTap: () {
         context
             .read<AudioPlayerBloc>()
-            .add(LocateAudio(index, audioInfoState.buffer!, null));
+            .add(LocateAudio(index, audioInfoState.buffer!, 0));
       },
       child:
 
@@ -126,31 +122,35 @@ Widget _heading(BuildContext context, AlbumPageState state) {
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
         child: Text(
-          state.playlist!.title,
+          state.playlist.title,
           style: Theme.of(context).textTheme.titleLarge,
         ),
       ),
       Padding(
         padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
         child: Text(
-          state.playlist!.author,
+          state.playlist.author,
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      ElevatedButton(
-          onPressed: () {
+      BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+          buildWhen: (prev, curr) =>
+              prev.playHistory[state.playlist.id]?[0] !=
+              curr.playHistory[state.playlist.id]?[0],
+          builder: (context, playlistPageState) {
             // [index, positionInMilliSeconds]
-            List<int>? playHistory = context
-                .read<PlaylistPageCubit>()
-                .state
-                .playHistory[state.playlist!.id];
-            int? index = playHistory?[0];
-            int? position = playHistory?[1];
-            context
-                .read<AudioPlayerBloc>()
-                .add(LocateAudio(index, state.buffer!, position));
-          },
-          child: const Text("继续播放")),
+            List<int>? playHistory =
+                playlistPageState.playHistory[state.playlist.id];
+            int index = playHistory?[0] ?? 0;
+            int position = playHistory?[1] ?? 0;
+            return ElevatedButton(
+                onPressed: () {
+                  context
+                      .read<AudioPlayerBloc>()
+                      .add(LocateAudio(index, state.buffer!, position));
+                },
+                child: Text(index == 0 ? "开始播放" : "继续播放:第$index节"));
+          }),
     ],
   );
 }

@@ -17,7 +17,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   AudioPlayerBloc()
       : super(AudioPlayerState(
-            const MediaItem(id: "0", title: "unknown"), PlaybackState())) {
+            const MediaItem(id: "0", title: "not playing"), PlaybackState())) {
     _initBloc();
 
     on<_UpdateState>(_onUpdateState);

@@ -3,6 +3,7 @@ import 'package:audiotags/audiotags.dart';
 import 'package:course_player/data/repositories/covers_repository.dart';
 import 'package:course_player/data/repositories/playlist_repository.dart';
 import 'package:course_player/data/repositories/song_repository.dart';
+import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
 import 'package:course_player/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -39,6 +40,7 @@ Future<int> _loadDefaultCover() async {
 }
 
 Future<void> load(String path) async {
+  getIt<SettingsCubit>().stateRebuilding();
   await getIt<SongRepository>().destroySongDb();
   await getIt<PlaylistRepository>().destroyPlaylistDb();
   await getIt<CoversRepository>().destroyCoversDb();
@@ -51,6 +53,7 @@ Future<void> load(String path) async {
       await _processOnePlaylist(folder);
     }
   }
+  getIt<SettingsCubit>().updateRebuiltTime();
 }
 
 // Handling one playlist, 默认一个顶层folder对应一个playlist

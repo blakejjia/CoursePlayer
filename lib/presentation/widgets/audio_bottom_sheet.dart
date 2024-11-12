@@ -38,7 +38,7 @@ Widget _content(BuildContext context) {
           listener: (context, state) {
             /// here, update SongProgress database
             int playlistId =
-                context.read<AlbumPageBloc>().state.playlist?.id ?? 0;
+                context.read<AlbumPageBloc>().state.playlist.id;
             context.read<PlaylistPageCubit>().playListCubitUpdateSongProgress(
                 playlistId,
                 state.playbackState.queueIndex ?? 0,

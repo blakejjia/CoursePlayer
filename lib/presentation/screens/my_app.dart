@@ -1,5 +1,3 @@
-import 'package:course_player/presentation/screens/pages/artist_page.dart';
-import 'package:course_player/presentation/screens/pages/home_page.dart';
 import 'package:course_player/presentation/screens/pages/playlist_page.dart';
 import 'package:course_player/presentation/screens/pages/setting_page.dart';
 import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
@@ -52,9 +50,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     final List<Widget> pages = [
-      const HomePage(),
       const CoursePage(),
-      const ArtistPage(),
        const SettingPage(),
     ];
 
@@ -73,14 +69,7 @@ class _MyAppState extends State<MyApp> {
             currentIndex: _currentIndex,
             items: const [
               BottomNavigationBarItem(
-                  icon: Icon(
-                    Icons.home,
-                  ),
-                  label: "Home"),
-              BottomNavigationBarItem(
                   icon: Icon(Icons.album), label: "Courses"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.category), label: "Artists"),
               BottomNavigationBarItem(
                   icon: Icon(Icons.settings), label: "Settings"),
             ],

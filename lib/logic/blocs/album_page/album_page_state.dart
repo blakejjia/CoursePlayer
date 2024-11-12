@@ -1,11 +1,11 @@
 part of 'album_page_bloc.dart';
 
 class AlbumPageState {
-  final Playlist? playlist;
+  final Playlist playlist;
   final List<Song>? buffer;
   final Uint8List? picture;
 
-  const AlbumPageState({this.playlist, this.buffer, this.picture});
+  const AlbumPageState({required this.playlist, this.buffer, this.picture});
 
   AlbumPageState copyWith({
     Playlist? playlist,

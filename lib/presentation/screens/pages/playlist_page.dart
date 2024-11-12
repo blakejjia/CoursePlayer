@@ -1,5 +1,6 @@
 import 'package:course_player/data/models/models.dart';
 import 'package:course_player/data/providers/load_from_db.dart';
+import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
 import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
 import 'package:course_player/presentation/widgets/future_builder.dart';
 import 'package:course_player/presentation/widgets/playlist_widgets.dart';
@@ -24,7 +25,19 @@ class _CoursePageState extends State<CoursePage> {
     return Scaffold(
         appBar: AppBar(
           title: const Text('Courser'),
-          leading: const Icon(Icons.play_circle_filled),
+          leading: IconButton(
+            icon: Icon(Icons.play_circle_filled),
+            onPressed: () async {
+              List<int>? playHistory =
+                  context.read<PlaylistPageCubit>().state.latestPlayed;
+              if (playHistory == null) return;
+              List<Song>? songs = await getIt<LoadFromDb>()
+                  .getSongsByPlaylistId(playHistory[0]);
+              context
+                  .read<AudioPlayerBloc>()
+                  .add(LocateAudio(playHistory[1], songs, playHistory[2]));
+            },
+          ),
           actions: [
             BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
               builder: (context, state) {

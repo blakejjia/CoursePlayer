@@ -7,11 +7,9 @@ A mp3 player specially designed for listening to courses.
 3. quick and easy to use
 
 # important functions 
-1. each playlist can continue playing (under same course from beginning or continue at the same time can be set in settings)
-2. Autodetect pdf resource and show an icon beside, show pdf if clicked
-3. under tools: delete same portion of music (likely to be advertisement)
-4. under tools: change song's meta-info quickly
-5. in homepage: add "listen today" section
+1. Autodetect pdf resource and show an icon beside, show pdf if clicked
+2. under tools: change song's meta-info quickly
+3. in homepage: add "listen today" section
 
 # other information
 This project based on flutter and developed by Blake Jia from 2024 9th October. The second ever software I have developed. 
