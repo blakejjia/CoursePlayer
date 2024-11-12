@@ -44,26 +44,23 @@ Widget _songTile(
     BuildContext context, Playlist playlist, Song song, int index) {
   return InkWell(
       onTap: () {
-        context.read<AudioPlayerBloc>().add(LocateAudio(index, playlist.id, 0));
+        context.read<AudioPlayerBloc>().add(LocateAudio(playlist.id, index, 0));
       },
-      child:
-
-          /// check if the tile is selected or not
-          BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-              buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
-              builder: (context, state) {
-                if (song.id == int.parse(state.mediaItem.id)) {
-                  return _songTileSelected(context, song);
-                } else {
-                  return _songTileNormal(song);
-                }
-              }));
+      child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+          buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
+          builder: (context, state) {
+            if (song.id == int.parse(state.mediaItem.id)) {
+              return _songTileSelected(context, song);
+            } else {
+              return _songTileNormal(song);
+            }
+          }));
 }
 
 /// when selected, song tile look like this
 Container _songTileSelected(BuildContext context, Song song) {
   return Container(
-    color: Theme.of(context).colorScheme.primaryFixed,
+    color: Theme.of(context).colorScheme.primaryFixed.withOpacity(0.3),
     child: _songTileNormal(song),
   );
 }
@@ -81,7 +78,6 @@ ListTile _songTileNormal(Song song) {
         Text(_formatDuration(song.length))
       ],
     ),
-    trailing: const Icon(Icons.more_vert),
   );
 }
 
@@ -145,7 +141,7 @@ Widget _heading(BuildContext context, AlbumPageState state) {
                 onPressed: () {
                   context
                       .read<AudioPlayerBloc>()
-                      .add(LocateAudio(index, state.playlist.id, position));
+                      .add(LocateAudio(state.playlist.id, index, position));
                 },
                 child: Text(index == 0 ? "开始播放" : "继续播放:第$index节"));
           }),

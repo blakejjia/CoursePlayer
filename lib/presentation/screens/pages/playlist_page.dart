@@ -27,70 +27,59 @@ class _CoursePageState extends State<CoursePage> {
           title: const Text('Courser'),
           leading: IconButton(
             icon: Icon(Icons.play_circle_filled),
-            onPressed: () async {
-              List<int>? playHistory =
-                  context.read<PlaylistPageCubit>().state.latestPlayed;
-              if (playHistory == null) return;
-
-              context
-                  .read<AudioPlayerBloc>()
-                  .add(LocateAudio(playHistory[1], playHistory[0], playHistory[2]));
+            onPressed: () {
+              _continueWithHistory(context);
             },
           ),
           actions: [
-            BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
-              builder: (context, state) {
-                return PopupMenuButton<String>(
-                  onSelected: (selection) {
-                    context.read<PlaylistPageCubit>().playListPageChangeView();
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                        value: 'ListView',
-                        child: Text(state.isGridView ? '显示为列表' : '显示为网格'),
-                      ),
-                    ];
-                  },
-                );
+            PopupMenuButton<String>(
+              onSelected: (_) {
+                context.read<PlaylistPageCubit>().playListPageChangeView();
+              },
+              itemBuilder: (BuildContext context) {
+                return [
+                  PopupMenuItem<String>(
+                    value: 'ListView',
+                    child: BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+                      buildWhen: (prev, curr) =>
+                          prev.isGridView != curr.isGridView,
+                      builder: (context, state) {
+                        return Text(state.isGridView ? '显示为列表' : '显示为网格');
+                      },
+                    ),
+                  ),
+                ];
               },
             ),
           ],
         ),
         body: MRefreshFutureBuilder(
-            //TODO:转移进bloc
-            _refreshData,
-            () => getIt<LoadFromDb>().getAllPlaylists(), child: (data) {
-          return CourseList(data);
+            _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(),
+            child: (data) {
+          return courseList(data, context);
         }));
+  }
+
+  void _continueWithHistory(BuildContext context) {
+    List<int>? playHistory =
+        context.read<PlaylistPageCubit>().state.latestPlayed;
+    context
+        .read<AudioPlayerBloc>()
+        .add(LocateAudio(playHistory?[0], playHistory?[1], playHistory?[2]));
   }
 }
 
-class CourseList extends StatelessWidget {
-  final List<Playlist>? playlists;
-  const CourseList(this.playlists, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    if (playlists == null || playlists!.isEmpty) {
-      return const Center(child: Text("空空如也,请在settings中重构索引"));
-    } else {
-      return Column(children: [
-        Text(
-          "Courses",
-          style: Theme.of(context).textTheme.titleLarge,
-        ),
-        Expanded(
-            child: BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
-                buildWhen: (prev, current) =>
-                    prev.isGridView != current.isGridView,
-                builder: (context, state) {
-                  return state.isGridView
-                      ? _showInCard(playlists!)
-                      : _showInList(playlists!);
-                })),
-      ]);
-    }
+Widget courseList(List<Playlist>? playlists, BuildContext context) {
+  if (playlists == null || playlists.isEmpty) {
+    return const Center(child: Text("空空如也,请在settings中重构索引"));
+  } else {
+    return BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+        buildWhen: (prev, curr) => prev.isGridView != curr.isGridView,
+        builder: (context, state) {
+          return state.isGridView
+              ? _showInCard(playlists)
+              : _showInList(playlists);
+        });
   }
 }
 

@@ -27,7 +27,7 @@ Widget _playInfos(BuildContext context) {
     buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
     builder: (context, state) {
       return Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(20.0),
         child: Text(
           state.mediaItem.title,
           style: Theme.of(context).textTheme.titleMedium,
@@ -67,7 +67,6 @@ class PlayerButtons extends StatelessWidget {
       onPressed: () {
         if (state.mediaItem.displayDescription == null) {
           showDialog(
-            //TODO:用的多的话可以extract出来
             context: context,
             builder: (BuildContext context) {
               return AlertDialog(

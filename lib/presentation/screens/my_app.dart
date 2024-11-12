@@ -5,7 +5,6 @@ import 'package:course_player/presentation/screens/oneTime/permission_grant_page
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
@@ -20,7 +19,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _checkPermissionInBackground(); // 后台检查权限
+    _checkPermissionInBackground();
   }
 
   // 后台检查权限
@@ -51,7 +50,7 @@ class _MyAppState extends State<MyApp> {
 
     final List<Widget> pages = [
       const CoursePage(),
-       const SettingPage(),
+      const SettingPage(),
     ];
 
     return Scaffold(

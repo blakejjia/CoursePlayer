@@ -92,8 +92,13 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   Future<void> _onLocateAudio(event, emit) async {
+    if (event.index == null ||
+        event.playlistId == null ||
+        event.position == null) return;
+
     List<Song>? songs =
         await getIt<LoadFromDb>().getSongsByPlaylistId(event.playlistId);
+    emit(state.copyWith(currentPlaylist: event.playlistId));
     await audioHandler.locateAudio(
         songs!
             .whereType<Song>()
@@ -111,7 +116,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         songs.map((song) => song.path).toList().cast<String>(),
         event.index,
         event.position);
-    emit(state.copyWith(currentPlaylist: event.playlistId));
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) async {
