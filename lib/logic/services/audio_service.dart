@@ -29,7 +29,6 @@ class MyAudioHandler extends BaseAudioHandler {
 
   void _notifyAudioHandlerAboutPlaybackEvents() {
     _player.positionStream.listen((_) async{
-      await Future.delayed(Duration(milliseconds: 100));
       playbackState.add(playbackState.value.copyWith(
         controls: [
           MediaControl.skipToPrevious,

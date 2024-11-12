@@ -1,6 +1,6 @@
 part of 'playlist_page_cubit.dart';
 
-class PlaylistPageState extends Equatable {
+class PlaylistPageState {
   final bool isGridView;
   // {
   //  playlistId:
@@ -57,7 +57,4 @@ class PlaylistPageState extends Equatable {
       ),
     );
   }
-
-  @override
-  List<Object?> get props => [isGridView, playHistory, latestPlayed];
 }

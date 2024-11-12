@@ -38,18 +38,16 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   void _initBloc() {
     audioHandler = getIt<MyAudioHandler>();
 
-    playerInfoStream = CombineLatestStream.combine3(
+    playerInfoStream = CombineLatestStream.combine2(
       audioHandler.playbackState,
       audioHandler.mediaItem,
-      audioHandler.queue,
-      (playbackState, mediaItem, queue) {
+      (playbackState, mediaItem) {
         return _UpdateState(
           mediaItem,
           playbackState,
         );
       },
     )
-        .debounceTime(const Duration(milliseconds: 100))
         .listen((updateStateEvent) {
       add(updateStateEvent);
     });

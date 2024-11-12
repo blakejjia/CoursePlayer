@@ -165,7 +165,7 @@ class PlayerProgressBar extends StatelessWidget {
       width: 0.8 * MediaQuery.of(context).size.width,
       child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         buildWhen: (prev, curr) =>
-            prev.playbackState.position != curr.playbackState.position,
+            prev.playbackState.updatePosition != curr.playbackState.updatePosition,
         builder: (context, state) {
           return ProgressBar(
             progress: state.playbackState.position,
