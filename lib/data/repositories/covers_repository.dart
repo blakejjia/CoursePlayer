@@ -1,68 +1,70 @@
-
+import 'dart:typed_data';
+import 'package:hive/hive.dart';
 import 'package:course_player/data/models/models.dart';
-import 'package:drift/drift.dart';
 
-@DriftAccessor(tables: [Covers])
-class CoversRepository extends DatabaseAccessor<AppDatabase>{
-  CoversRepository(super.db);
+class CoversRepository {
+  final Box<Cover> _coverBox;
+
+  // Constructor
+  CoversRepository(this._coverBox);
 
   // 创建新封面
-  Future<int> createCover(Uint8List coverData, String hash) async {
-    return await into(db.covers).insert(
-      CoversCompanion(
-        cover: Value(coverData),
-        hash: Value(hash),
-      ),
-    );
+  Future<void> createCover(Uint8List coverData, String hash) async {
+    final cover = Cover((b) => b
+      ..cover = coverData  // 直接使用 Uint8List
+      ..hash = hash);
+    await _coverBox.add(cover);
   }
 
-  // 创建新封面 withId
-  Future<int> createCoverWithId(int id,Uint8List coverData, String hash) async {
-    return await into(db.covers).insert(
-      CoversCompanion(
-        id: Value(id),
-        cover: Value(coverData),
-        hash: Value(hash),
-      ),
-    );
+  // 创建新封面 withId (Hive automatically generates an ID)
+  Future<void> createCoverWithId(int id, Uint8List coverData, String hash) async {
+    final cover = Cover((b) => b
+      ..id = id
+      ..cover = coverData  // 直接使用 Uint8List
+      ..hash = hash);
+    await _coverBox.put(id, cover);
   }
 
   // 根据ID读取封面
   Future<Cover?> getCoverById(int id) async {
-    return await (select(db.covers)..where((tbl) => tbl.id.equals(id))).getSingleOrNull();
+    return _coverBox.get(id);
   }
 
-// 根据哈希值读取封面的 ID
+  // 根据哈希值读取封面的 ID
   Future<int?> getCoverIdByHash(String hash) async {
-    final result = await (select(db.covers)..where((tbl) => tbl.hash.equals(hash))).getSingleOrNull();
-    return result?.id; // 假设 Cover 类中有一个 id 字段
+    for (var entry in _coverBox.toMap().entries) {
+      if (entry.value.hash == hash) {
+        return entry.key; // Hive uses keys for storing, returning the key as ID
+      }
+    }
+    return null;
   }
 
-
-// 更新封面
+  // 更新封面
   Future<bool> updateCover(int id, Uint8List newCoverData, String newHash) async {
     final coverToUpdate = await getCoverById(id);
     if (coverToUpdate != null) {
-      final rowsAffected = await (update(db.covers)..where((tbl) => tbl.id.equals(id))).write(
-        CoversCompanion(
-          cover: Value(newCoverData),
-          hash: Value(newHash),
-        ),
-      );
-      return rowsAffected > 0; // 返回更新是否成功的布尔值
+      final updatedCover = Cover((b) => b
+        ..cover = newCoverData  // 直接使用 Uint8List
+        ..hash = newHash);
+      await _coverBox.put(id, updatedCover);
+      return true; // Successfully updated
     }
-    return false; // 封面未找到
+    return false; // Cover not found
   }
 
   // 删除封面
-  Future<int> deleteCover(int id) async {
-    return await (delete(db.covers)..where((tbl) => tbl.id.equals(id))).go();
+  Future<void> deleteCover(int id) async {
+    await _coverBox.delete(id);
   }
 
   // 获取所有封面
   Future<List<Cover>> getAllCovers() async {
-    return await select(db.covers).get();
+    return _coverBox.values.toList();
   }
 
-  Future<int> destroyCoversDb() => db.delete(db.covers).go();
+  // 销毁所有封面
+  Future<void> destroyCoversDb() async {
+    await _coverBox.clear();
+  }
 }

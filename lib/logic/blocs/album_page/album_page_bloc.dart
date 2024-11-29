@@ -13,9 +13,13 @@ part 'album_page_state.dart';
 
 class AlbumPageBloc extends Bloc<AlbumPageEvent, AlbumPageState> {
   AlbumPageBloc()
-      : super(const AlbumPageState(
-            playlist: Playlist(
-                id: 0, title: "unknown", author: "unknown", imageId: 0))) {
+      : super(AlbumPageState(
+          playlist: Playlist((b) => b
+            ..id = 0
+            ..title = "unknown"
+            ..author = "unknown"
+            ..imageId = 0),
+        )) {
     on<AudioInfoLocatePlaylist>(_onLocatePlaylist);
   }
 

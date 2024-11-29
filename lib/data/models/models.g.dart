@@ -2,1326 +2,532 @@
 
 part of 'models.dart';
 
-// ignore_for_file: type=lint
-class $SongsTable extends Songs with TableInfo<$SongsTable, Song> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $SongsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _artistMeta = const VerificationMeta('artist');
-  @override
-  late final GeneratedColumn<String> artist = GeneratedColumn<String>(
-      'artist', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _playlistMeta =
-      const VerificationMeta('playlist');
-  @override
-  late final GeneratedColumn<String> playlist = GeneratedColumn<String>(
-      'playlist', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _lengthMeta = const VerificationMeta('length');
-  @override
-  late final GeneratedColumn<int> length = GeneratedColumn<int>(
-      'length', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _imageIdMeta =
-      const VerificationMeta('imageId');
-  @override
-  late final GeneratedColumn<int> imageId = GeneratedColumn<int>(
-      'image_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _pathMeta = const VerificationMeta('path');
-  @override
-  late final GeneratedColumn<String> path = GeneratedColumn<String>(
-      'path', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, artist, title, playlist, length, imageId, path];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'songs';
-  @override
-  VerificationContext validateIntegrity(Insertable<Song> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('artist')) {
-      context.handle(_artistMeta,
-          artist.isAcceptableOrUnknown(data['artist']!, _artistMeta));
-    } else if (isInserting) {
-      context.missing(_artistMeta);
-    }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
-    }
-    if (data.containsKey('playlist')) {
-      context.handle(_playlistMeta,
-          playlist.isAcceptableOrUnknown(data['playlist']!, _playlistMeta));
-    } else if (isInserting) {
-      context.missing(_playlistMeta);
-    }
-    if (data.containsKey('length')) {
-      context.handle(_lengthMeta,
-          length.isAcceptableOrUnknown(data['length']!, _lengthMeta));
-    } else if (isInserting) {
-      context.missing(_lengthMeta);
-    }
-    if (data.containsKey('image_id')) {
-      context.handle(_imageIdMeta,
-          imageId.isAcceptableOrUnknown(data['image_id']!, _imageIdMeta));
-    } else if (isInserting) {
-      context.missing(_imageIdMeta);
-    }
-    if (data.containsKey('path')) {
-      context.handle(
-          _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
-    } else if (isInserting) {
-      context.missing(_pathMeta);
-    }
-    return context;
-  }
+// **************************************************************************
+// BuiltValueGenerator
+// **************************************************************************
 
+class _$Song extends Song {
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Song map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Song(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      artist: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}artist'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      playlist: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}playlist'])!,
-      length: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}length'])!,
-      imageId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}image_id'])!,
-      path: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
-    );
-  }
-
-  @override
-  $SongsTable createAlias(String alias) {
-    return $SongsTable(attachedDatabase, alias);
-  }
-}
-
-class Song extends DataClass implements Insertable<Song> {
   final int id;
+  @override
   final String artist;
+  @override
   final String title;
+  @override
   final String playlist;
+  @override
   final int length;
+  @override
   final int imageId;
+  @override
   final String path;
-  const Song(
+
+  factory _$Song([void Function(SongBuilder)? updates]) =>
+      (new SongBuilder()..update(updates))._build();
+
+  _$Song._(
       {required this.id,
       required this.artist,
       required this.title,
       required this.playlist,
       required this.length,
       required this.imageId,
-      required this.path});
+      required this.path})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(id, r'Song', 'id');
+    BuiltValueNullFieldError.checkNotNull(artist, r'Song', 'artist');
+    BuiltValueNullFieldError.checkNotNull(title, r'Song', 'title');
+    BuiltValueNullFieldError.checkNotNull(playlist, r'Song', 'playlist');
+    BuiltValueNullFieldError.checkNotNull(length, r'Song', 'length');
+    BuiltValueNullFieldError.checkNotNull(imageId, r'Song', 'imageId');
+    BuiltValueNullFieldError.checkNotNull(path, r'Song', 'path');
+  }
+
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['artist'] = Variable<String>(artist);
-    map['title'] = Variable<String>(title);
-    map['playlist'] = Variable<String>(playlist);
-    map['length'] = Variable<int>(length);
-    map['image_id'] = Variable<int>(imageId);
-    map['path'] = Variable<String>(path);
-    return map;
-  }
+  Song rebuild(void Function(SongBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
 
-  SongsCompanion toCompanion(bool nullToAbsent) {
-    return SongsCompanion(
-      id: Value(id),
-      artist: Value(artist),
-      title: Value(title),
-      playlist: Value(playlist),
-      length: Value(length),
-      imageId: Value(imageId),
-      path: Value(path),
-    );
-  }
-
-  factory Song.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Song(
-      id: serializer.fromJson<int>(json['id']),
-      artist: serializer.fromJson<String>(json['artist']),
-      title: serializer.fromJson<String>(json['title']),
-      playlist: serializer.fromJson<String>(json['playlist']),
-      length: serializer.fromJson<int>(json['length']),
-      imageId: serializer.fromJson<int>(json['imageId']),
-      path: serializer.fromJson<String>(json['path']),
-    );
-  }
   @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'artist': serializer.toJson<String>(artist),
-      'title': serializer.toJson<String>(title),
-      'playlist': serializer.toJson<String>(playlist),
-      'length': serializer.toJson<int>(length),
-      'imageId': serializer.toJson<int>(imageId),
-      'path': serializer.toJson<String>(path),
-    };
+  SongBuilder toBuilder() => new SongBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is Song &&
+        id == other.id &&
+        artist == other.artist &&
+        title == other.title &&
+        playlist == other.playlist &&
+        length == other.length &&
+        imageId == other.imageId &&
+        path == other.path;
   }
 
-  Song copyWith(
-          {int? id,
-          String? artist,
-          String? title,
-          String? playlist,
-          int? length,
-          int? imageId,
-          String? path}) =>
-      Song(
-        id: id ?? this.id,
-        artist: artist ?? this.artist,
-        title: title ?? this.title,
-        playlist: playlist ?? this.playlist,
-        length: length ?? this.length,
-        imageId: imageId ?? this.imageId,
-        path: path ?? this.path,
-      );
-  Song copyWithCompanion(SongsCompanion data) {
-    return Song(
-      id: data.id.present ? data.id.value : this.id,
-      artist: data.artist.present ? data.artist.value : this.artist,
-      title: data.title.present ? data.title.value : this.title,
-      playlist: data.playlist.present ? data.playlist.value : this.playlist,
-      length: data.length.present ? data.length.value : this.length,
-      imageId: data.imageId.present ? data.imageId.value : this.imageId,
-      path: data.path.present ? data.path.value : this.path,
-    );
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, artist.hashCode);
+    _$hash = $jc(_$hash, title.hashCode);
+    _$hash = $jc(_$hash, playlist.hashCode);
+    _$hash = $jc(_$hash, length.hashCode);
+    _$hash = $jc(_$hash, imageId.hashCode);
+    _$hash = $jc(_$hash, path.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return (StringBuffer('Song(')
-          ..write('id: $id, ')
-          ..write('artist: $artist, ')
-          ..write('title: $title, ')
-          ..write('playlist: $playlist, ')
-          ..write('length: $length, ')
-          ..write('imageId: $imageId, ')
-          ..write('path: $path')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, artist, title, playlist, length, imageId, path);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Song &&
-          other.id == this.id &&
-          other.artist == this.artist &&
-          other.title == this.title &&
-          other.playlist == this.playlist &&
-          other.length == this.length &&
-          other.imageId == this.imageId &&
-          other.path == this.path);
-}
-
-class SongsCompanion extends UpdateCompanion<Song> {
-  final Value<int> id;
-  final Value<String> artist;
-  final Value<String> title;
-  final Value<String> playlist;
-  final Value<int> length;
-  final Value<int> imageId;
-  final Value<String> path;
-  const SongsCompanion({
-    this.id = const Value.absent(),
-    this.artist = const Value.absent(),
-    this.title = const Value.absent(),
-    this.playlist = const Value.absent(),
-    this.length = const Value.absent(),
-    this.imageId = const Value.absent(),
-    this.path = const Value.absent(),
-  });
-  SongsCompanion.insert({
-    this.id = const Value.absent(),
-    required String artist,
-    required String title,
-    required String playlist,
-    required int length,
-    required int imageId,
-    required String path,
-  })  : artist = Value(artist),
-        title = Value(title),
-        playlist = Value(playlist),
-        length = Value(length),
-        imageId = Value(imageId),
-        path = Value(path);
-  static Insertable<Song> custom({
-    Expression<int>? id,
-    Expression<String>? artist,
-    Expression<String>? title,
-    Expression<String>? playlist,
-    Expression<int>? length,
-    Expression<int>? imageId,
-    Expression<String>? path,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (artist != null) 'artist': artist,
-      if (title != null) 'title': title,
-      if (playlist != null) 'playlist': playlist,
-      if (length != null) 'length': length,
-      if (imageId != null) 'image_id': imageId,
-      if (path != null) 'path': path,
-    });
-  }
-
-  SongsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? artist,
-      Value<String>? title,
-      Value<String>? playlist,
-      Value<int>? length,
-      Value<int>? imageId,
-      Value<String>? path}) {
-    return SongsCompanion(
-      id: id ?? this.id,
-      artist: artist ?? this.artist,
-      title: title ?? this.title,
-      playlist: playlist ?? this.playlist,
-      length: length ?? this.length,
-      imageId: imageId ?? this.imageId,
-      path: path ?? this.path,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (artist.present) {
-      map['artist'] = Variable<String>(artist.value);
-    }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (playlist.present) {
-      map['playlist'] = Variable<String>(playlist.value);
-    }
-    if (length.present) {
-      map['length'] = Variable<int>(length.value);
-    }
-    if (imageId.present) {
-      map['image_id'] = Variable<int>(imageId.value);
-    }
-    if (path.present) {
-      map['path'] = Variable<String>(path.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SongsCompanion(')
-          ..write('id: $id, ')
-          ..write('artist: $artist, ')
-          ..write('title: $title, ')
-          ..write('playlist: $playlist, ')
-          ..write('length: $length, ')
-          ..write('imageId: $imageId, ')
-          ..write('path: $path')
-          ..write(')'))
+    return (newBuiltValueToStringHelper(r'Song')
+          ..add('id', id)
+          ..add('artist', artist)
+          ..add('title', title)
+          ..add('playlist', playlist)
+          ..add('length', length)
+          ..add('imageId', imageId)
+          ..add('path', path))
         .toString();
   }
 }
 
-class $CoversTable extends Covers with TableInfo<$CoversTable, Cover> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CoversTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _coverMeta = const VerificationMeta('cover');
-  @override
-  late final GeneratedColumn<Uint8List> cover = GeneratedColumn<Uint8List>(
-      'cover', aliasedName, false,
-      type: DriftSqlType.blob, requiredDuringInsert: true);
-  static const VerificationMeta _hashMeta = const VerificationMeta('hash');
-  @override
-  late final GeneratedColumn<String> hash = GeneratedColumn<String>(
-      'hash', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, cover, hash];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'covers';
-  @override
-  VerificationContext validateIntegrity(Insertable<Cover> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+class SongBuilder implements Builder<Song, SongBuilder> {
+  _$Song? _$v;
+
+  int? _id;
+  int? get id => _$this._id;
+  set id(int? id) => _$this._id = id;
+
+  String? _artist;
+  String? get artist => _$this._artist;
+  set artist(String? artist) => _$this._artist = artist;
+
+  String? _title;
+  String? get title => _$this._title;
+  set title(String? title) => _$this._title = title;
+
+  String? _playlist;
+  String? get playlist => _$this._playlist;
+  set playlist(String? playlist) => _$this._playlist = playlist;
+
+  int? _length;
+  int? get length => _$this._length;
+  set length(int? length) => _$this._length = length;
+
+  int? _imageId;
+  int? get imageId => _$this._imageId;
+  set imageId(int? imageId) => _$this._imageId = imageId;
+
+  String? _path;
+  String? get path => _$this._path;
+  set path(String? path) => _$this._path = path;
+
+  SongBuilder();
+
+  SongBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _id = $v.id;
+      _artist = $v.artist;
+      _title = $v.title;
+      _playlist = $v.playlist;
+      _length = $v.length;
+      _imageId = $v.imageId;
+      _path = $v.path;
+      _$v = null;
     }
-    if (data.containsKey('cover')) {
-      context.handle(
-          _coverMeta, cover.isAcceptableOrUnknown(data['cover']!, _coverMeta));
-    } else if (isInserting) {
-      context.missing(_coverMeta);
-    }
-    if (data.containsKey('hash')) {
-      context.handle(
-          _hashMeta, hash.isAcceptableOrUnknown(data['hash']!, _hashMeta));
-    } else if (isInserting) {
-      context.missing(_hashMeta);
-    }
-    return context;
+    return this;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Cover map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Cover(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      cover: attachedDatabase.typeMapping
-          .read(DriftSqlType.blob, data['${effectivePrefix}cover'])!,
-      hash: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}hash'])!,
-    );
+  void replace(Song other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$Song;
   }
 
   @override
-  $CoversTable createAlias(String alias) {
-    return $CoversTable(attachedDatabase, alias);
+  void update(void Function(SongBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  Song build() => _build();
+
+  _$Song _build() {
+    final _$result = _$v ??
+        new _$Song._(
+            id: BuiltValueNullFieldError.checkNotNull(id, r'Song', 'id'),
+            artist: BuiltValueNullFieldError.checkNotNull(
+                artist, r'Song', 'artist'),
+            title:
+                BuiltValueNullFieldError.checkNotNull(title, r'Song', 'title'),
+            playlist: BuiltValueNullFieldError.checkNotNull(
+                playlist, r'Song', 'playlist'),
+            length: BuiltValueNullFieldError.checkNotNull(
+                length, r'Song', 'length'),
+            imageId: BuiltValueNullFieldError.checkNotNull(
+                imageId, r'Song', 'imageId'),
+            path: BuiltValueNullFieldError.checkNotNull(path, r'Song', 'path'));
+    replace(_$result);
+    return _$result;
   }
 }
 
-class Cover extends DataClass implements Insertable<Cover> {
+class _$Cover extends Cover {
+  @override
   final int id;
+  @override
   final Uint8List cover;
+  @override
   final String hash;
-  const Cover({required this.id, required this.cover, required this.hash});
+
+  factory _$Cover([void Function(CoverBuilder)? updates]) =>
+      (new CoverBuilder()..update(updates))._build();
+
+  _$Cover._({required this.id, required this.cover, required this.hash})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(id, r'Cover', 'id');
+    BuiltValueNullFieldError.checkNotNull(cover, r'Cover', 'cover');
+    BuiltValueNullFieldError.checkNotNull(hash, r'Cover', 'hash');
+  }
+
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['cover'] = Variable<Uint8List>(cover);
-    map['hash'] = Variable<String>(hash);
-    return map;
-  }
+  Cover rebuild(void Function(CoverBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
 
-  CoversCompanion toCompanion(bool nullToAbsent) {
-    return CoversCompanion(
-      id: Value(id),
-      cover: Value(cover),
-      hash: Value(hash),
-    );
-  }
-
-  factory Cover.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Cover(
-      id: serializer.fromJson<int>(json['id']),
-      cover: serializer.fromJson<Uint8List>(json['cover']),
-      hash: serializer.fromJson<String>(json['hash']),
-    );
-  }
   @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'cover': serializer.toJson<Uint8List>(cover),
-      'hash': serializer.toJson<String>(hash),
-    };
+  CoverBuilder toBuilder() => new CoverBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is Cover &&
+        id == other.id &&
+        cover == other.cover &&
+        hash == other.hash;
   }
 
-  Cover copyWith({int? id, Uint8List? cover, String? hash}) => Cover(
-        id: id ?? this.id,
-        cover: cover ?? this.cover,
-        hash: hash ?? this.hash,
-      );
-  Cover copyWithCompanion(CoversCompanion data) {
-    return Cover(
-      id: data.id.present ? data.id.value : this.id,
-      cover: data.cover.present ? data.cover.value : this.cover,
-      hash: data.hash.present ? data.hash.value : this.hash,
-    );
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, cover.hashCode);
+    _$hash = $jc(_$hash, hash.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return (StringBuffer('Cover(')
-          ..write('id: $id, ')
-          ..write('cover: $cover, ')
-          ..write('hash: $hash')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, $driftBlobEquality.hash(cover), hash);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Cover &&
-          other.id == this.id &&
-          $driftBlobEquality.equals(other.cover, this.cover) &&
-          other.hash == this.hash);
-}
-
-class CoversCompanion extends UpdateCompanion<Cover> {
-  final Value<int> id;
-  final Value<Uint8List> cover;
-  final Value<String> hash;
-  const CoversCompanion({
-    this.id = const Value.absent(),
-    this.cover = const Value.absent(),
-    this.hash = const Value.absent(),
-  });
-  CoversCompanion.insert({
-    this.id = const Value.absent(),
-    required Uint8List cover,
-    required String hash,
-  })  : cover = Value(cover),
-        hash = Value(hash);
-  static Insertable<Cover> custom({
-    Expression<int>? id,
-    Expression<Uint8List>? cover,
-    Expression<String>? hash,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (cover != null) 'cover': cover,
-      if (hash != null) 'hash': hash,
-    });
-  }
-
-  CoversCompanion copyWith(
-      {Value<int>? id, Value<Uint8List>? cover, Value<String>? hash}) {
-    return CoversCompanion(
-      id: id ?? this.id,
-      cover: cover ?? this.cover,
-      hash: hash ?? this.hash,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (cover.present) {
-      map['cover'] = Variable<Uint8List>(cover.value);
-    }
-    if (hash.present) {
-      map['hash'] = Variable<String>(hash.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CoversCompanion(')
-          ..write('id: $id, ')
-          ..write('cover: $cover, ')
-          ..write('hash: $hash')
-          ..write(')'))
+    return (newBuiltValueToStringHelper(r'Cover')
+          ..add('id', id)
+          ..add('cover', cover)
+          ..add('hash', hash))
         .toString();
   }
 }
 
-class $PlaylistsTable extends Playlists
-    with TableInfo<$PlaylistsTable, Playlist> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $PlaylistsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _titleMeta = const VerificationMeta('title');
-  @override
-  late final GeneratedColumn<String> title = GeneratedColumn<String>(
-      'title', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _authorMeta = const VerificationMeta('author');
-  @override
-  late final GeneratedColumn<String> author = GeneratedColumn<String>(
-      'author', aliasedName, false,
-      type: DriftSqlType.string, requiredDuringInsert: true);
-  static const VerificationMeta _imageIdMeta =
-      const VerificationMeta('imageId');
-  @override
-  late final GeneratedColumn<int> imageId = GeneratedColumn<int>(
-      'image_id', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns => [id, title, author, imageId];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'playlists';
-  @override
-  VerificationContext validateIntegrity(Insertable<Playlist> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+class CoverBuilder implements Builder<Cover, CoverBuilder> {
+  _$Cover? _$v;
+
+  int? _id;
+  int? get id => _$this._id;
+  set id(int? id) => _$this._id = id;
+
+  Uint8List? _cover;
+  Uint8List? get cover => _$this._cover;
+  set cover(Uint8List? cover) => _$this._cover = cover;
+
+  String? _hash;
+  String? get hash => _$this._hash;
+  set hash(String? hash) => _$this._hash = hash;
+
+  CoverBuilder();
+
+  CoverBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _id = $v.id;
+      _cover = $v.cover;
+      _hash = $v.hash;
+      _$v = null;
     }
-    if (data.containsKey('title')) {
-      context.handle(
-          _titleMeta, title.isAcceptableOrUnknown(data['title']!, _titleMeta));
-    } else if (isInserting) {
-      context.missing(_titleMeta);
-    }
-    if (data.containsKey('author')) {
-      context.handle(_authorMeta,
-          author.isAcceptableOrUnknown(data['author']!, _authorMeta));
-    } else if (isInserting) {
-      context.missing(_authorMeta);
-    }
-    if (data.containsKey('image_id')) {
-      context.handle(_imageIdMeta,
-          imageId.isAcceptableOrUnknown(data['image_id']!, _imageIdMeta));
-    } else if (isInserting) {
-      context.missing(_imageIdMeta);
-    }
-    return context;
+    return this;
   }
 
   @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Playlist map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Playlist(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      title: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}title'])!,
-      author: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}author'])!,
-      imageId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}image_id'])!,
-    );
+  void replace(Cover other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$Cover;
   }
 
   @override
-  $PlaylistsTable createAlias(String alias) {
-    return $PlaylistsTable(attachedDatabase, alias);
+  void update(void Function(CoverBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  Cover build() => _build();
+
+  _$Cover _build() {
+    final _$result = _$v ??
+        new _$Cover._(
+            id: BuiltValueNullFieldError.checkNotNull(id, r'Cover', 'id'),
+            cover:
+                BuiltValueNullFieldError.checkNotNull(cover, r'Cover', 'cover'),
+            hash:
+                BuiltValueNullFieldError.checkNotNull(hash, r'Cover', 'hash'));
+    replace(_$result);
+    return _$result;
   }
 }
 
-class Playlist extends DataClass implements Insertable<Playlist> {
+class _$Playlist extends Playlist {
+  @override
   final int id;
+  @override
   final String title;
+  @override
   final String author;
+  @override
   final int imageId;
-  const Playlist(
+
+  factory _$Playlist([void Function(PlaylistBuilder)? updates]) =>
+      (new PlaylistBuilder()..update(updates))._build();
+
+  _$Playlist._(
       {required this.id,
       required this.title,
       required this.author,
-      required this.imageId});
+      required this.imageId})
+      : super._() {
+    BuiltValueNullFieldError.checkNotNull(id, r'Playlist', 'id');
+    BuiltValueNullFieldError.checkNotNull(title, r'Playlist', 'title');
+    BuiltValueNullFieldError.checkNotNull(author, r'Playlist', 'author');
+    BuiltValueNullFieldError.checkNotNull(imageId, r'Playlist', 'imageId');
+  }
+
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['title'] = Variable<String>(title);
-    map['author'] = Variable<String>(author);
-    map['image_id'] = Variable<int>(imageId);
-    return map;
-  }
+  Playlist rebuild(void Function(PlaylistBuilder) updates) =>
+      (toBuilder()..update(updates)).build();
 
-  PlaylistsCompanion toCompanion(bool nullToAbsent) {
-    return PlaylistsCompanion(
-      id: Value(id),
-      title: Value(title),
-      author: Value(author),
-      imageId: Value(imageId),
-    );
-  }
-
-  factory Playlist.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Playlist(
-      id: serializer.fromJson<int>(json['id']),
-      title: serializer.fromJson<String>(json['title']),
-      author: serializer.fromJson<String>(json['author']),
-      imageId: serializer.fromJson<int>(json['imageId']),
-    );
-  }
   @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'title': serializer.toJson<String>(title),
-      'author': serializer.toJson<String>(author),
-      'imageId': serializer.toJson<int>(imageId),
-    };
+  PlaylistBuilder toBuilder() => new PlaylistBuilder()..replace(this);
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(other, this)) return true;
+    return other is Playlist &&
+        id == other.id &&
+        title == other.title &&
+        author == other.author &&
+        imageId == other.imageId;
   }
 
-  Playlist copyWith({int? id, String? title, String? author, int? imageId}) =>
-      Playlist(
-        id: id ?? this.id,
-        title: title ?? this.title,
-        author: author ?? this.author,
-        imageId: imageId ?? this.imageId,
-      );
-  Playlist copyWithCompanion(PlaylistsCompanion data) {
-    return Playlist(
-      id: data.id.present ? data.id.value : this.id,
-      title: data.title.present ? data.title.value : this.title,
-      author: data.author.present ? data.author.value : this.author,
-      imageId: data.imageId.present ? data.imageId.value : this.imageId,
-    );
+  @override
+  int get hashCode {
+    var _$hash = 0;
+    _$hash = $jc(_$hash, id.hashCode);
+    _$hash = $jc(_$hash, title.hashCode);
+    _$hash = $jc(_$hash, author.hashCode);
+    _$hash = $jc(_$hash, imageId.hashCode);
+    _$hash = $jf(_$hash);
+    return _$hash;
   }
 
   @override
   String toString() {
-    return (StringBuffer('Playlist(')
-          ..write('id: $id, ')
-          ..write('title: $title, ')
-          ..write('author: $author, ')
-          ..write('imageId: $imageId')
-          ..write(')'))
+    return (newBuiltValueToStringHelper(r'Playlist')
+          ..add('id', id)
+          ..add('title', title)
+          ..add('author', author)
+          ..add('imageId', imageId))
         .toString();
+  }
+}
+
+class PlaylistBuilder implements Builder<Playlist, PlaylistBuilder> {
+  _$Playlist? _$v;
+
+  int? _id;
+  int? get id => _$this._id;
+  set id(int? id) => _$this._id = id;
+
+  String? _title;
+  String? get title => _$this._title;
+  set title(String? title) => _$this._title = title;
+
+  String? _author;
+  String? get author => _$this._author;
+  set author(String? author) => _$this._author = author;
+
+  int? _imageId;
+  int? get imageId => _$this._imageId;
+  set imageId(int? imageId) => _$this._imageId = imageId;
+
+  PlaylistBuilder();
+
+  PlaylistBuilder get _$this {
+    final $v = _$v;
+    if ($v != null) {
+      _id = $v.id;
+      _title = $v.title;
+      _author = $v.author;
+      _imageId = $v.imageId;
+      _$v = null;
+    }
+    return this;
   }
 
   @override
-  int get hashCode => Object.hash(id, title, author, imageId);
+  void replace(Playlist other) {
+    ArgumentError.checkNotNull(other, 'other');
+    _$v = other as _$Playlist;
+  }
+
+  @override
+  void update(void Function(PlaylistBuilder)? updates) {
+    if (updates != null) updates(this);
+  }
+
+  @override
+  Playlist build() => _build();
+
+  _$Playlist _build() {
+    final _$result = _$v ??
+        new _$Playlist._(
+            id: BuiltValueNullFieldError.checkNotNull(id, r'Playlist', 'id'),
+            title: BuiltValueNullFieldError.checkNotNull(
+                title, r'Playlist', 'title'),
+            author: BuiltValueNullFieldError.checkNotNull(
+                author, r'Playlist', 'author'),
+            imageId: BuiltValueNullFieldError.checkNotNull(
+                imageId, r'Playlist', 'imageId'));
+    replace(_$result);
+    return _$result;
+  }
+}
+
+// ignore_for_file: deprecated_member_use_from_same_package,type=lint
+
+// **************************************************************************
+// TypeAdapterGenerator
+// **************************************************************************
+
+class SongAdapter extends TypeAdapter<Song> {
+  @override
+  final int typeId = 0;
+
+  @override
+  Song read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Song();
+  }
+
+  @override
+  void write(BinaryWriter writer, Song obj) {
+    writer
+      ..writeByte(7)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(2)
+      ..write(obj.artist)
+      ..writeByte(1)
+      ..write(obj.title)
+      ..writeByte(4)
+      ..write(obj.playlist)
+      ..writeByte(3)
+      ..write(obj.length)
+      ..writeByte(5)
+      ..write(obj.imageId)
+      ..writeByte(6)
+      ..write(obj.path);
+  }
+
+  @override
+  int get hashCode => typeId.hashCode;
+
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Playlist &&
-          other.id == this.id &&
-          other.title == this.title &&
-          other.author == this.author &&
-          other.imageId == this.imageId);
+      other is SongAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }
 
-class PlaylistsCompanion extends UpdateCompanion<Playlist> {
-  final Value<int> id;
-  final Value<String> title;
-  final Value<String> author;
-  final Value<int> imageId;
-  const PlaylistsCompanion({
-    this.id = const Value.absent(),
-    this.title = const Value.absent(),
-    this.author = const Value.absent(),
-    this.imageId = const Value.absent(),
-  });
-  PlaylistsCompanion.insert({
-    this.id = const Value.absent(),
-    required String title,
-    required String author,
-    required int imageId,
-  })  : title = Value(title),
-        author = Value(author),
-        imageId = Value(imageId);
-  static Insertable<Playlist> custom({
-    Expression<int>? id,
-    Expression<String>? title,
-    Expression<String>? author,
-    Expression<int>? imageId,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (title != null) 'title': title,
-      if (author != null) 'author': author,
-      if (imageId != null) 'image_id': imageId,
-    });
-  }
+class CoverAdapter extends TypeAdapter<Cover> {
+  @override
+  final int typeId = 1;
 
-  PlaylistsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? title,
-      Value<String>? author,
-      Value<int>? imageId}) {
-    return PlaylistsCompanion(
-      id: id ?? this.id,
-      title: title ?? this.title,
-      author: author ?? this.author,
-      imageId: imageId ?? this.imageId,
-    );
+  @override
+  Cover read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Cover();
   }
 
   @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (title.present) {
-      map['title'] = Variable<String>(title.value);
-    }
-    if (author.present) {
-      map['author'] = Variable<String>(author.value);
-    }
-    if (imageId.present) {
-      map['image_id'] = Variable<int>(imageId.value);
-    }
-    return map;
+  void write(BinaryWriter writer, Cover obj) {
+    writer
+      ..writeByte(3)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.cover)
+      ..writeByte(2)
+      ..write(obj.hash);
   }
 
   @override
-  String toString() {
-    return (StringBuffer('PlaylistsCompanion(')
-          ..write('id: $id, ')
-          ..write('title: $title, ')
-          ..write('author: $author, ')
-          ..write('imageId: $imageId')
-          ..write(')'))
-        .toString();
+  int get hashCode => typeId.hashCode;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is CoverAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
+}
+
+class PlaylistAdapter extends TypeAdapter<Playlist> {
+  @override
+  final int typeId = 2;
+
+  @override
+  Playlist read(BinaryReader reader) {
+    final numOfFields = reader.readByte();
+    final fields = <int, dynamic>{
+      for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
+    };
+    return Playlist();
   }
-}
 
-abstract class _$AppDatabase extends GeneratedDatabase {
-  _$AppDatabase(QueryExecutor e) : super(e);
-  $AppDatabaseManager get managers => $AppDatabaseManager(this);
-  late final $SongsTable songs = $SongsTable(this);
-  late final $CoversTable covers = $CoversTable(this);
-  late final $PlaylistsTable playlists = $PlaylistsTable(this);
   @override
-  Iterable<TableInfo<Table, Object?>> get allTables =>
-      allSchemaEntities.whereType<TableInfo<Table, Object?>>();
+  void write(BinaryWriter writer, Playlist obj) {
+    writer
+      ..writeByte(4)
+      ..writeByte(0)
+      ..write(obj.id)
+      ..writeByte(1)
+      ..write(obj.title)
+      ..writeByte(2)
+      ..write(obj.author)
+      ..writeByte(3)
+      ..write(obj.imageId);
+  }
+
   @override
-  List<DatabaseSchemaEntity> get allSchemaEntities =>
-      [songs, covers, playlists];
-}
+  int get hashCode => typeId.hashCode;
 
-typedef $$SongsTableCreateCompanionBuilder = SongsCompanion Function({
-  Value<int> id,
-  required String artist,
-  required String title,
-  required String playlist,
-  required int length,
-  required int imageId,
-  required String path,
-});
-typedef $$SongsTableUpdateCompanionBuilder = SongsCompanion Function({
-  Value<int> id,
-  Value<String> artist,
-  Value<String> title,
-  Value<String> playlist,
-  Value<int> length,
-  Value<int> imageId,
-  Value<String> path,
-});
-
-class $$SongsTableFilterComposer extends Composer<_$AppDatabase, $SongsTable> {
-  $$SongsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get artist => $composableBuilder(
-      column: $table.artist, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get playlist => $composableBuilder(
-      column: $table.playlist, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get length => $composableBuilder(
-      column: $table.length, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get imageId => $composableBuilder(
-      column: $table.imageId, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get path => $composableBuilder(
-      column: $table.path, builder: (column) => ColumnFilters(column));
-}
-
-class $$SongsTableOrderingComposer
-    extends Composer<_$AppDatabase, $SongsTable> {
-  $$SongsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get artist => $composableBuilder(
-      column: $table.artist, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get playlist => $composableBuilder(
-      column: $table.playlist, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get length => $composableBuilder(
-      column: $table.length, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get imageId => $composableBuilder(
-      column: $table.imageId, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get path => $composableBuilder(
-      column: $table.path, builder: (column) => ColumnOrderings(column));
-}
-
-class $$SongsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $SongsTable> {
-  $$SongsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get artist =>
-      $composableBuilder(column: $table.artist, builder: (column) => column);
-
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<String> get playlist =>
-      $composableBuilder(column: $table.playlist, builder: (column) => column);
-
-  GeneratedColumn<int> get length =>
-      $composableBuilder(column: $table.length, builder: (column) => column);
-
-  GeneratedColumn<int> get imageId =>
-      $composableBuilder(column: $table.imageId, builder: (column) => column);
-
-  GeneratedColumn<String> get path =>
-      $composableBuilder(column: $table.path, builder: (column) => column);
-}
-
-class $$SongsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $SongsTable,
-    Song,
-    $$SongsTableFilterComposer,
-    $$SongsTableOrderingComposer,
-    $$SongsTableAnnotationComposer,
-    $$SongsTableCreateCompanionBuilder,
-    $$SongsTableUpdateCompanionBuilder,
-    (Song, BaseReferences<_$AppDatabase, $SongsTable, Song>),
-    Song,
-    PrefetchHooks Function()> {
-  $$SongsTableTableManager(_$AppDatabase db, $SongsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$SongsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$SongsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$SongsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> artist = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> playlist = const Value.absent(),
-            Value<int> length = const Value.absent(),
-            Value<int> imageId = const Value.absent(),
-            Value<String> path = const Value.absent(),
-          }) =>
-              SongsCompanion(
-            id: id,
-            artist: artist,
-            title: title,
-            playlist: playlist,
-            length: length,
-            imageId: imageId,
-            path: path,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String artist,
-            required String title,
-            required String playlist,
-            required int length,
-            required int imageId,
-            required String path,
-          }) =>
-              SongsCompanion.insert(
-            id: id,
-            artist: artist,
-            title: title,
-            playlist: playlist,
-            length: length,
-            imageId: imageId,
-            path: path,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
-}
-
-typedef $$SongsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $SongsTable,
-    Song,
-    $$SongsTableFilterComposer,
-    $$SongsTableOrderingComposer,
-    $$SongsTableAnnotationComposer,
-    $$SongsTableCreateCompanionBuilder,
-    $$SongsTableUpdateCompanionBuilder,
-    (Song, BaseReferences<_$AppDatabase, $SongsTable, Song>),
-    Song,
-    PrefetchHooks Function()>;
-typedef $$CoversTableCreateCompanionBuilder = CoversCompanion Function({
-  Value<int> id,
-  required Uint8List cover,
-  required String hash,
-});
-typedef $$CoversTableUpdateCompanionBuilder = CoversCompanion Function({
-  Value<int> id,
-  Value<Uint8List> cover,
-  Value<String> hash,
-});
-
-class $$CoversTableFilterComposer
-    extends Composer<_$AppDatabase, $CoversTable> {
-  $$CoversTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<Uint8List> get cover => $composableBuilder(
-      column: $table.cover, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get hash => $composableBuilder(
-      column: $table.hash, builder: (column) => ColumnFilters(column));
-}
-
-class $$CoversTableOrderingComposer
-    extends Composer<_$AppDatabase, $CoversTable> {
-  $$CoversTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<Uint8List> get cover => $composableBuilder(
-      column: $table.cover, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get hash => $composableBuilder(
-      column: $table.hash, builder: (column) => ColumnOrderings(column));
-}
-
-class $$CoversTableAnnotationComposer
-    extends Composer<_$AppDatabase, $CoversTable> {
-  $$CoversTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<Uint8List> get cover =>
-      $composableBuilder(column: $table.cover, builder: (column) => column);
-
-  GeneratedColumn<String> get hash =>
-      $composableBuilder(column: $table.hash, builder: (column) => column);
-}
-
-class $$CoversTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $CoversTable,
-    Cover,
-    $$CoversTableFilterComposer,
-    $$CoversTableOrderingComposer,
-    $$CoversTableAnnotationComposer,
-    $$CoversTableCreateCompanionBuilder,
-    $$CoversTableUpdateCompanionBuilder,
-    (Cover, BaseReferences<_$AppDatabase, $CoversTable, Cover>),
-    Cover,
-    PrefetchHooks Function()> {
-  $$CoversTableTableManager(_$AppDatabase db, $CoversTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$CoversTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$CoversTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$CoversTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<Uint8List> cover = const Value.absent(),
-            Value<String> hash = const Value.absent(),
-          }) =>
-              CoversCompanion(
-            id: id,
-            cover: cover,
-            hash: hash,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required Uint8List cover,
-            required String hash,
-          }) =>
-              CoversCompanion.insert(
-            id: id,
-            cover: cover,
-            hash: hash,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
-}
-
-typedef $$CoversTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $CoversTable,
-    Cover,
-    $$CoversTableFilterComposer,
-    $$CoversTableOrderingComposer,
-    $$CoversTableAnnotationComposer,
-    $$CoversTableCreateCompanionBuilder,
-    $$CoversTableUpdateCompanionBuilder,
-    (Cover, BaseReferences<_$AppDatabase, $CoversTable, Cover>),
-    Cover,
-    PrefetchHooks Function()>;
-typedef $$PlaylistsTableCreateCompanionBuilder = PlaylistsCompanion Function({
-  Value<int> id,
-  required String title,
-  required String author,
-  required int imageId,
-});
-typedef $$PlaylistsTableUpdateCompanionBuilder = PlaylistsCompanion Function({
-  Value<int> id,
-  Value<String> title,
-  Value<String> author,
-  Value<int> imageId,
-});
-
-class $$PlaylistsTableFilterComposer
-    extends Composer<_$AppDatabase, $PlaylistsTable> {
-  $$PlaylistsTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnFilters<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<String> get author => $composableBuilder(
-      column: $table.author, builder: (column) => ColumnFilters(column));
-
-  ColumnFilters<int> get imageId => $composableBuilder(
-      column: $table.imageId, builder: (column) => ColumnFilters(column));
-}
-
-class $$PlaylistsTableOrderingComposer
-    extends Composer<_$AppDatabase, $PlaylistsTable> {
-  $$PlaylistsTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  ColumnOrderings<int> get id => $composableBuilder(
-      column: $table.id, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get title => $composableBuilder(
-      column: $table.title, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<String> get author => $composableBuilder(
-      column: $table.author, builder: (column) => ColumnOrderings(column));
-
-  ColumnOrderings<int> get imageId => $composableBuilder(
-      column: $table.imageId, builder: (column) => ColumnOrderings(column));
-}
-
-class $$PlaylistsTableAnnotationComposer
-    extends Composer<_$AppDatabase, $PlaylistsTable> {
-  $$PlaylistsTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  GeneratedColumn<int> get id =>
-      $composableBuilder(column: $table.id, builder: (column) => column);
-
-  GeneratedColumn<String> get title =>
-      $composableBuilder(column: $table.title, builder: (column) => column);
-
-  GeneratedColumn<String> get author =>
-      $composableBuilder(column: $table.author, builder: (column) => column);
-
-  GeneratedColumn<int> get imageId =>
-      $composableBuilder(column: $table.imageId, builder: (column) => column);
-}
-
-class $$PlaylistsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $PlaylistsTable,
-    Playlist,
-    $$PlaylistsTableFilterComposer,
-    $$PlaylistsTableOrderingComposer,
-    $$PlaylistsTableAnnotationComposer,
-    $$PlaylistsTableCreateCompanionBuilder,
-    $$PlaylistsTableUpdateCompanionBuilder,
-    (Playlist, BaseReferences<_$AppDatabase, $PlaylistsTable, Playlist>),
-    Playlist,
-    PrefetchHooks Function()> {
-  $$PlaylistsTableTableManager(_$AppDatabase db, $PlaylistsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$PlaylistsTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$PlaylistsTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$PlaylistsTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> title = const Value.absent(),
-            Value<String> author = const Value.absent(),
-            Value<int> imageId = const Value.absent(),
-          }) =>
-              PlaylistsCompanion(
-            id: id,
-            title: title,
-            author: author,
-            imageId: imageId,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String title,
-            required String author,
-            required int imageId,
-          }) =>
-              PlaylistsCompanion.insert(
-            id: id,
-            title: title,
-            author: author,
-            imageId: imageId,
-          ),
-          withReferenceMapper: (p0) => p0
-              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
-              .toList(),
-          prefetchHooksCallback: null,
-        ));
-}
-
-typedef $$PlaylistsTableProcessedTableManager = ProcessedTableManager<
-    _$AppDatabase,
-    $PlaylistsTable,
-    Playlist,
-    $$PlaylistsTableFilterComposer,
-    $$PlaylistsTableOrderingComposer,
-    $$PlaylistsTableAnnotationComposer,
-    $$PlaylistsTableCreateCompanionBuilder,
-    $$PlaylistsTableUpdateCompanionBuilder,
-    (Playlist, BaseReferences<_$AppDatabase, $PlaylistsTable, Playlist>),
-    Playlist,
-    PrefetchHooks Function()>;
-
-class $AppDatabaseManager {
-  final _$AppDatabase _db;
-  $AppDatabaseManager(this._db);
-  $$SongsTableTableManager get songs =>
-      $$SongsTableTableManager(_db, _db.songs);
-  $$CoversTableTableManager get covers =>
-      $$CoversTableTableManager(_db, _db.covers);
-  $$PlaylistsTableTableManager get playlists =>
-      $$PlaylistsTableTableManager(_db, _db.playlists);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PlaylistAdapter &&
+          runtimeType == other.runtimeType &&
+          typeId == other.typeId;
 }

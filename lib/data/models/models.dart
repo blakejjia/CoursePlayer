@@ -1,41 +1,73 @@
-import 'package:drift/drift.dart';
-import 'package:drift_flutter/drift_flutter.dart';
+import 'dart:typed_data';
+
+import 'package:hive/hive.dart';
+import 'package:built_value/built_value.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+
 part 'models.g.dart';
 
-@DataClassName('Song')
-class Songs extends Table{
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get artist => text()();
-  TextColumn get title => text()();
-  TextColumn get playlist => text()(); // playlist Id
-  IntColumn get length => integer()();
-  IntColumn get imageId => integer()(); // utf-8 encoded Uint8List
-  TextColumn get path => text()();
+@HiveType(typeId: 0)
+abstract class Song implements Built<Song, SongBuilder> {
+  // Hive fields
+  @HiveField(0)
+  int get id;
+
+  @HiveField(2)
+  String get artist;
+
+  @HiveField(1)
+  String get title;
+
+  @HiveField(4)
+  String get playlist;
+
+  @HiveField(3)
+  int get length;
+
+  @HiveField(5)
+  int get imageId;
+
+  @HiveField(6)
+  String get path;
+
+  // Constructor
+  Song._();
+  factory Song([void Function(SongBuilder) updates]) = _$Song;
 }
 
-@DataClassName("Cover")
-class Covers extends Table{
-  IntColumn get id => integer().autoIncrement()();
-  BlobColumn get cover => blob()(); // 使用Blob存储图片的二进制数据
-  TextColumn get hash => text()(); // SHA256，使用Int存储
+@HiveType(typeId: 1)
+abstract class Cover implements Built<Cover, CoverBuilder> {
+  // Hive fields
+  @HiveField(0)
+  int get id;
+
+  @HiveField(1)
+  Uint8List get cover; // 图片的二进制数据用 BuiltList<int> 存储
+
+  @HiveField(2)
+  String get hash; // SHA256 字符串表示
+
+  // Constructor
+  Cover._();
+  factory Cover([void Function(CoverBuilder) updates]) = _$Cover;
 }
 
-@DataClassName("Playlist")
-class Playlists extends Table{
-  IntColumn get id => integer().autoIncrement()();
-  TextColumn get title => text()();
-  TextColumn get author => text()();
-  IntColumn get imageId => integer()();
-}
+@HiveType(typeId: 2)
+abstract class Playlist implements Built<Playlist, PlaylistBuilder> {
+  // Hive fields
+  @HiveField(0)
+  int get id;
 
-@DriftDatabase(tables:[Songs, Covers,Playlists])
-class AppDatabase extends _$AppDatabase{
-  AppDatabase() : super(_openConnection());
+  @HiveField(1)
+  String get title;
 
-  @override
-  int get schemaVersion => 1;
+  @HiveField(2)
+  String get author;
 
-  static QueryExecutor _openConnection() {
-    return driftDatabase(name: 'my_database');
-  }
+  @HiveField(3)
+  int get imageId;
+
+  // Constructor
+  Playlist._();
+  factory Playlist([void Function(PlaylistBuilder) updates]) = _$Playlist;
 }
