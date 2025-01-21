@@ -1,13 +1,23 @@
-# CoursePlayer
-A mp3 player specially designed for listening to courses.
+<p align="center">
+  <img src="assets/lunchico.png" width="300px" alt="lunch icon">
+</p>
+<h2 align="center">Lemon🍋‍🟩 - offline music player</h2>
+A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
 
-# Goals
-1. most importantly, design of ui should be perfect.
-2. great support for all kinds of formats
-3. quick and easy to use
+# Features
+- 🌟Determine playlist based on folder📂, not mp3 tags🏷️
+- 🌟"continue playing" for each playlist⏩
+- 🌟auto sort and clean file names✂️
+- 🌟open-source, total-free💸
 
-# important functions 
-1. Autodetect pdf resource and show an icon beside, show pdf if clicked
+# UI
+add when language versions all prepared. 
+
+# future goals
+1. ⚡Autodetect pdf resource and show an icon beside, show pdf if clicked
+2. 🎶support for all kinds of music formats
+3. 🍬user determine how to sort, rename music
+4. 🗂️auto-rebuild index, detecting folder change
 
 # other information
-This project based on flutter and developed by Blake Jia from 2024 9th October. The second ever software I have developed. 
+Developed by Blake Jia, built with flutter. 
