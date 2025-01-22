@@ -1,20 +1,21 @@
-import 'package:lemon/data/repositories/covers_repository.dart';
-import 'package:lemon/data/repositories/playlist_repository.dart';
-import 'package:lemon/data/models/models.dart';
-import 'package:lemon/data/providers/load_from_db.dart';
-import 'package:lemon/data/repositories/song_repository.dart';
-import 'package:lemon/logic/blocs/audio_player/audio_player_bloc.dart';
-import 'package:lemon/logic/blocs/playlist_page/playlist_page_cubit.dart';
-import 'package:lemon/logic/blocs/settings/settings_cubit.dart';
-import 'package:lemon/logic/services/audio_service.dart';
-import 'package:lemon/presentation/screens/my_app.dart';
+import 'package:lemon/common/data/models/models.dart';
+import 'package:lemon/common/data/providers/load_from_db.dart';
+import 'package:lemon/common/data/repositories/song_repository.dart';
+import 'package:lemon/playlistPage/bloc/album_page/album_page_bloc.dart';
+import 'package:lemon/playlistPage/bloc/playlist_page/playlist_page_cubit.dart';
+import 'package:lemon/common/logic/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:lemon/common/presentation/my_app.dart';
+import 'package:lemon/settingsPage/bloc/settings_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 
-import 'logic/blocs/album_page/album_page_bloc.dart';
+import 'common/logic/bloc/audio_player/audio_player_bloc.dart';
+import 'common/data/repositories/covers_repository.dart';
+import 'common/data/repositories/playlist_repository.dart';
+
 
 final getIt = GetIt.instance;
 
@@ -59,7 +60,7 @@ class MainApp extends StatelessWidget {
         builder: (context, state) {
           return MaterialApp(
             theme: ThemeData(
-              colorSchemeSeed: Color(state.seedColor),
+              colorSchemeSeed: state.seedColor,
               useMaterial3: true,
             ),
             debugShowCheckedModeBanner: false,
