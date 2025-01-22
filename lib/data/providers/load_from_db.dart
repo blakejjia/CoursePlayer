@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
-import 'package:course_player/data/repositories/covers_repository.dart';
-import 'package:course_player/data/repositories/playlist_repository.dart';
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/data/repositories/song_repository.dart';
-import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/repositories/covers_repository.dart';
+import 'package:lemon/data/repositories/playlist_repository.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/data/repositories/song_repository.dart';
+import 'package:lemon/logic/blocs/settings/settings_cubit.dart';
+import 'package:lemon/main.dart';
 
 class LoadFromDb {
   SongRepository songDAO = getIt<SongRepository>();

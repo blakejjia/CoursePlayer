@@ -1,10 +1,10 @@
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
-import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
-import 'package:course_player/presentation/widgets/future_builder.dart';
-import 'package:course_player/presentation/widgets/playlist_widgets.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/data/providers/load_from_db.dart';
+import 'package:lemon/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:lemon/logic/blocs/playlist_page/playlist_page_cubit.dart';
+import 'package:lemon/presentation/widgets/future_builder.dart';
+import 'package:lemon/presentation/widgets/playlist_widgets.dart';
+import 'package:lemon/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

@@ -1,9 +1,9 @@
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/logic/blocs/album_page/album_page_bloc.dart';
-import 'package:course_player/presentation/screens/conditionalPages/album_songs_view.dart';
-import 'package:course_player/presentation/widgets/future_builder.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/data/providers/load_from_db.dart';
+import 'package:lemon/logic/blocs/album_page/album_page_bloc.dart';
+import 'package:lemon/presentation/screens/conditionalPages/album_songs_view.dart';
+import 'package:lemon/presentation/widgets/future_builder.dart';
+import 'package:lemon/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

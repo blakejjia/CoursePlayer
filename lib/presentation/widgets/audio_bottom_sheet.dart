@@ -1,6 +1,6 @@
-import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
-import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
-import 'package:course_player/presentation/screens/conditionalPages/audio_page.dart';
+import 'package:lemon/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:lemon/logic/blocs/playlist_page/playlist_page_cubit.dart';
+import 'package:lemon/presentation/screens/conditionalPages/audio_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

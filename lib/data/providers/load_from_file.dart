@@ -1,10 +1,10 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
-import 'package:course_player/data/repositories/covers_repository.dart';
-import 'package:course_player/data/repositories/playlist_repository.dart';
-import 'package:course_player/data/repositories/song_repository.dart';
-import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/repositories/covers_repository.dart';
+import 'package:lemon/data/repositories/playlist_repository.dart';
+import 'package:lemon/data/repositories/song_repository.dart';
+import 'package:lemon/logic/blocs/settings/settings_cubit.dart';
+import 'package:lemon/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';

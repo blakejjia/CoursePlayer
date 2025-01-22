@@ -1,6 +1,6 @@
-import 'package:course_player/data/providers/load_from_file.dart';
-import 'package:course_player/logic/blocs/settings/settings_cubit.dart';
-import 'package:course_player/presentation/screens/oneTime/info_page.dart';
+import 'package:lemon/data/providers/load_from_file.dart';
+import 'package:lemon/logic/blocs/settings/settings_cubit.dart';
+import 'package:lemon/presentation/screens/oneTime/info_page.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';

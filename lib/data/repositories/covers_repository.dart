@@ -1,5 +1,5 @@
 
-import 'package:course_player/data/models/models.dart';
+import 'package:lemon/data/models/models.dart';
 import 'package:drift/drift.dart';
 
 @DriftAccessor(tables: [Covers])

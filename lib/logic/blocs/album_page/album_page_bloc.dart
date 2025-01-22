@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 

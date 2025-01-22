@@ -1,8 +1,8 @@
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/logic/blocs/album_page/album_page_bloc.dart';
-import 'package:course_player/logic/blocs/audio_player/audio_player_bloc.dart';
-import 'package:course_player/logic/blocs/playlist_page/playlist_page_cubit.dart';
-import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/logic/blocs/album_page/album_page_bloc.dart';
+import 'package:lemon/logic/blocs/audio_player/audio_player_bloc.dart';
+import 'package:lemon/logic/blocs/playlist_page/playlist_page_cubit.dart';
+import 'package:lemon/presentation/widgets/audio_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

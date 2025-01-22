@@ -1,6 +1,5 @@
-name: course_player
-description: "A mp3 player specially designed for courses."
-publish_to: 'none'
+name: lemon
+description: "Lemon🍋‍ - offline music player"
 version: 0.1.0
 
 environment:
@@ -28,6 +27,7 @@ dependencies:
   path: ^1.9.0
   audio_service: ^0.18.15
   share_plus: ^10.1.2
+  flutter_launcher_icons: ^0.14.3
 
 dev_dependencies:
   flutter_test:

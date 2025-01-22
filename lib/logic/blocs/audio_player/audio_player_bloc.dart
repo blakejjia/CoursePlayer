@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
-import 'package:course_player/data/models/models.dart';
-import 'package:course_player/data/providers/load_from_db.dart';
-import 'package:course_player/main.dart';
+import 'package:lemon/data/models/models.dart';
+import 'package:lemon/data/providers/load_from_db.dart';
+import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';

@@ -1,7 +1,7 @@
-import 'package:course_player/presentation/screens/pages/playlist_page.dart';
-import 'package:course_player/presentation/screens/pages/setting_page.dart';
-import 'package:course_player/presentation/widgets/audio_bottom_sheet.dart';
-import 'package:course_player/presentation/screens/oneTime/permission_grant_page.dart';
+import 'package:lemon/presentation/screens/pages/playlist_page.dart';
+import 'package:lemon/presentation/screens/pages/setting_page.dart';
+import 'package:lemon/presentation/widgets/audio_bottom_sheet.dart';
+import 'package:lemon/presentation/screens/oneTime/permission_grant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
