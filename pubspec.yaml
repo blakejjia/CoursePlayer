@@ -39,4 +39,5 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
-    - "assets/default_cover.jpeg"
+    - "assets/lang/appInfo/zh.json"
+    - "assets/lang/appInfo/en.json"

@@ -1,0 +1,21 @@
+{
+  "tutorial": [
+    "Step 1. Put your courses in a folder on your phone",
+    "Step 2. Choose the folder in settings",
+    "Step 3. Enjoy using the app!",
+    "P.S. If you add more files later, rebuild the index in settings",
+    "We automatically treat the folder name as the course name and the file name as the course title",
+    "Small Tip: Tap the top-left corner to continue playing"
+  ],
+  "thanks": [
+    "This app is developed entirely by BlakeJia",
+    "The original intention was to solve the issue of players that don't support continuous playback for every playlist",
+    "or those that charge money for this feature"
+  ],
+  "app_info": [
+    "Courser is fully offline, with no network permissions, and completely free",
+    "It handles, categorizes, and plays audio files based on folder and file names",
+    "Even if the metadata is modified by others",
+    "The app can't be affected"
+  ]
+}

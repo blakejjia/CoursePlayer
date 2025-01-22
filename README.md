@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/icon/launchIcon.png" width="300px" alt="lunch icon">
+  <img src="assets/launch_icon/launchIcon.png" width="300px" alt="lunch icon">
 </p>
 <h2 align="center">Lemon🍋‍🟩 - offline music player</h2>
 A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
