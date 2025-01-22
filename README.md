@@ -1,9 +1,11 @@
 <p align="center">
   <img src="assets/launch_icon/launchIcon.png" width="300px" alt="lunch icon">
 </p>
-<h2 align="center">Lemon🍋‍🟩 - offline music player</h2>
+<h2 align="center">Lemon🍋‍🟩 - offline course player</h2>
 A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
 
+supported language: CN& EN
+if you're looking for chinese version of this page, [click here](README_zh.md)
 # Features
 - 🌟Determine playlist based on folder📂, not mp3 tags🏷️
 - 🌟"continue playing" for each playlist⏩
