@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
+import 'package:lemon/common/utils/wash_data.dart';
 import 'package:lemon/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
@@ -23,14 +24,7 @@ Future<int> _formatImage(List<Picture>? pictures) async {
   return coverId ?? coversDao.createCover(pictureBytes, hash);
 }
 
-String _formatAuthor(Set<String> authors) {
-  // 格式化playlist中song的作者，如果大于3就是群星
-  if (authors.length < 3) {
-    return authors.join(' ');
-  } else {
-    return "群星";
-  }
-}
+
 
 Future<int> _loadDefaultCover() async {
   final coverData = await rootBundle
@@ -76,28 +70,32 @@ Future<void> _processFiles(List<File> files, Directory folder) async {
   Set<String> authors = {}; // 使用 Set 来避免重复艺术家
   int imageId = 0; // 如果没有可用图片，那就是 0
   for (File file in files) {
-    // 遍历 playlist 中的 song
-    if (file.path.endsWith('.mp3')) {
-      Tag? tag = await AudioTags.read(file.path);
-      if (tag != null) {
-        // 添加艺术家到列表
-        (tag.albumArtist != null) ? authors.add(tag.albumArtist!) : null;
-        (imageId == 0 && tag.pictures.isNotEmpty)
-            ? imageId = await _formatImage(tag.pictures)
-            : null;
-        // 设置封面图片 ID，只设置一次
+    // in case of non-mp3 files
+    // TODO: create log file for failures - see reason.
+    try {
+      await AudioTags.read(file.path);
+    } catch (e) {
+      continue;
+    }
+    Tag? tag = await AudioTags.read(file.path);
+    if (tag != null) {
+      // 添加艺术家到列表
+      (tag.albumArtist != null) ? authors.add(tag.albumArtist!) : null;
+      (imageId == 0 && tag.pictures.isNotEmpty)
+          ? imageId = await _formatImage(tag.pictures)
+          : null;
 
-        getIt<SongRepository>().insertSong(
-          artist: tag.albumArtist ?? "Unknown Artist",
-          title: basename(file.path),
-          playlist: basename(folder.path),
-          length: tag.duration ?? 0,
-          imageId: await _formatImage(tag.pictures),
-          path: file.path,
-        );
-      }
+      // 设置封面图片 ID，只设置一次
+      getIt<SongRepository>().insertSong(
+        artist: washArtist(tag.albumArtist),
+        title: basename(file.path),
+        playlist: basename(folder.path),
+        length: tag.duration ?? 0,
+        imageId: await _formatImage(tag.pictures),
+        path: file.path,
+      );
     }
   }
   getIt<PlaylistRepository>()
-      .createPlaylist(basename(folder.path), _formatAuthor(authors), imageId);
+      .insertPlaylist(basename(folder.path), washPlaylistArtist(authors), imageId);
 }

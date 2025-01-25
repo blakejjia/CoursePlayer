@@ -4,8 +4,8 @@
 <h2 align="center">Lemon🍋‍🟩 - offline course player</h2>
 A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
 
-supported language: CN& EN
-if you're looking for chinese version of this page, [click here](README_zh.md)
+supported language: [CN](README_zh.md)& EN
+
 # Features
 - 🌟Determine playlist based on folder📂, not mp3 tags🏷️
 - 🌟"continue playing" for each playlist⏩

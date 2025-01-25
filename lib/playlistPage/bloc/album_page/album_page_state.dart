@@ -1,18 +1,26 @@
 part of 'album_page_bloc.dart';
 
+@immutable
 class AlbumPageState {
+}
+
+class AlbumPageLoading extends AlbumPageState{
+  AlbumPageLoading();
+}
+
+class AlbumPageReady extends AlbumPageState{
   final Playlist playlist;
   final List<Song>? buffer;
   final Uint8List? picture;
 
-  const AlbumPageState({required this.playlist, this.buffer, this.picture});
+  AlbumPageReady({required this.playlist, this.buffer, this.picture});
 
-  AlbumPageState copyWith({
+  AlbumPageReady copyWith({
     Playlist? playlist,
     List<Song>? buffer,
     Uint8List? picture,
   }) {
-    return AlbumPageState(
+    return AlbumPageReady(
       playlist: playlist ?? this.playlist,
       buffer: buffer ?? this.buffer,
       picture: picture ?? this.picture,

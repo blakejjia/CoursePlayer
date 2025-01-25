@@ -6,7 +6,7 @@ class PlaylistRepository extends DatabaseAccessor<AppDatabase>{
   PlaylistRepository(super.db);
 
   // 创建新的播放列表
-  Future<int> createPlaylist(String title, String author, int imageId) async {
+  Future<int> insertPlaylist(String title, String author, int imageId) async {
     return await into(db.playlists).insert(
       PlaylistsCompanion(
         title: Value(title),

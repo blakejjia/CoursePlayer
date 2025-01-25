@@ -4,7 +4,7 @@
 <h2 align="center">Lemon🍋‍🟩 - offline course player</h2>
 A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
 
-支持语言: 中文 & 英文
+支持语言: 中文 & [英文](README.md)
 
 # 功能
 - 🌟根据文件夹📂而非 MP3 标签🏷️来确定播放列表

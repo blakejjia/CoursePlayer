@@ -5,6 +5,10 @@ import 'package:share_plus/share_plus.dart';
 
 import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
 
+/// [AudioPage] is a page that displays the audio player state.
+///
+/// It displays the title of the current media item, a progress bar, and buttons
+/// to control the playback.
 class AudioPage extends StatelessWidget {
   const AudioPage({super.key});
 
@@ -38,6 +42,15 @@ Widget _playInfos(BuildContext context) {
   );
 }
 
+/// [PlayerButtons] is a row of buttons to control the audio player.
+///
+/// It contains buttons to:
+/// - replay 10 seconds
+/// - go to the previous media item
+/// - play/pause the current media item
+/// - go to the next media item
+/// - change the playback speed
+/// - share the current media item
 class PlayerButtons extends StatelessWidget {
   const PlayerButtons({super.key});
 

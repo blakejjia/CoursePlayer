@@ -12,19 +12,17 @@ part 'album_page_event.dart';
 part 'album_page_state.dart';
 
 class AlbumPageBloc extends Bloc<AlbumPageEvent, AlbumPageState> {
-  AlbumPageBloc()
-      : super(const AlbumPageState(
-            playlist: Playlist(
-                id: 0, title: "unknown", author: "unknown", imageId: 0))) {
+  AlbumPageBloc() : super(AlbumPageLoading()) {
     on<AudioInfoLocatePlaylist>(_onLocatePlaylist);
   }
 
-  FutureOr<void> _onLocatePlaylist(event, emit) async {
+  Future<void> _onLocatePlaylist(event, emit) async {
+    emit(AlbumPageLoading());
     List<Song> songList =
         await getIt<LoadFromDb>().getSongsByPlaylist(event.playlist);
     Uint8List? picture =
         await getIt<LoadFromDb>().getCoverUint8ListByPlaylist(event.playlist);
-    emit(AlbumPageState(
+    emit(AlbumPageReady(
         playlist: event.playlist, buffer: songList, picture: picture));
   }
 }

@@ -7,6 +7,8 @@ import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
 import '../bloc/album_page/album_page_bloc.dart';
 import '../bloc/playlist_page/playlist_page_cubit.dart';
 
+/// [AlbumSongsView] is a view that shows all songs in an album.
+/// listens to [AlbumPageBloc] and [AudioPlayerBloc].
 class AlbumSongsView extends StatelessWidget {
   const AlbumSongsView({super.key});
 
@@ -14,28 +16,32 @@ class AlbumSongsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocBuilder<AlbumPageBloc, AlbumPageState>(
       builder: (context, state) {
-        return Scaffold(
-          appBar: AppBar(
-            title: Text(state.playlist.title),
-          ),
-          bottomNavigationBar: const AudioBottomSheet(),
-          body: switch (state.buffer) {
-            [...] => ListView.builder(
-                itemCount: state.buffer!.length + 1,
-                itemBuilder: (context, index) {
-                  if (index == 0) {
-                    return _heading(context, state);
-                  } else {
-                    return _songTile(context, state.playlist,
-                        state.buffer![index - 1], index - 1);
-                  }
+        return (state is AlbumPageReady)
+            ? Scaffold(
+                appBar: AppBar(
+                  title: Text(state.playlist.title),
+                ),
+                bottomNavigationBar: const AudioBottomSheet(),
+                body: switch (state.buffer) {
+                  [...] => ListView.builder(
+                      itemCount: state.buffer!.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index == 0) {
+                          return _heading(context, state);
+                        } else {
+                          return _songTile(context, state.playlist,
+                              state.buffer![index - 1], index - 1);
+                        }
+                      },
+                    ),
+                  null => const Center(
+                      child: Text("空空如也"),
+                    ),
                 },
-              ),
-            null => const Center(
-                child: Text("空空如也"),
-              ),
-          },
-        );
+              )
+            : const Center(
+                child: CircularProgressIndicator(),
+              );
       },
     );
   }
@@ -72,7 +78,10 @@ ListTile _songTileNormal(Song song) {
     title: Text(_formatTitle(song.title)),
     subtitle: Row(
       children: [
-        Text(song.artist),
+        Text(
+          song.artist,
+          overflow: TextOverflow.ellipsis,
+        ),
         const SizedBox(
           width: 20,
         ),
@@ -104,7 +113,7 @@ String _formatTitle(String title) {
   return title;
 }
 
-Widget _heading(BuildContext context, AlbumPageState state) {
+Widget _heading(BuildContext context, AlbumPageReady state) {
   return Column(
     children: [
       SizedBox(

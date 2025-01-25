@@ -8,23 +8,24 @@ import '../../bloc/album_page/album_page_bloc.dart';
 import '../album_songs_view.dart';
 import '../../../audioPage/presentation/future_builder.dart';
 
+/// [PlaylistCard] is a card that displays a playlist.
+///
+/// required [Playlist] as a parameter.
+/// It displays the cover image, title, and author of the playlist.
+/// When tapped, it navigates to the [AlbumSongsView] page.
+/// It uses the [MFutureBuilder] widget to load the cover image.
 class PlaylistCard extends StatelessWidget {
   final Playlist playList;
   const PlaylistCard({super.key, required this.playList});
 
   @override
   Widget build(BuildContext context) {
-    return mCard(context, playList);
-  }
-
-  // getIt<loadFromDb>().getCoverUint8ListByPlaylist(playlist)
-  Widget mCard(BuildContext context, Playlist playlist) {
     return MFutureBuilder(
-        () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(playlist),
+        () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(playList),
         child: (data) {
       return InkWell(
         onTap: () {
-          context.read<AlbumPageBloc>().add(AudioInfoLocatePlaylist(playlist));
+          context.read<AlbumPageBloc>().add(AudioInfoLocatePlaylist(playList));
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -45,7 +46,7 @@ class PlaylistCard extends StatelessWidget {
               Padding(
                 // course detail
                 padding: const EdgeInsets.fromLTRB(5, 10, 5, 0),
-                child: _courseDetail(context, playlist),
+                child: _courseDetail(context, playList),
               ),
             ],
           ),
@@ -70,10 +71,10 @@ class PlaylistCard extends StatelessWidget {
             )),
         Padding(
           padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 10),
-          child: Text(playlist.author,
+          child: Text((playlist.author.isEmpty) ? 'Unknown' : playlist.author,
               overflow: TextOverflow.ellipsis,
               style: Theme.of(context).textTheme.bodyMedium,
-              maxLines: 2,
+              maxLines: 1,
               textAlign: TextAlign.center),
         ),
       ],

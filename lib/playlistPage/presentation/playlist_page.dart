@@ -33,6 +33,7 @@ class _CoursePageState extends State<CoursePage> {
             },
           ),
           actions: [
+            // change view button
             PopupMenuButton<String>(
               onSelected: (_) {
                 context.read<PlaylistPageCubit>().playListPageChangeView();
@@ -56,8 +57,18 @@ class _CoursePageState extends State<CoursePage> {
         ),
         body: MRefreshFutureBuilder(
             _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(),
-            child: (data) {
-          return courseList(data, context);
+            child: (playlist) {
+              if (playlist == null || playlist.isEmpty) {
+                return const Center(child: Text("空空如也,请在settings中重构索引"));
+              } else {
+                return BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+                    buildWhen: (prev, curr) => prev.isGridView != curr.isGridView,
+                    builder: (context, state) {
+                      return state.isGridView
+                          ? _showInCard(playlist)
+                          : _showInList(playlist);
+                    });
+              }
         }));
   }
 
@@ -67,20 +78,6 @@ class _CoursePageState extends State<CoursePage> {
     context
         .read<AudioPlayerBloc>()
         .add(LocateAudio(playHistory?[0], playHistory?[1], playHistory?[2]));
-  }
-}
-
-Widget courseList(List<Playlist>? playlists, BuildContext context) {
-  if (playlists == null || playlists.isEmpty) {
-    return const Center(child: Text("空空如也,请在settings中重构索引"));
-  } else {
-    return BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
-        buildWhen: (prev, curr) => prev.isGridView != curr.isGridView,
-        builder: (context, state) {
-          return state.isGridView
-              ? _showInCard(playlists)
-              : _showInList(playlists);
-        });
   }
 }
 
