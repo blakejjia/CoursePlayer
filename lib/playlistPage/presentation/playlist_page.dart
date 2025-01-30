@@ -46,7 +46,7 @@ class _CoursePageState extends State<CoursePage> {
                       buildWhen: (prev, curr) =>
                           prev.isGridView != curr.isGridView,
                       builder: (context, state) {
-                        return Text(state.isGridView ? '显示为列表' : '显示为网格');
+                        return Text(state.isGridView ? 'list view' : 'grid view');
                       },
                     ),
                   ),
@@ -59,7 +59,7 @@ class _CoursePageState extends State<CoursePage> {
             _refreshData, () => getIt<LoadFromDb>().getAllPlaylists(),
             child: (playlist) {
               if (playlist == null || playlist.isEmpty) {
-                return const Center(child: Text("空空如也,请在settings中重构索引"));
+                return const Center(child: Text("please rebuild index in settings page"));
               } else {
                 return BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
                     buildWhen: (prev, curr) => prev.isGridView != curr.isGridView,

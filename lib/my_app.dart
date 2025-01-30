@@ -1,10 +1,10 @@
 import 'package:lemon/playlistPage/presentation/playlist_page.dart';
 import 'package:lemon/playlistPage/presentation/widgets/audio_bottom_sheet.dart';
-import 'package:lemon/common/presentation/permission_grant_page.dart';
+import 'package:lemon/settingsPage/presentation/permission_grant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../settingsPage/presentation/setting_page.dart';
+import 'settingsPage/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});

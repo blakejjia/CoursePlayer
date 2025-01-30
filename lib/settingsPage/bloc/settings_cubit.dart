@@ -16,13 +16,13 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
   }
 
   void stateRebuilding() {
-    emit(state.copyWith(dbRebuiltTime: "正在重构, 这不会消耗太久"));
+    emit(state.copyWith(indexInfo: "indexing songs..."));
   }
 
   void updateRebuiltTime() async {
-    emit(state.copyWith(dbRebuiltTime: "重构完成"));
+    emit(state.copyWith(indexInfo: "index finished"));
     await Future.delayed(Duration(seconds: 1));
-    emit(state.copyWith(dbRebuiltTime: "最近一次重构: ${DateTime.now()}"));
+    emit(state.copyWith(indexInfo: "latest index: ${DateTime.now()}"));
   }
 
   void changeShowCover() {

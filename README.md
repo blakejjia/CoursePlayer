@@ -13,7 +13,12 @@ supported language: [CN](README_zh.md)& EN
 - 🌟open-source, total-free💸
 
 # UI
-add when language versions all prepared. 
+<p style="display: flex; justify-content: center; gap: 10px;">
+  <img src="assets/screenshots/continue_playing.jpg" width="200px" alt="screenshot1">
+  <img src="assets/screenshots/settings_page.jpg" width="200px" alt="screenshot2">
+  <img src="assets/screenshots/playlist_view.jpg" width="200px" alt="screenshot3">
+  <img src="assets/screenshots/else.jpg" width="200px" alt="screenshot4">
+</p>
 
 # future goals
 1. ⚡Autodetect pdf resource and show an icon beside, show pdf if clicked

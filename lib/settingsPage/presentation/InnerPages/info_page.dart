@@ -24,7 +24,7 @@ class _InfoPageState extends State<InfoPage> {
 
   // read json file here
   Future<void> _loadJson() async {
-    String jsonString = await rootBundle.loadString('assets/lang/appInfo/zh.json');
+    String jsonString = await rootBundle.loadString('assets/lang/appInfo/en.json');
     final Map<String, List<dynamic>> jsonData = Map<String, List<dynamic>>.from(jsonDecode(jsonString));
 
     // update state is json file is read

@@ -32,13 +32,13 @@ class SettingPage extends StatelessWidget {
             /// == GroupedTile: information ==
             GroupedTile(children: [
               ListTile(
-                title: Text("选择播放目录"),
+                title: Text("select dictionary"),
                 trailing: Text(state.audioPath),
                 onTap: () => _handleChangeDir(context.read<SettingsCubit>()),
               ),
               ListTile(
-                title: Text("重构索引"),
-                trailing: Text(state.dbRebuiltTime?.split('.')[0] ?? "还没有重构过"),
+                title: Text("rebuild index"),
+                trailing: Text(state.dbRebuiltTime?.split('.')[0] ?? "not yet built"),
                 onTap: () =>
                     load(context.read<SettingsCubit>().state.audioPath),
               ),
@@ -50,18 +50,18 @@ class SettingPage extends StatelessWidget {
             ),
             GroupedTile(children: [
               ListTile(
-                title: Text("显示自带的专辑封面"),
+                title: Text("show album cover"),
                 trailing: state.showCover ? Icon(Icons.check) : null,
                 onTap: () => context.read<SettingsCubit>().changeShowCover(),
               ),
               ListTile(
-                title: Text("清理文件名"),
+                title: Text("clean up file name"),
                 trailing: state.cleanFileName ? Icon(Icons.check) : null,
                 onTap: () =>
                     context.read<SettingsCubit>().changeCleanFileName(),
               ),
               ListTile(
-                title: Text("主题色"),
+                title: Text("theme color"),
                 trailing: Container(
                   width: 23,
                   height: 23,
@@ -80,7 +80,7 @@ class SettingPage extends StatelessWidget {
             ),
             GroupedTile(children: [
               ListTile(
-                title: Text("使用教程&作者"),
+                title: Text("tutorial& author"),
                 onTap: () {
                   Navigator.push(
                     context,

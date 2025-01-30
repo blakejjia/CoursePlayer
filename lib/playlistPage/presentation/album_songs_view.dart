@@ -35,7 +35,7 @@ class AlbumSongsView extends StatelessWidget {
                       },
                     ),
                   null => const Center(
-                      child: Text("空空如也"),
+                      child: Text("nothing here"),
                     ),
                 },
               )
@@ -153,7 +153,7 @@ Widget _heading(BuildContext context, AlbumPageReady state) {
                       .read<AudioPlayerBloc>()
                       .add(LocateAudio(state.playlist.id, index, position));
                 },
-                child: Text(index == 0 ? "开始播放" : "继续播放:第$index节"));
+                child: Text(index == 0 ? "start playing" : "continue: #${index+1}"));
           }),
     ],
   );
