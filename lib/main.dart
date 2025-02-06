@@ -1,8 +1,8 @@
+
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/providers/load_from_db.dart';
 import 'package:lemon/common/data/repositories/song_repository.dart';
-import 'package:lemon/playlistPage/bloc/album_page/album_page_bloc.dart';
-import 'package:lemon/playlistPage/bloc/playlist_page/playlist_page_cubit.dart';
 import 'package:lemon/common/logic/service/audio_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -12,9 +12,10 @@ import 'package:lemon/my_app.dart';
 import 'package:lemon/settingsPage/bloc/settings_cubit.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'CoursesPage/albumPage/bloc/album_page_cubit.dart';
 import 'common/logic/bloc/audio_player/audio_player_bloc.dart';
 import 'common/data/repositories/covers_repository.dart';
-import 'common/data/repositories/playlist_repository.dart';
+import 'common/data/repositories/album_repository.dart';
 
 
 final getIt = GetIt.instance;
@@ -32,8 +33,8 @@ Future<void> setup() async {
   getIt.registerSingleton<SongRepository>(SongRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<CoversRepository>(
       CoversRepository(getIt<AppDatabase>()));
-  getIt.registerSingleton<PlaylistRepository>(
-      PlaylistRepository(getIt<AppDatabase>()));
+  getIt.registerSingleton<AlbumRepository>(
+      AlbumRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<LoadFromDb>(LoadFromDb());
   getIt.registerSingleton<MyAudioHandler>(await initAudioService());
 }
@@ -52,8 +53,8 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<SettingsCubit>(create: (_) => getIt<SettingsCubit>()),
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
-        BlocProvider<AlbumPageBloc>(create: (_) => AlbumPageBloc()),
-        BlocProvider<PlaylistPageCubit>(create: (_) => PlaylistPageCubit()),
+        BlocProvider<SongListPageBloc>(create: (_) => SongListPageBloc()),
+        BlocProvider<AlbumPageCubit>(create: (_) => AlbumPageCubit()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(
         buildWhen: (prev, curr) => prev.seedColor != curr.seedColor,

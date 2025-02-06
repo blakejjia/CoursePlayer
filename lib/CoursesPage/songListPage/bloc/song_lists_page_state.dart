@@ -1,22 +1,22 @@
-part of 'album_page_bloc.dart';
+part of 'song_lists_page_bloc.dart';
 
 @immutable
-class AlbumPageState {
+class SongListPageState {
 }
 
-class AlbumPageLoading extends AlbumPageState{
+class AlbumPageLoading extends SongListPageState{
   AlbumPageLoading();
 }
 
-class AlbumPageReady extends AlbumPageState{
-  final Playlist playlist;
+class AlbumPageReady extends SongListPageState{
+  final Album playlist;
   final List<Song>? buffer;
   final Uint8List? picture;
 
   AlbumPageReady({required this.playlist, this.buffer, this.picture});
 
   AlbumPageReady copyWith({
-    Playlist? playlist,
+    Album? playlist,
     List<Song>? buffer,
     Uint8List? picture,
   }) {

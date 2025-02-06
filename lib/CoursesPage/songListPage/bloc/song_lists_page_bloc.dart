@@ -8,21 +8,21 @@ import 'package:meta/meta.dart';
 
 import '../../../common/data/providers/load_from_db.dart';
 
-part 'album_page_event.dart';
-part 'album_page_state.dart';
+part 'song_list_page_event.dart';
+part 'song_lists_page_state.dart';
 
-class AlbumPageBloc extends Bloc<AlbumPageEvent, AlbumPageState> {
-  AlbumPageBloc() : super(AlbumPageLoading()) {
+class SongListPageBloc extends Bloc<SongListPageEvent, SongListPageState> {
+  SongListPageBloc() : super(AlbumPageLoading()) {
     on<AudioInfoLocatePlaylist>(_onLocatePlaylist);
   }
 
   Future<void> _onLocatePlaylist(event, emit) async {
     emit(AlbumPageLoading());
     List<Song> songList =
-        await getIt<LoadFromDb>().getSongsByPlaylist(event.playlist);
+        await getIt<LoadFromDb>().getSongsByPlaylist(event.album);
     Uint8List? picture =
-        await getIt<LoadFromDb>().getCoverUint8ListByPlaylist(event.playlist);
+        await getIt<LoadFromDb>().getCoverUint8ListByPlaylist(event.album);
     emit(AlbumPageReady(
-        playlist: event.playlist, buffer: songList, picture: picture));
+        playlist: event.album, buffer: songList, picture: picture));
   }
 }

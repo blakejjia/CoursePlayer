@@ -13,9 +13,9 @@ String washArtist(String? artist) {
   return artist;
 }
 
-/// [washPlaylistArtist] was applied when loading data from file
+/// [getAlbumArtistBySet] was applied when loading data from file
 /// this function is used to format the author of the playlist
-String washPlaylistArtist(Set<String> artists) {
+String getAlbumArtistBySet(Set<String> artists) {
   if(artists.isEmpty) {
     return 'Unknown Artist';
   } else if (artists.length < 3) {
@@ -97,10 +97,12 @@ List<Song> cleanSongTitles(List<Song> songs) {
       id: song.id,
       artist: song.artist,
       title: cleanedTitle,
-      playlist: song.playlist,
+      album: song.album,
+      parts: song.parts,
       length: song.length,
       imageId: song.imageId,
       path: song.path,
+      playedInSecond: song.playedInSecond,
     );
   }).toList();
 }

@@ -12,7 +12,7 @@ supported language: [CN](README_zh.md)& EN
 - 🌟auto sort and clean file names✂️
 - 🌟open-source, total-free💸
 
-# UI
+# Screen shots
 <p style="display: flex; justify-content: center; gap: 10px;">
   <img src="assets/screenshots/continue_playing.jpg" width="200px" alt="screenshot1">
   <img src="assets/screenshots/settings_page.jpg" width="200px" alt="screenshot2">

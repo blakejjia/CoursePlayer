@@ -7,30 +7,30 @@ import 'package:lemon/main.dart';
 import '../../../settingsPage/bloc/settings_cubit.dart';
 import '../../utils/wash_data.dart';
 import '../repositories/covers_repository.dart';
-import '../repositories/playlist_repository.dart';
+import '../repositories/album_repository.dart';
 
 class LoadFromDb {
   SongRepository songDAO = getIt<SongRepository>();
 
   Future<List<Song>> getAllSongs() async => songDAO.getAllSongs();
 
-  Future<List<Playlist>> getAllPlaylists() async {
-    return getIt<PlaylistRepository>().getAllPlaylists();
+  Future<List<Album>> getAllPlaylists() async {
+    return getIt<AlbumRepository>().getAllAlbums();
   }
 
-  Future<List<Song>> getSongsByPlaylist(Playlist playlist) async {
+  Future<List<Song>> getSongsByPlaylist(Album playlist) async {
     List<Song> songs = await songDAO.getSongByPlaylist(playlist.title);
     return _handleSongs(songs);
   }
 
   Future<List<Song>?> getSongsByPlaylistId(int id) async {
     if (id == 0) return null;
-    Playlist? playlist = await getPlaylistById(id);
+    Album? playlist = await getPlaylistById(id);
     List<Song> songs = await songDAO.getSongByPlaylist(playlist!.title);
     return _handleSongs(songs);
   }
 
-  Future<Uint8List?> getCoverUint8ListByPlaylist(Playlist playlist) async {
+  Future<Uint8List?> getCoverUint8ListByPlaylist(Album playlist) async {
     if (!getIt<SettingsCubit>().state.showCover) {
       Cover? defaultCover = await getIt<CoversRepository>().getCoverById(0);
       return defaultCover?.cover;
@@ -40,12 +40,12 @@ class LoadFromDb {
     return cover?.cover;
   }
 
-  Future<Playlist?> getPlaylistByName(String playlist) async {
-    return getIt<PlaylistRepository>().getPlaylistByName(playlist);
+  Future<Album?> getPlaylistByName(String playlist) async {
+    return getIt<AlbumRepository>().getAlbumByName(playlist);
   }
 
-  Future<Playlist?> getPlaylistById(int id) async {
-    return getIt<PlaylistRepository>().getPlaylistById(id);
+  Future<Album?> getPlaylistById(int id) async {
+    return getIt<AlbumRepository>().getAlbumById(id);
   }
 }
 

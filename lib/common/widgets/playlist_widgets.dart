@@ -4,18 +4,18 @@ import 'package:lemon/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../bloc/album_page/album_page_bloc.dart';
-import '../album_songs_view.dart';
-import '../../../audioPage/presentation/future_builder.dart';
+import '../../CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+import '../../CoursesPage/songListPage/songs_list_page.dart';
+import '../../audioPage/presentation/future_builder.dart';
 
 /// [PlaylistCard] is a card that displays a playlist.
 ///
-/// required [Playlist] as a parameter.
+/// required [Album] as a parameter.
 /// It displays the cover image, title, and author of the playlist.
-/// When tapped, it navigates to the [AlbumSongsView] page.
+/// When tapped, it navigates to the [SongsListPage] page.
 /// It uses the [MFutureBuilder] widget to load the cover image.
 class PlaylistCard extends StatelessWidget {
-  final Playlist playList;
+  final Album playList;
   const PlaylistCard({super.key, required this.playList});
 
   @override
@@ -25,11 +25,11 @@ class PlaylistCard extends StatelessWidget {
         child: (data) {
       return InkWell(
         onTap: () {
-          context.read<AlbumPageBloc>().add(AudioInfoLocatePlaylist(playList));
+          context.read<SongListPageBloc>().add(AudioInfoLocatePlaylist(playList));
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const AlbumSongsView(),
+              builder: (_) => const SongsListPage(),
             ),
           );
         },
@@ -55,7 +55,7 @@ class PlaylistCard extends StatelessWidget {
     });
   }
 
-  Widget _courseDetail(BuildContext context, Playlist playlist) {
+  Widget _courseDetail(BuildContext context, Album playlist) {
     return Column(
       children: [
         Padding(
@@ -83,7 +83,7 @@ class PlaylistCard extends StatelessWidget {
 }
 
 class PlaylistList extends StatelessWidget {
-  final Playlist playlist;
+  final Album playlist;
   const PlaylistList(this.playlist, {super.key});
 
   @override
@@ -93,11 +93,11 @@ class PlaylistList extends StatelessWidget {
         child: (data) {
       return ListTile(
         onTap: () {
-          context.read<AlbumPageBloc>().add(AudioInfoLocatePlaylist(playlist));
+          context.read<SongListPageBloc>().add(AudioInfoLocatePlaylist(playlist));
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (_) => const AlbumSongsView(),
+              builder: (_) => const SongsListPage(),
             ),
           );
         },

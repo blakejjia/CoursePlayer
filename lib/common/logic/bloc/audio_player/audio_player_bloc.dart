@@ -105,7 +105,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
             .map((song) => MediaItem(
                   id: song.id.toString(),
                   title: song.title,
-                  album: song.playlist,
+                  album: song.album,
                   displayDescription: song.path,
                   artist: song.artist,
                   genre: null,

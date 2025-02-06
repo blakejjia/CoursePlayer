@@ -1,9 +1,9 @@
-import 'package:lemon/playlistPage/presentation/playlist_page.dart';
-import 'package:lemon/playlistPage/presentation/widgets/audio_bottom_sheet.dart';
 import 'package:lemon/settingsPage/presentation/permission_grant_page.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'CoursesPage/albumPage/album_page.dart';
+import 'audioPage/presentation/audio_bottom_sheet.dart';
 import 'settingsPage/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {
@@ -50,7 +50,7 @@ class _MyAppState extends State<MyApp> {
     }
 
     final List<Widget> pages = [
-      const CoursePage(),
+      const AlbumPage(),
       const SettingPage(),
     ];
 

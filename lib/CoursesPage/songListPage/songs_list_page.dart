@@ -1,20 +1,20 @@
+import 'package:lemon/CoursesPage/albumPage/bloc/album_page_cubit.dart';
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/audioPage/presentation/audio_bottom_sheet.dart';
 import 'package:lemon/common/data/models/models.dart';
-import 'package:lemon/playlistPage/presentation/widgets/audio_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
-import '../bloc/album_page/album_page_bloc.dart';
-import '../bloc/playlist_page/playlist_page_cubit.dart';
 
-/// [AlbumSongsView] is a view that shows all songs in an album.
+/// [SongsListPage] is a view that shows all songs in an album.
 /// listens to [AlbumPageBloc] and [AudioPlayerBloc].
-class AlbumSongsView extends StatelessWidget {
-  const AlbumSongsView({super.key});
+class SongsListPage extends StatelessWidget {
+  const SongsListPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AlbumPageBloc, AlbumPageState>(
+    return BlocBuilder<SongListPageBloc, SongListPageState>(
       builder: (context, state) {
         return (state is AlbumPageReady)
             ? Scaffold(
@@ -48,7 +48,7 @@ class AlbumSongsView extends StatelessWidget {
 }
 
 Widget _songTile(
-    BuildContext context, Playlist playlist, Song song, int index) {
+    BuildContext context, Album playlist, Song song, int index) {
   return InkWell(
       onTap: () {
         context.read<AudioPlayerBloc>().add(LocateAudio(playlist.id, index, 0));
@@ -137,14 +137,14 @@ Widget _heading(BuildContext context, AlbumPageReady state) {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      BlocBuilder<PlaylistPageCubit, PlaylistPageState>(
+      BlocBuilder<AlbumPageCubit,AlbumPageState>(
           buildWhen: (prev, curr) =>
-              prev.playHistory[state.playlist.id]?[0] !=
-              curr.playHistory[state.playlist.id]?[0],
+              prev.progress[state.playlist.id]?[0] !=
+              curr.progress[state.playlist.id]?[0],
           builder: (context, playlistPageState) {
             // [index, positionInMilliSeconds]
             List<int>? playHistory =
-                playlistPageState.playHistory[state.playlist.id];
+                playlistPageState.progress[state.playlist.id];
             int index = playHistory?[0] ?? 0;
             int position = playHistory?[1] ?? 0;
             return ElevatedButton(

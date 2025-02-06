@@ -1,10 +1,11 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 
-part 'playlist_page_state.dart';
+part 'album_page_state.dart';
 
-class PlaylistPageCubit extends HydratedCubit<PlaylistPageState> {
-  PlaylistPageCubit()
-      : super(const PlaylistPageState(isGridView: false, playHistory: {}));
+
+class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
+  AlbumPageCubit()
+      : super(const AlbumPageState(isGridView: false, progress: {}));
 
   void playListPageChangeView() =>
       emit(state.copyWith(isGridView: !state.isGridView));
@@ -12,20 +13,20 @@ class PlaylistPageCubit extends HydratedCubit<PlaylistPageState> {
   void playListCubitUpdateSongProgress(
       int playlistId, int index, int position) {
     if (playlistId == 0) return;
-    final newPlayHistory = Map<int, List<int>>.from(state.playHistory);
+    final newPlayHistory = Map<int, List<int>>.from(state.progress);
     newPlayHistory[playlistId] = [index, position];
     emit(state.copyWith(
-        playHistory: newPlayHistory,
+        progress: newPlayHistory,
         latestPlayed: [playlistId, index, position]));
   }
 
   @override
-  PlaylistPageState? fromJson(Map<String, dynamic> json) {
-    return PlaylistPageState.fromMap(json);
+  AlbumPageState? fromJson(Map<String, dynamic> json) {
+    return AlbumPageState.fromMap(json);
   }
 
   @override
-  Map<String, dynamic>? toJson(PlaylistPageState state) {
+  Map<String, dynamic>? toJson(AlbumPageState state) {
     return state.toMap();
   }
 }

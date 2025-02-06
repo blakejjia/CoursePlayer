@@ -2,8 +2,8 @@ import 'package:lemon/audioPage/presentation/audio_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../common/logic/bloc/audio_player/audio_player_bloc.dart';
-import '../../bloc/playlist_page/playlist_page_cubit.dart';
+import '../../CoursesPage/albumPage/bloc/album_page_cubit.dart';
+import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
 
 class AudioBottomSheet extends StatelessWidget {
   const AudioBottomSheet({super.key});
@@ -37,7 +37,7 @@ Widget _content(BuildContext context) {
         child: BlocConsumer<AudioPlayerBloc, AudioPlayerState>(
           listener: (context, state) {
             /// here, update SongProgress database
-            context.read<PlaylistPageCubit>().playListCubitUpdateSongProgress(
+            context.read<AlbumPageCubit>().playListCubitUpdateSongProgress(
               state.currentPlaylistId,
                 state.playbackState.queueIndex ?? 0,
                 state.playbackState.position.inMilliseconds);
