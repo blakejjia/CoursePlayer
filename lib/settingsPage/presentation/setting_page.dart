@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lemon/settingsPage/presentation/widgets/groupedTile.dart';
+import 'package:lemon/settingsPage/presentation/widgets/grouped_tile.dart';
 
 import '../../common/data/providers/load_from_file.dart';
 import '../bloc/settings_cubit.dart';

@@ -65,7 +65,6 @@ Future<void> _handleAlbum(Directory folder) async {
     await _handleSongs(files, folder);
   } catch (e) {
     // TODO: put it in log file
-    print('Error while accessing folder: $e');
   }
 }
 

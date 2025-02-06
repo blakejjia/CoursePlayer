@@ -41,7 +41,7 @@ class SettingsState {
       Color? seedColor}) {
     return SettingsState(
         audioPath: audioPath ?? this.audioPath,
-        dbRebuiltTime: indexInfo ?? this.dbRebuiltTime,
+        dbRebuiltTime: indexInfo ?? dbRebuiltTime,
         cleanFileName: cleanFileName ?? this.cleanFileName,
         showCover: showCover ?? this.showCover,
         seedColor: seedColor ?? this.seedColor);

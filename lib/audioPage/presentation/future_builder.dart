@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 
+/// [MRefreshFutureBuilder] is a widget that takes a refresh function and a load function
+/// and builds a [FutureBuilder] with a [RefreshIndicator] that calls the refresh function.
 class MRefreshFutureBuilder<T> extends StatelessWidget {
-  final Future<void> Function() _refreshFunction; // 刷新函数
-  final Future<T>? Function() _loadFunction; // 加载函数
-  final Widget Function(T?) child; // child 现在接收 snapshot.data
+
+  /// [_refreshFunction] called when the user pulls down to refresh.
+  final Future<void> Function() _refreshFunction;
+
+  /// [_loadFunction] called to load the data.
+  final Future<T>? Function() _loadFunction;
+
+  /// child is main body
+  /// receives data from [_loadFunction]
+  /// should be [listview] in order to pull to refresh
+  final Widget Function(T?) child;
 
   const MRefreshFutureBuilder(
     this._refreshFunction,

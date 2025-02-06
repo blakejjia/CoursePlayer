@@ -1,4 +1,3 @@
-import 'package:lemon/CoursesPage/albumPage/bloc/album_page_cubit.dart';
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/audioPage/presentation/audio_bottom_sheet.dart';
 import 'package:lemon/common/data/models/models.dart';
@@ -137,24 +136,25 @@ Widget _heading(BuildContext context, AlbumPageReady state) {
           style: Theme.of(context).textTheme.bodyMedium,
         ),
       ),
-      BlocBuilder<AlbumPageCubit,AlbumPageState>(
-          buildWhen: (prev, curr) =>
-              prev.progress[state.playlist.id]?[0] !=
-              curr.progress[state.playlist.id]?[0],
-          builder: (context, playlistPageState) {
-            // [index, positionInMilliSeconds]
-            List<int>? playHistory =
-                playlistPageState.progress[state.playlist.id];
-            int index = playHistory?[0] ?? 0;
-            int position = playHistory?[1] ?? 0;
-            return ElevatedButton(
-                onPressed: () {
-                  context
-                      .read<AudioPlayerBloc>()
-                      .add(LocateAudio(state.playlist.id, index, position));
-                },
-                child: Text(index == 0 ? "start playing" : "continue: #${index+1}"));
-          }),
+      // TODO:bring back
+      // BlocBuilder<AlbumPageCubit,AlbumPageState>(
+      //     buildWhen: (prev, curr) =>
+      //         prev.progress[state.playlist.id]?[0] !=
+      //         curr.progress[state.playlist.id]?[0],
+      //     builder: (context, playlistPageState) {
+      //       // [index, positionInMilliSeconds]
+      //       List<int>? playHistory =
+      //           playlistPageState.progress[state.playlist.id];
+      //       int index = playHistory?[0] ?? 0;
+      //       int position = playHistory?[1] ?? 0;
+      //       return ElevatedButton(
+      //           onPressed: () {
+      //             context
+      //                 .read<AudioPlayerBloc>()
+      //                 .add(LocateAudio(state.playlist.id, index, position));
+      //           },
+      //           child: Text(index == 0 ? "start playing" : "continue: #${index+1}"));
+      //     }),
     ],
   );
 }
