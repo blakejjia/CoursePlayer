@@ -9,7 +9,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   Future<int> insertSong({
     required String artist,
     required String title,
-    required String album,
+    required int album,
     required int length,
     required int imageId,
     required String path,
@@ -40,10 +40,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   // TODO: change model and change this
   Future<List<Song>?> getSongsByPlaylistId(int id) async {
     if (id == 0) return null;
-    Album? album = await (db.select(db.albums)..where((tbl) => tbl.id.equals(id)))
-        .getSingleOrNull();
-    String albumName = album?.title ?? '';
-    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(albumName)))
+    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(id)))
         .get();
   }
 
@@ -58,10 +55,4 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
       (db.delete(db.songs)..where((s) => s.id.equals(id))).go();
   // destroy
   Future<int> destroySongDb() => db.delete(db.songs).go();
-
-  @Deprecated('change model and deprecate this')
-  Future<List<Song>> getSongByAlbumName(String name) async {
-    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(name)))
-        .get();
-  }
 }

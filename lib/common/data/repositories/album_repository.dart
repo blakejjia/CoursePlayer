@@ -6,17 +6,56 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
   AlbumRepository(super.db);
 
   /// update last played index with id
-  Future<int> updateLastPlayedIndexWithId(int id, int lastPlayedIndex) async {
-    return await (update(db.albums)..where((tbl) => tbl.id.equals(id))).write(
-        AlbumsCompanion(
-            lastPlayedIndex: Value(lastPlayedIndex),
-            // TODO: sometimes playedTracks is not lastPlayed index
-            playedTracks: Value(lastPlayedIndex)));
+  Future<int> updateLastPlayedTimeWithId(int id) async {
+    int timestamp = double.parse(DateTime.timestamp().toString()).round();
+    return await (update(db.albums)..where((tbl) => tbl.id.equals(id)))
+        .write(AlbumsCompanion(lastPlayedTime: Value(timestamp)));
+  }
+
+  /// update last played index with id
+  Future<void> updateLastPlayedSongWithId(int id, int songId) async {
+    await (update(db.albums)..where((tbl) => tbl.id.equals(id)))
+        .write(AlbumsCompanion(lastPlayedIndex: Value(songId)));
+  }
+
+  /// updateAlbumProgress
+  Future<int> updateAlbumProgress(Album album) async {
+    final songs = await (select(db.songs)
+          ..where((tbl) => tbl.album.equals(album.id)))
+        .get();
+    int playedTracks = 0;
+
+    for (var song in songs) {
+      if (song.playedInSecond / song.length > 0.9) {
+        playedTracks++;
+      }
+    }
+
+    return await (update(db.albums)..where((tbl) => tbl.id.equals(album.id)))
+        .write(
+      AlbumsCompanion(
+        playedTracks: Value(playedTracks),
+      ),
+    );
+  }
+
+  /// Update all album progress
+  Future<int> updateAllAlbumProgress() async {
+    final albums = await getAllAlbums();
+    int updatedCount = 0;
+
+    for (var album in albums) {
+      await updateAlbumProgress(album);
+      updatedCount++;
+    }
+
+    return updatedCount;
   }
 
   /// insert a new album to the database
   Future<int> insertAlbum(
-      {required String title,
+      {int? id,
+      required String title,
       required String author,
       required int imageId,
       required String sourcePath,
@@ -25,16 +64,28 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
       required int playedTracked,
       required int lastPlayedIndex}) async {
     return await into(db.albums).insert(
-      AlbumsCompanion(
-        title: Value(title),
-        author: Value(author),
-        imageId: Value(imageId),
-        sourcePath: Value(sourcePath),
-        lastPlayedTime: Value(lastPlayedTime),
-        lastPlayedIndex: Value(lastPlayedIndex),
-        totalTracks: Value(totalTracks),
-        playedTracks: Value(playedTracked),
-      ),
+      (id != null)
+          ? AlbumsCompanion(
+              id: Value(id),
+              title: Value(title),
+              author: Value(author),
+              imageId: Value(imageId),
+              sourcePath: Value(sourcePath),
+              lastPlayedTime: Value(lastPlayedTime),
+              lastPlayedIndex: Value(lastPlayedIndex),
+              totalTracks: Value(totalTracks),
+              playedTracks: Value(playedTracked),
+            )
+          : AlbumsCompanion(
+              title: Value(title),
+              author: Value(author),
+              imageId: Value(imageId),
+              sourcePath: Value(sourcePath),
+              lastPlayedTime: Value(lastPlayedTime),
+              lastPlayedIndex: Value(lastPlayedIndex),
+              totalTracks: Value(totalTracks),
+              playedTracks: Value(playedTracked),
+            ),
     );
   }
 

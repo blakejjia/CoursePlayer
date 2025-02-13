@@ -62,7 +62,7 @@ class SongsListPage extends StatelessWidget {
                             },
                             child: Text(state.album.lastPlayedIndex == -1
                                 ? "start playing"
-                                : "continue: #${state.album.lastPlayedIndex + 1}"))
+                                : "continue songId: #${state.album.lastPlayedIndex}"))
                       ],
                     );
                   } else {

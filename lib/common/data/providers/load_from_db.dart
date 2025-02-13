@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/repositories/song_repository.dart';
@@ -6,7 +5,6 @@ import 'package:lemon/main.dart';
 
 import '../../../settingsPage/bloc/settings_cubit.dart';
 import '../../utils/wash_data.dart';
-import '../repositories/covers_repository.dart';
 import '../repositories/album_repository.dart';
 
 class LoadFromDb {
@@ -14,16 +12,10 @@ class LoadFromDb {
 
   Future<List<Song>> getAllSongs() async => songDAO.getAllSongs();
 
-  Future<List<Song>> getSongsByPlaylist(Album playlist) async {
-    List<Song> songs = await songDAO.getSongByAlbumName(playlist.title);
-    return _handleSongs(songs);
+  Future<List<Song>?> getSongsByPlaylist(Album playlist) async {
+    List<Song>? songs = await songDAO.getSongsByPlaylistId(playlist.id);
+    return _handleSongs(songs!);
   }
-
-
-
-
-
-
 
   Future<Album?> getPlaylistById(int id) async {
     return getIt<AlbumRepository>().getAlbumById(id);

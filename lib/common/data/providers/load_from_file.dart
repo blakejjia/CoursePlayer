@@ -11,7 +11,6 @@ import '../repositories/covers_repository.dart';
 import '../repositories/album_repository.dart';
 import '../repositories/song_repository.dart';
 
-
 Future<void> load(String path) async {
   // init
   getIt<SettingsCubit>().stateRebuilding();
@@ -23,8 +22,10 @@ Future<void> load(String path) async {
   // locate directory
   final directory = Directory(path);
   if (await directory.exists()) {
+    int albumId = 10;
     for (var folder in directory.listSync().whereType<Directory>()) {
-      await _handleAlbum(folder);
+      await _handleAlbum(folder, albumId);
+      albumId++;
     }
   }
   getIt<SettingsCubit>().updateRebuiltTime();
@@ -54,7 +55,7 @@ Future<void> load(String path) async {
 ///
 /// path: file path
 
-Future<void> _handleAlbum(Directory folder) async {
+Future<void> _handleAlbum(Directory folder, int albumId) async {
   try {
     List<File> files = [];
     await for (var entity in folder.list(recursive: true, followLinks: false)) {
@@ -62,13 +63,14 @@ Future<void> _handleAlbum(Directory folder) async {
         files.add(entity);
       }
     }
-    await _handleSongs(files, folder);
+    await _handleSongs(files, folder, albumId);
   } catch (e) {
     // TODO: put it in log file
   }
 }
 
-Future<void> _handleSongs(List<File> files, Directory folder) async {
+Future<void> _handleSongs(
+    List<File> files, Directory folder, int albumId) async {
   Set<String> authors = {}; // 使用 Set 来避免重复艺术家
   int playlistImageId = 0; // 如果没有可用图片，那就是 0
   int totalTracks = 0;
@@ -88,22 +90,23 @@ Future<void> _handleSongs(List<File> files, Directory folder) async {
       (tag.albumArtist != null) ? authors.add(tag.albumArtist!) : null;
       // set cover ID
       int imageId = await _handlePictureSerialize(tag.pictures);
-      (imageId!=0) ? playlistImageId = imageId : null;
+      (imageId != 0) ? playlistImageId = imageId : null;
 
       getIt<SongRepository>().insertSong(
-        artist: washArtist(tag.albumArtist),
-        title: basename(file.path),
-        album: basename(folder.path),
-        length: tag.duration ?? 0,
-        imageId: imageId,
-        path: file.path,
-        parts: basename(folder.parent.path),
-        playedInSecond: 0
-      );
+          artist: washArtist(tag.albumArtist),
+          title: basename(file.path),
+          album: albumId,
+          length: tag.duration ?? 0,
+          imageId: imageId,
+          path: file.path,
+          parts: basename(folder.parent.path),
+          playedInSecond: 0);
       totalTracks++;
     }
   }
-  getIt<AlbumRepository>().insertAlbum(title: basename(folder.path),
+  getIt<AlbumRepository>().insertAlbum(
+      id: albumId,
+      title: basename(folder.path),
       author: getAlbumArtistBySet(authors),
       imageId: playlistImageId,
       sourcePath: folder.path,
@@ -112,7 +115,6 @@ Future<void> _handleSongs(List<File> files, Directory folder) async {
       totalTracks: totalTracks,
       playedTracked: 0);
 }
-
 
 Future<int> _handlePictureSerialize(List<Picture>? pictures) async {
   if (pictures == null || pictures.isEmpty) {
@@ -125,8 +127,6 @@ Future<int> _handlePictureSerialize(List<Picture>? pictures) async {
   int? coverId = await coversDao.getCoverIdByHash(hash);
   return coverId ?? coversDao.createCover(pictureBytes, hash);
 }
-
-
 
 Future<int> _loadDefaultCover() async {
   final coverData = await rootBundle

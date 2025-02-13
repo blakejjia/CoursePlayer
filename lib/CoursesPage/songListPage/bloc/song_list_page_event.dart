@@ -3,10 +3,12 @@ part of 'song_lists_page_bloc.dart';
 @immutable
 sealed class SongListPageEvent {}
 
-final class AudioInfoLocatePlaylist extends SongListPageEvent {
+final class SongListLocatePlaylist extends SongListPageEvent {
   final Album album;
 
-  AudioInfoLocatePlaylist(this.album);
+  SongListLocatePlaylist(this.album);
 }
 
-final class UpdateSongListEvent extends SongListPageEvent {}
+
+final class UpdateSongListEvent extends SongListPageEvent {
+}

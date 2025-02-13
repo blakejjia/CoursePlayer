@@ -1,5 +1,4 @@
 import 'package:lemon/common/data/models/models.dart';
-import 'package:lemon/common/data/providers/load_from_db.dart';
 import 'package:lemon/common/data/repositories/covers_repository.dart';
 import 'package:lemon/main.dart';
 import 'package:flutter/material.dart';
@@ -7,6 +6,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../songListPage/bloc/song_lists_page_bloc.dart';
 import '../../songListPage/songs_list_page.dart';
+import '../functions.dart';
 import 'future_builder.dart';
 
 /// [AlbumCard] is a card that displays a playlist.
@@ -26,7 +26,7 @@ class AlbumCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return InkWell(
       onTap: () {
-        context.read<SongListPageBloc>().add(AudioInfoLocatePlaylist(album));
+        context.read<SongListPageBloc>().add(SongListLocatePlaylist(album));
         Navigator.push(
           context,
           MaterialPageRoute(
@@ -101,7 +101,7 @@ class AlbumTile extends StatelessWidget {
         child: (data) {
       return ListTile(
         onTap: () {
-          context.read<SongListPageBloc>().add(AudioInfoLocatePlaylist(album));
+          context.read<SongListPageBloc>().add(SongListLocatePlaylist(album));
           Navigator.push(
             context,
             MaterialPageRoute(
@@ -112,7 +112,7 @@ class AlbumTile extends StatelessWidget {
         leading: Image.memory(data!),
         title: Text(album.title),
         subtitle: Text(album.author),
-        trailing: Text("${(album.playedTracks*100/album.totalTracks).round()}%"),
+        trailing: Text(formatAlbumProgress(album)),
       );
     });
   }

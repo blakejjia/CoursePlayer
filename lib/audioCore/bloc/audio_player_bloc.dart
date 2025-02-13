@@ -1,16 +1,14 @@
 import 'dart:async';
-import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/common/data/models/models.dart';
-import 'package:lemon/common/data/providers/load_from_db.dart';
-import 'package:lemon/common/data/repositories/album_repository.dart';
 import 'package:lemon/common/data/repositories/song_repository.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
+import '../../common/data/repositories/album_repository.dart';
 import '../../common/logic/service/audio_service.dart';
 
 part 'audio_player_event.dart';
@@ -70,8 +68,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     if (event.playbackState.playing) {
       getIt<SongRepository>().updateSongProgress(int.parse(event.mediaItem.id),
           event.playbackState.position.inSeconds);
-      getIt<AlbumRepository>().updateLastPlayedIndexWithId(
-          state.currentPlaylistId, int.parse(event.mediaItem.id));
     }
   }
 
@@ -119,7 +115,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
             .map((song) => MediaItem(
                   id: song.id.toString(),
                   title: song.title,
-                  album: song.album,
+                  album: "${song.album}",
                   displayDescription: song.path,
                   artist: song.artist,
                   genre: null,
@@ -151,6 +147,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   FutureOr<void> _onPauseEvent(event, emit) async {
     await audioHandler.pause();
+    await getIt<AlbumRepository>().updateLastPlayedSongWithId(int.parse(state.mediaItem.album!), int.parse(state.mediaItem.id));
     getIt<SongListPageBloc>().add(UpdateSongListEvent());
   }
 

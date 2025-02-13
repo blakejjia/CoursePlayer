@@ -13,7 +13,7 @@ class Songs extends Table{
   /// ---------- playlist & sort information -----------
 
   /// name of head folder at indexing folder
-  TextColumn get album => text()();
+  IntColumn get album => integer()();
 
   /// the name of closest folder, used for sorting
   TextColumn get parts => text()();

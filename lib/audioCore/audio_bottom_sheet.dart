@@ -1,9 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
-import 'package:lemon/CoursesPage/songListPage/songs_list_page.dart';
 
-import '../CoursesPage/albumPage/bloc/album_page_cubit.dart';
 import 'audio_page.dart';
 import 'bloc/audio_player_bloc.dart';
 
