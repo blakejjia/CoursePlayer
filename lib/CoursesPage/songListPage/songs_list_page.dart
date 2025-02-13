@@ -126,7 +126,7 @@ ListTile _songTileNormal(Song song) {
         Text(formatDuration(song.length))
       ],
     ),
-    trailing: Text(song.playedInSecond.toString()),// TODO: change style here
+    trailing: (song.playedInSecond == 0)? null : Text(formatProgress(song))
   );
 }
 

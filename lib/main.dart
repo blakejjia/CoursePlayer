@@ -27,7 +27,6 @@ Future<void> setup() async {
   );
 
   // getIt
-  getIt.registerSingleton<SettingsCubit>(SettingsCubit());
   getIt.registerSingleton<AppDatabase>(AppDatabase());
   getIt.registerSingleton<SongRepository>(SongRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<CoversRepository>(
@@ -35,6 +34,9 @@ Future<void> setup() async {
   getIt.registerSingleton<AlbumRepository>(
       AlbumRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<LoadFromDb>(LoadFromDb());
+
+  getIt.registerSingleton<SettingsCubit>(SettingsCubit());
+  getIt.registerSingleton<SongListPageBloc>(SongListPageBloc());
   getIt.registerSingleton<MyAudioHandler>(await initAudioService());
 }
 
@@ -52,7 +54,7 @@ class MainApp extends StatelessWidget {
       providers: [
         BlocProvider<SettingsCubit>(create: (_) => getIt<SettingsCubit>()),
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
-        BlocProvider<SongListPageBloc>(create: (_) => SongListPageBloc()),
+        BlocProvider<SongListPageBloc>(create: (_) => getIt<SongListPageBloc>()),
         BlocProvider<AlbumPageCubit>(create: (_) => AlbumPageCubit()),
       ],
       child: BlocBuilder<SettingsCubit, SettingsState>(

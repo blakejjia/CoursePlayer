@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:ui';
 import 'package:audio_service/audio_service.dart';
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/providers/load_from_db.dart';
 import 'package:lemon/common/data/repositories/album_repository.dart';
@@ -149,6 +151,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   FutureOr<void> _onPauseEvent(event, emit) async {
     await audioHandler.pause();
+    getIt<SongListPageBloc>().add(UpdateSongListEvent());
   }
 
   @override

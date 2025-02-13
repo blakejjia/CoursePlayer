@@ -1,10 +1,10 @@
 import 'package:audio_video_progress_bar/audio_video_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../audioCore/bloc/audio_player_bloc.dart';
-
+import 'bloc/audio_player_bloc.dart';
 
 /// [AudioPage] is a page that displays the audio player state.
 ///
@@ -181,7 +181,8 @@ class PlayerProgressBar extends StatelessWidget {
       width: 0.8 * MediaQuery.of(context).size.width,
       child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
         buildWhen: (prev, curr) =>
-            prev.playbackState.updatePosition != curr.playbackState.updatePosition,
+            prev.playbackState.updatePosition !=
+            curr.playbackState.updatePosition,
         builder: (context, state) {
           return ProgressBar(
             progress: state.playbackState.position,

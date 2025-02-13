@@ -37,6 +37,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
         .getSingleOrNull();
   }
 
+  // TODO: change model and change this
   Future<List<Song>?> getSongsByPlaylistId(int id) async {
     if (id == 0) return null;
     Album? album = await (db.select(db.albums)..where((tbl) => tbl.id.equals(id)))
@@ -58,7 +59,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   // destroy
   Future<int> destroySongDb() => db.delete(db.songs).go();
 
-  // query song by playlist name
+  @Deprecated('change model and deprecate this')
   Future<List<Song>> getSongByAlbumName(String name) async {
     return await (db.select(db.songs)..where((tbl) => tbl.album.equals(name)))
         .get();

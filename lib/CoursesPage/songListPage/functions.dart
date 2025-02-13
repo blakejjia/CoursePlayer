@@ -1,3 +1,5 @@
+import '../../common/data/models/models.dart';
+
 String formatDuration(int duration) {
   String twoDigits(int n) => n.toString().padLeft(2, '0');
   int hours = duration ~/ 3600;
@@ -18,4 +20,11 @@ String formatTitle(String title) {
     return title.substring(0, lastDotIndex);
   }
   return title;
+}
+
+String formatProgress(Song song){
+  int played = song.playedInSecond;
+  int totalLength = song.length;
+  int progress = (played/totalLength*100).round();
+  return "played:${progress}%";
 }
