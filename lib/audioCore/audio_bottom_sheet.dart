@@ -1,9 +1,11 @@
-import 'package:lemon/audioPage/presentation/audio_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/CoursesPage/songListPage/songs_list_page.dart';
 
-import '../../CoursesPage/albumPage/bloc/album_page_cubit.dart';
-import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
+import '../CoursesPage/albumPage/bloc/album_page_cubit.dart';
+import '../audioPage/audio_page.dart';
+import 'bloc/audio_player_bloc.dart';
 
 class AudioBottomSheet extends StatelessWidget {
   const AudioBottomSheet({super.key});
@@ -33,15 +35,8 @@ Widget _content(BuildContext context) {
       SizedBox(
         height: 3,
 
-        /// build LinearProgressIndicator
-        child: BlocConsumer<AudioPlayerBloc, AudioPlayerState>(
-          listener: (context, state) {
-            /// here, update SongProgress database
-            context.read<AlbumPageCubit>().playListCubitUpdateSongProgress(
-              state.currentPlaylistId,
-                state.playbackState.queueIndex ?? 0,
-                state.playbackState.position.inMilliseconds);
-          },
+        /// LinearProgressIndicator, at the same time notify pages to reload
+        child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
           builder: (context, state) {
             return LinearProgressIndicator(
               value: (state.mediaItem.duration != null &&
@@ -79,16 +74,18 @@ Widget _content(BuildContext context) {
                     ? IconButton(
                         icon: const Icon(Icons.pause_rounded),
                         iconSize: 40,
-                        onPressed: () =>
-                            context.read<AudioPlayerBloc>().add(PauseEvent()),
-                      )
+                        onPressed: () {
+                          context.read<AudioPlayerBloc>().add(PauseEvent());
+                          context
+                              .read<SongListPageBloc>()
+                              .add(UpdateSongListEvent());
+                        })
                     : IconButton(
                         icon: const Icon(Icons.play_arrow_rounded),
                         iconSize: 40,
-                        onPressed: () => context
-                            .read<AudioPlayerBloc>()
-                            .add(ContinueEvent()),
-                      ),
+                        onPressed: () {
+                          context.read<AudioPlayerBloc>().add(ContinueEvent());
+                        }),
                 IconButton(
                   icon: const Icon(Icons.fast_forward_rounded),
                   iconSize: 40,

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import 'CoursesPage/albumPage/album_page.dart';
-import 'audioPage/presentation/audio_bottom_sheet.dart';
+import 'audioCore/audio_bottom_sheet.dart';
 import 'settingsPage/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {

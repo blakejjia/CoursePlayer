@@ -2,7 +2,7 @@ import 'package:lemon/common/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
+import '../../audioCore/bloc/audio_player_bloc.dart';
 import 'widgets/albums_widgets.dart';
 import 'bloc/album_page_cubit.dart';
 
@@ -20,7 +20,7 @@ class AlbumPage extends StatefulWidget {
 class _AlbumPageState extends State<AlbumPage> {
   @override
   void initState() {
-    context.read<AlbumPageCubit>().init();
+    context.read<AlbumPageCubit>().load();
     super.initState();
   }
 

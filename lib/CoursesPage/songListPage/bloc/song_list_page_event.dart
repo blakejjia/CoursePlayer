@@ -8,3 +8,5 @@ final class AudioInfoLocatePlaylist extends SongListPageEvent {
 
   AudioInfoLocatePlaylist(this.album);
 }
+
+final class UpdateSongListEvent extends SongListPageEvent {}

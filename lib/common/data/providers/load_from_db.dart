@@ -14,35 +14,16 @@ class LoadFromDb {
 
   Future<List<Song>> getAllSongs() async => songDAO.getAllSongs();
 
-  Future<List<Album>> getAllPlaylists() async {
-    return getIt<AlbumRepository>().getAllAlbums();
-  }
-
   Future<List<Song>> getSongsByPlaylist(Album playlist) async {
-    List<Song> songs = await songDAO.getSongByPlaylist(playlist.title);
+    List<Song> songs = await songDAO.getSongByAlbumName(playlist.title);
     return _handleSongs(songs);
   }
 
-  Future<List<Song>?> getSongsByPlaylistId(int id) async {
-    if (id == 0) return null;
-    Album? playlist = await getPlaylistById(id);
-    List<Song> songs = await songDAO.getSongByPlaylist(playlist!.title);
-    return _handleSongs(songs);
-  }
 
-  Future<Uint8List?> getCoverUint8ListByPlaylist(Album playlist) async {
-    if (!getIt<SettingsCubit>().state.showCover) {
-      Cover? defaultCover = await getIt<CoversRepository>().getCoverById(0);
-      return defaultCover?.cover;
-    }
-    Cover? cover =
-        await getIt<CoversRepository>().getCoverById(playlist.imageId);
-    return cover?.cover;
-  }
 
-  Future<Album?> getPlaylistByName(String playlist) async {
-    return getIt<AlbumRepository>().getAlbumByName(playlist);
-  }
+
+
+
 
   Future<Album?> getPlaylistById(int id) async {
     return getIt<AlbumRepository>().getAlbumById(id);

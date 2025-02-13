@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:share_plus/share_plus.dart';
 
-import '../../common/logic/bloc/audio_player/audio_player_bloc.dart';
+import '../audioCore/bloc/audio_player_bloc.dart';
+
 
 /// [AudioPage] is a page that displays the audio player state.
 ///
@@ -28,6 +29,7 @@ class AudioPage extends StatelessWidget {
 }
 
 Widget _playInfos(BuildContext context) {
+  // TODO: shouldn't rely on AudioPlayerBloc
   return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
     buildWhen: (prev, curr) => prev.mediaItem != curr.mediaItem,
     builder: (context, state) {

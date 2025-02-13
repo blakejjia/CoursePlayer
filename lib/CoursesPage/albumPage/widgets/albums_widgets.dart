@@ -1,12 +1,13 @@
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/providers/load_from_db.dart';
+import 'package:lemon/common/data/repositories/covers_repository.dart';
 import 'package:lemon/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../songListPage/bloc/song_lists_page_bloc.dart';
 import '../../songListPage/songs_list_page.dart';
-import '../../../audioPage/presentation/future_builder.dart';
+import 'future_builder.dart';
 
 /// [AlbumCard] is a card that displays a playlist.
 ///
@@ -39,7 +40,7 @@ class AlbumCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             MFutureBuilder(
-                () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(album),
+                () => getIt<CoversRepository>().getCoverUint8ListByPlaylist(album),
                 child: (data) {
               return SizedBox(
                 height: 100,
@@ -96,7 +97,7 @@ class AlbumTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MFutureBuilder(
-        () => getIt<LoadFromDb>().getCoverUint8ListByPlaylist(album),
+        () => getIt<CoversRepository>().getCoverUint8ListByPlaylist(album),
         child: (data) {
       return ListTile(
         onTap: () {

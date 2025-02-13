@@ -37,8 +37,21 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
         .getSingleOrNull();
   }
 
+  Future<List<Song>?> getSongsByPlaylistId(int id) async {
+    if (id == 0) return null;
+    Album? album = await (db.select(db.albums)..where((tbl) => tbl.id.equals(id)))
+        .getSingleOrNull();
+    String albumName = album?.title ?? '';
+    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(albumName)))
+        .get();
+  }
+
   // update
   Future<bool> updateSong(Song song) => db.update(db.songs).replace(song);
+  Future<int> updateSongProgress(int id, int playedInSecond) =>
+      (db.update(db.songs)..where((s) => s.id.equals(id)))
+          .write(SongsCompanion(playedInSecond: Value(playedInSecond)));
+
   // delete
   Future<int> deleteSong(int id) =>
       (db.delete(db.songs)..where((s) => s.id.equals(id))).go();
@@ -46,9 +59,8 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   Future<int> destroySongDb() => db.delete(db.songs).go();
 
   // query song by playlist name
-  Future<List<Song>> getSongByPlaylist(String playlistName) async {
-    return await (db.select(db.songs)
-          ..where((tbl) => tbl.album.equals(playlistName)))
+  Future<List<Song>> getSongByAlbumName(String name) async {
+    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(name)))
         .get();
   }
 }

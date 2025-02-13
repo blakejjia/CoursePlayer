@@ -2,18 +2,25 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/providers/load_from_db.dart';
+import 'package:lemon/common/data/repositories/album_repository.dart';
+import 'package:lemon/common/data/repositories/song_repository.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../service/audio_service.dart';
+import '../../common/logic/service/audio_service.dart';
 
 part 'audio_player_event.dart';
 part 'audio_player_state.dart';
 
 class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
+  /// [audioHandler] is the audio handler that controls the audio service
+  /// it is used to control the audio service
   late final MyAudioHandler audioHandler;
+
+  /// [playerInfoStream] is the stream that listens to the audio service
+  /// it is used to update the state
   late StreamSubscription playerInfoStream;
 
   AudioPlayerBloc()
@@ -47,17 +54,23 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
           playbackState,
         );
       },
-    )
-        .listen((updateStateEvent) {
+    ).listen((updateStateEvent) {
       add(updateStateEvent);
     });
   }
 
+  /// Core function, updates database and state
   FutureOr<void> _onUpdateState(event, emit) {
     emit(state.copyWith(
       mediaItem: event.mediaItem,
       playbackState: event.playbackState,
     ));
+    if (event.playbackState.playing) {
+      getIt<SongRepository>().updateSongProgress(int.parse(event.mediaItem.id),
+          event.playbackState.position.inSeconds);
+      getIt<AlbumRepository>().updateLastPlayedIndexWithId(
+          state.currentPlaylistId, int.parse(event.mediaItem.id));
+    }
   }
 
   FutureOr<void> _onSetSpeed(event, emit) async {
@@ -95,9 +108,8 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         event.position == null) {
       return;
     }
-
     List<Song>? songs =
-        await getIt<LoadFromDb>().getSongsByPlaylistId(event.playlistId);
+        await getIt<SongRepository>().getSongsByPlaylistId(event.playlistId);
     emit(state.copyWith(currentPlaylist: event.playlistId));
     await audioHandler.locateAudio(
         songs!
