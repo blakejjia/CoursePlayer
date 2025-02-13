@@ -62,11 +62,14 @@ class _AlbumPageState extends State<AlbumPage> {
         body: RefreshIndicator(
           onRefresh: _refreshData,
           child: BlocBuilder<AlbumPageCubit, AlbumPageState>(
+              // do not reload if play history changes
+              buildWhen: (prev, curr) => (prev.isGridView != curr.isGridView ||
+                  prev.albums != curr.albums),
               builder: (BuildContext context, AlbumPageState state) {
-            return state.isGridView
-                ? _showInCard(state.albums)
-                : _showInList(state.albums);
-          }),
+                return state.isGridView
+                    ? _showInCard(state.albums)
+                    : _showInList(state.albums);
+              }),
         ));
   }
 
@@ -74,12 +77,14 @@ class _AlbumPageState extends State<AlbumPage> {
     setState(() {});
   }
 
-  // TODO: repair continue with history
   void _continueWithHistory(BuildContext context) {
-    // List<int>? playHistory = context.read<AlbumPageCubit>().state.latestPlayed;
-    // context
-    //     .read<AudioPlayerBloc>()
-    //     .add(LocateAudio(playHistory?[0], playHistory?[1]));
+    LatestPlayed? playHistory =
+        context.read<AlbumPageCubit>().state.latestPlayed;
+    if (playHistory != null) {
+      context
+          .read<AudioPlayerBloc>()
+          .add(LocateAudio(playHistory.album, playHistory.songId));
+    }
   }
 }
 

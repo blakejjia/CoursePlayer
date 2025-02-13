@@ -20,6 +20,10 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
     emit(state.copyWith(albums: albums));
   }
 
+  void updateHistory(LatestPlayed history){
+    emit(state.copyWith(latestPlayed: history));
+  }
+
   @override
   AlbumPageState? fromJson(Map<String, dynamic> json) {
     return AlbumPageState.fromMap(json);

@@ -14,17 +14,17 @@ class AudioPlayerIdeal extends AudioPlayerState{
   /// use to update playing or nor primarily
   final PlaybackState playbackState;
 
-  /// [currentAlbum] is the id of the current playlist
-  final Album currentAlbum;
+  /// [album] is the id of the current playlist
+  final Album album;
 
-  AudioPlayerIdeal(this.mediaItem, this.playbackState, this.currentAlbum);
+  AudioPlayerIdeal(this.mediaItem, this.playbackState, this.album);
 
   copyWith(
       {MediaItem? mediaItem,
         PlaybackState? playbackState,
-        Album? currentAlbum}) =>
+        Album? album}) =>
       AudioPlayerIdeal(
           mediaItem ?? this.mediaItem,
           playbackState ?? this.playbackState,
-          currentAlbum ?? this.currentAlbum);
+          album ?? this.album);
 }

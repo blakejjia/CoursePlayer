@@ -69,6 +69,9 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         getIt<SongRepository>().updateSongProgress(
             int.parse(event.mediaItem.id),
             event.playbackState.position.inSeconds);
+        // TODO: move this logic to settings
+        getIt<AlbumPageCubit>().updateHistory(LatestPlayed(
+            (state as AudioPlayerIdeal).album, int.parse(event.mediaItem.id)));
       }
     }
   }
