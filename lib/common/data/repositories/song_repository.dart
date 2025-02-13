@@ -38,7 +38,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   }
 
   // TODO: change model and change this
-  Future<List<Song>?> getSongsByPlaylistId(int id) async {
+  Future<List<Song>?> getSongsByAlbumId(int id) async {
     if (id == 0) return null;
     return await (db.select(db.songs)..where((tbl) => tbl.album.equals(id)))
         .get();

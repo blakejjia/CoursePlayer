@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
+import 'package:lemon/CoursesPage/albumPage/bloc/album_page_cubit.dart';
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/common/data/models/models.dart';
 import 'package:lemon/common/data/repositories/song_repository.dart';
@@ -23,9 +24,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   /// it is used to update the state
   late StreamSubscription playerInfoStream;
 
-  AudioPlayerBloc()
-      : super(AudioPlayerState(const MediaItem(id: "0", title: "not playing"),
-            PlaybackState(), 0)) {
+  AudioPlayerBloc() : super(AudioPlayerInitial()) {
     _initBloc();
 
     on<_UpdateState>(_onUpdateState);
@@ -61,13 +60,16 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   /// Core function, updates database and state
   FutureOr<void> _onUpdateState(event, emit) {
-    emit(state.copyWith(
-      mediaItem: event.mediaItem,
-      playbackState: event.playbackState,
-    ));
-    if (event.playbackState.playing) {
-      getIt<SongRepository>().updateSongProgress(int.parse(event.mediaItem.id),
-          event.playbackState.position.inSeconds);
+    if (state is AudioPlayerIdeal) {
+      emit((state as AudioPlayerIdeal).copyWith(
+        mediaItem: event.mediaItem,
+        playbackState: event.playbackState,
+      ));
+      if (event.playbackState.playing) {
+        getIt<SongRepository>().updateSongProgress(
+            int.parse(event.mediaItem.id),
+            event.playbackState.position.inSeconds);
+      }
     }
   }
 
@@ -101,14 +103,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   }
 
   Future<void> _onLocateAudio(event, emit) async {
-    if (event.index == null ||
-        event.playlistId == null ||
-        event.position == null) {
-      return;
-    }
-    List<Song>? songs =
-        await getIt<SongRepository>().getSongsByPlaylistId(event.playlistId);
-    emit(state.copyWith(currentPlaylist: event.playlistId));
+    List<Song>? songs = (event.buffer)??await getIt<SongRepository>().getSongsByAlbumId(event.album.id);
+    int songId = event.songId;
+    int index = songs?.indexWhere((song) => song.id == songId) ?? 0;
+
+    emit(AudioPlayerIdeal(
+        MediaItem(id: '0', title: ''), PlaybackState(), event.album));
     await audioHandler.locateAudio(
         songs!
             .whereType<Song>()
@@ -124,13 +124,13 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
             .cast<MediaItem>()
             .toList(),
         songs.map((song) => song.path).toList().cast<String>(),
-        event.index,
-        event.position);
+        index,
+        0); //TODO: event.position
   }
 
   FutureOr<void> _onSwitchShuffleMode(event, emit) async {
     AudioServiceShuffleMode currentShuffleMode =
-        state.playbackState.shuffleMode;
+        (state as AudioPlayerIdeal).playbackState.shuffleMode;
     if (currentShuffleMode == AudioServiceShuffleMode.none) {
       currentShuffleMode = AudioServiceShuffleMode.all;
     } else {
@@ -147,8 +147,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
   FutureOr<void> _onPauseEvent(event, emit) async {
     await audioHandler.pause();
-    await getIt<AlbumRepository>().updateLastPlayedSongWithId(int.parse(state.mediaItem.album!), int.parse(state.mediaItem.id));
+    await getIt<AlbumRepository>().updateLastPlayedSongWithId(
+        int.parse((state as AudioPlayerIdeal).mediaItem.album!),
+        int.parse((state as AudioPlayerIdeal).mediaItem.id));
+    // refresh blocs
     getIt<SongListPageBloc>().add(UpdateSongListEvent());
+    getIt<AlbumPageCubit>().load();
   }
 
   @override

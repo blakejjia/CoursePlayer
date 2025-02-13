@@ -11,6 +11,7 @@ class AlbumPageState {
 
   /// The latest played song, serialize in format below
   /// [id, index, position]
+  @Deprecated("delete this!")
   final List<int>? latestPlayed;
 
   const AlbumPageState(

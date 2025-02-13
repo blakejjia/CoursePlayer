@@ -20,7 +20,7 @@ class SongsListPage extends StatelessWidget {
           return const Center(
             child: CircularProgressIndicator(),
           );
-        } else if (state is SongListPageReady){
+        } else if (state is SongListPageReady) {
           return Scaffold(
             appBar: AppBar(
               title: Text(state.album.title),
@@ -28,53 +28,52 @@ class SongsListPage extends StatelessWidget {
             bottomNavigationBar: const AudioBottomSheet(),
             body: switch (state.buffer) {
               [...] => ListView.builder(
-                itemCount: state.buffer!.length + 1,
-                itemBuilder: (context, index) {
-                  /// Title section
-                  if (index == 0) {
-                    return Column(
-                      children: [
-                        SizedBox(
-                          width: MediaQuery.of(context).size.width / 2,
-                          height: MediaQuery.of(context).size.width / 2,
-                          child: state.picture != null
-                              ? Image.memory(state.picture!)
-                              : Image.asset("assets/default_cover.jpeg"),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
-                          child: Text(
-                            state.album.title,
-                            style: Theme.of(context).textTheme.titleLarge,
+                  itemCount: state.buffer!.length + 1,
+                  itemBuilder: (context, index) {
+                    /// Title section
+                    if (index == 0) {
+                      return Column(
+                        children: [
+                          SizedBox(
+                            width: MediaQuery.of(context).size.width / 2,
+                            height: MediaQuery.of(context).size.width / 2,
+                            child: state.picture != null
+                                ? Image.memory(state.picture!)
+                                : Image.asset("assets/default_cover.jpeg"),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                          child: Text(
-                            state.album.author,
-                            style: Theme.of(context).textTheme.bodyMedium,
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
+                            child: Text(
+                              state.album.title,
+                              style: Theme.of(context).textTheme.titleLarge,
+                            ),
                           ),
-                        ),
-                        ElevatedButton(
-                            onPressed: () {
-                              context.read<AudioPlayerBloc>().add(LocateAudio(
-                                  state.album.id, state.album.lastPlayedIndex, 0));
-                            },
-                            child: Text(state.album.lastPlayedIndex == -1
-                                ? "start playing"
-                                : "continue songId: #${state.album.lastPlayedIndex}"))
-                      ],
-                    );
-                  } else {
-                    /// song tile section
-                    return _songTile(context, state.album,
-                        state.buffer![index - 1], index - 1);
-                  }
-                },
-              ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                            child: Text(
+                              state.album.author,
+                              style: Theme.of(context).textTheme.bodyMedium,
+                            ),
+                          ),
+                          ElevatedButton(
+                              onPressed: () {
+                                context.read<AudioPlayerBloc>().add(LocateAudio(
+                                    state.album,
+                                    state.album.lastPlayedIndex));
+                              },
+                              child: Text(contiButton(state)))
+                        ],
+                      );
+                    } else {
+                      /// song tile section
+                      return _songTile(
+                          context, state, index);
+                    }
+                  },
+                ),
               null => const Center(
-                child: Text("nothing here"),
-              ),
+                  child: Text("nothing here"),
+                ),
             },
           );
         } else {
@@ -87,19 +86,20 @@ class SongsListPage extends StatelessWidget {
   }
 }
 
-Widget _songTile(BuildContext context, Album playlist, Song song, int index) {
-  return InkWell(
-      onTap: () {
-        context.read<AudioPlayerBloc>().add(LocateAudio(playlist.id, index, song.playedInSecond));
-      },
-      child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-          builder: (context, state) {
-            if (song.id == int.parse(state.mediaItem.id)) {
-              return _songTileSelected(context, song);
-            } else {
-              return _songTileNormal(song);
-            }
-          }));
+Widget _songTile(BuildContext context, SongListPageReady state, int index) {
+  Album album = state.album;
+  List<Song>? buffer= state.buffer;
+  Song song = state.buffer![index - 1];
+  return InkWell(onTap: () {
+    context.read<AudioPlayerBloc>().add(LocateAudio(album, song.id, buffer: buffer));
+  }, child:
+      BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
+    if (state is AudioPlayerIdeal && song.id == int.parse(state.mediaItem.id)) {
+      return _songTileSelected(context, song);
+    } else {
+      return _songTileNormal(song);
+    }
+  }));
 }
 
 /// when selected, song tile look like this
@@ -113,20 +113,18 @@ Container _songTileSelected(BuildContext context, Song song) {
 /// when not selected, song tile look like this
 ListTile _songTileNormal(Song song) {
   return ListTile(
-    title: Text(formatTitle(song.title)),
-    subtitle: Row(
-      children: [
-        Text(
-          song.artist,
-          overflow: TextOverflow.ellipsis,
-        ),
-        const SizedBox(
-          width: 20,
-        ),
-        Text(formatDuration(song.length))
-      ],
-    ),
-    trailing: (song.playedInSecond == 0)? null : Text(formatProgress(song))
-  );
+      title: Text(formatTitle(song.title)),
+      subtitle: Row(
+        children: [
+          Text(
+            song.artist,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(
+            width: 20,
+          ),
+          Text(formatDuration(song.length))
+        ],
+      ),
+      trailing: (song.playedInSecond == 0) ? null : Text(formatProgress(song)));
 }
-

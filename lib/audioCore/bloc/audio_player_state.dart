@@ -1,7 +1,11 @@
 part of 'audio_player_bloc.dart';
 
-class AudioPlayerState {
+@immutable
+class AudioPlayerState {}
 
+class AudioPlayerInitial extends AudioPlayerState{}
+
+class AudioPlayerIdeal extends AudioPlayerState{
   /// [mediaItem] is the current playing media item
   /// use to update duration primarily
   final MediaItem mediaItem;
@@ -10,17 +14,17 @@ class AudioPlayerState {
   /// use to update playing or nor primarily
   final PlaybackState playbackState;
 
-  /// [currentPlaylistId] is the id of the current playlist
-  final int currentPlaylistId;
+  /// [currentAlbum] is the id of the current playlist
+  final Album currentAlbum;
 
-  AudioPlayerState(this.mediaItem, this.playbackState, this.currentPlaylistId);
+  AudioPlayerIdeal(this.mediaItem, this.playbackState, this.currentAlbum);
 
   copyWith(
-          {MediaItem? mediaItem,
-          PlaybackState? playbackState,
-          int? currentPlaylist}) =>
-      AudioPlayerState(
+      {MediaItem? mediaItem,
+        PlaybackState? playbackState,
+        Album? currentAlbum}) =>
+      AudioPlayerIdeal(
           mediaItem ?? this.mediaItem,
           playbackState ?? this.playbackState,
-          currentPlaylist ?? currentPlaylistId);
+          currentAlbum ?? this.currentAlbum);
 }

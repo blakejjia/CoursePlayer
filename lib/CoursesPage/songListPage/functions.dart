@@ -1,3 +1,5 @@
+import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+
 import '../../common/data/models/models.dart';
 
 String formatDuration(int duration) {
@@ -27,4 +29,10 @@ String formatProgress(Song song){
   int totalLength = song.length;
   int progress = (played/totalLength*100).round();
   return "played:${progress}%";
+}
+
+String contiButton(SongListPageReady state){
+  return state.album.lastPlayedIndex == -1
+      ? "start playing"
+      : "continue songId: #${state.album.lastPlayedIndex}";
 }

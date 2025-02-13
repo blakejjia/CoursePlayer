@@ -74,11 +74,12 @@ class _AlbumPageState extends State<AlbumPage> {
     setState(() {});
   }
 
+  // TODO: repair continue with history
   void _continueWithHistory(BuildContext context) {
-    List<int>? playHistory = context.read<AlbumPageCubit>().state.latestPlayed;
-    context
-        .read<AudioPlayerBloc>()
-        .add(LocateAudio(playHistory?[0], playHistory?[1], playHistory?[2]));
+    // List<int>? playHistory = context.read<AlbumPageCubit>().state.latestPlayed;
+    // context
+    //     .read<AudioPlayerBloc>()
+    //     .add(LocateAudio(playHistory?[0], playHistory?[1]));
   }
 }
 

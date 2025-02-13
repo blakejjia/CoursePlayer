@@ -24,7 +24,7 @@ class SongListPageBloc extends Bloc<SongListPageEvent, SongListPageState> {
   Future<void> _onLocatePlaylist(event, emit) async {
     emit(SongListPageLoading());
     List<Song>? songList =
-        await getIt<SongRepository>().getSongsByPlaylistId(event.album.id);
+        await getIt<SongRepository>().getSongsByAlbumId(event.album.id);
     Uint8List? picture =
         await getIt<CoversRepository>().getCoverUint8ListByPlaylist(event.album);
     emit(SongListPageReady(
@@ -33,7 +33,7 @@ class SongListPageBloc extends Bloc<SongListPageEvent, SongListPageState> {
 
   Future<void> _onUpdateSongList(event, emit) async {
     if (state is SongListPageReady) {
-      List<Song>? songList = await getIt<SongRepository>().getSongsByPlaylistId((state as SongListPageReady).album.id);
+      List<Song>? songList = await getIt<SongRepository>().getSongsByAlbumId((state as SongListPageReady).album.id);
       Album? album = await getIt<AlbumRepository>().getAlbumById((state as SongListPageReady).album.id);
       emit((state as SongListPageReady).copyWith(buffer: songList, album: album));
     }

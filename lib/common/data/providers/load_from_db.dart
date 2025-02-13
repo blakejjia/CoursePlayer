@@ -13,7 +13,7 @@ class LoadFromDb {
   Future<List<Song>> getAllSongs() async => songDAO.getAllSongs();
 
   Future<List<Song>?> getSongsByPlaylist(Album playlist) async {
-    List<Song>? songs = await songDAO.getSongsByPlaylistId(playlist.id);
+    List<Song>? songs = await songDAO.getSongsByAlbumId(playlist.id);
     return _handleSongs(songs!);
   }
 

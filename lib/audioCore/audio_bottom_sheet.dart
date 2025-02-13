@@ -25,74 +25,59 @@ class AudioBottomSheet extends StatelessWidget {
         ));
   }
 }
-
 Widget _content(BuildContext context) {
-  return Column(
-    children: [
-      SizedBox(
-        height: 3,
+  return BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
+    builder: (context, state) {
+      if (state is AudioPlayerIdeal){
 
-        /// LinearProgressIndicator, at the same time notify pages to reload
-        child: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-          builder: (context, state) {
-            return LinearProgressIndicator(
-              value: (state.mediaItem.duration != null &&
-                      state.mediaItem.duration!.inSeconds > 0)
-                  ? (state.playbackState.position.inSeconds /
-                      state.mediaItem.duration!.inSeconds)
-                  : 0,
-            );
-          },
-        ),
-      ),
-      ListTile(
-        /// build title
-        title: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-          buildWhen: (prev, curr) =>
-              prev.mediaItem.title != curr.mediaItem.title,
-          builder: (context, state) {
-            return Text(
-              state.mediaItem.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            );
-          },
-        ),
-
-        /// build trailing
-        trailing: BlocBuilder<AudioPlayerBloc, AudioPlayerState>(
-          buildWhen: (prev, curr) =>
-              prev.playbackState.playing != curr.playbackState.playing,
-          builder: (context, state) {
-            return Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                IconButton(
-                  icon: Icon(
-                    state.playbackState.playing
-                        ? Icons.pause_rounded
-                        : Icons.play_arrow_rounded,
+        final duration = state.mediaItem.duration;
+        final progress = (duration != null && duration.inSeconds > 0)
+            ? state.playbackState.position.inSeconds / duration.inSeconds
+            : 0.0;
+        return Column(
+          children: [
+            SizedBox(
+              height: 3,
+              child: LinearProgressIndicator(value: progress),
+            ),
+            ListTile(
+              title: Text(
+                state.mediaItem.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: Icon(
+                      state.playbackState.playing
+                          ? Icons.pause_rounded
+                          : Icons.play_arrow_rounded,
+                    ),
+                    iconSize: 40,
+                    onPressed: () {
+                      context.read<AudioPlayerBloc>().add(
+                        state.playbackState.playing
+                            ? PauseEvent()
+                            : ContinueEvent(),
+                      );
+                    },
                   ),
-                  iconSize: 40,
-                  onPressed: () {
-                    context.read<AudioPlayerBloc>().add(
-                          state.playbackState.playing
-                              ? PauseEvent()
-                              : ContinueEvent(),
-                        );
-                  },
-                ),
-                IconButton(
-                  icon: const Icon(Icons.fast_forward_rounded),
-                  iconSize: 40,
-                  onPressed: () =>
-                      context.read<AudioPlayerBloc>().add(NextEvent()),
-                ),
-              ],
-            );
-          },
-        ),
-      )
-    ],
+                  IconButton(
+                    icon: const Icon(Icons.fast_forward_rounded),
+                    iconSize: 40,
+                    onPressed: () =>
+                        context.read<AudioPlayerBloc>().add(NextEvent()),
+                  ),
+                ],
+              ),
+            )
+          ],
+        );
+      } else {
+        return Placeholder();
+      }
+    },
   );
 }
