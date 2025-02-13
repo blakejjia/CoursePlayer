@@ -138,7 +138,7 @@ class MyAudioHandler extends BaseAudioHandler {
     );
 
     await _player.setAudioSource(playlist);
-    await _player.seek(Duration(milliseconds: position ?? 0),
+    await _player.seek(Duration(seconds: position ?? 0),
         index: index ?? 0);
     await _player.play();
   }
