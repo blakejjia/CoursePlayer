@@ -6,7 +6,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../audioCore/bloc/audio_player_bloc.dart';
 import '../../audioCore/audio_bottom_sheet.dart';
-import 'functions.dart';
+import '../albumPage/widgets/albums_widgets.dart';
+import 'logic/functions.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.
 /// listens to [AlbumPageBloc] and [AudioPlayerBloc].
@@ -25,6 +26,21 @@ class SongsListPage extends StatelessWidget {
           return Scaffold(
             appBar: AppBar(
               title: Text(state.album.title),
+              actions: [
+                PopupMenuButton<String>(
+                  onSelected: (_) {
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => ChangeArtistPopUp(state.album.sourcePath,state.buffer));
+                  },
+                  itemBuilder: (BuildContext context) {
+                    return [
+                      PopupMenuItem<String>(
+                          value: 'ListView', child: Text("change artist name")),
+                    ];
+                  },
+                ),
+              ],
             ),
             bottomNavigationBar: const AudioBottomSheet(),
             body: switch (state.buffer) {

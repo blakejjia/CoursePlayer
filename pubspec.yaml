@@ -8,7 +8,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  audiotags: ^1.4.1
   permission_handler: ^11.3.1
   get_it: ^8.0.0
   drift: ^2.24.0
@@ -28,6 +27,7 @@ dependencies:
   audio_service: ^0.18.15
   share_plus: ^10.1.2
   flutter_launcher_icons: ^0.14.3
+  audiotags: ^1.4.3
 
 dev_dependencies:
   flutter_test:

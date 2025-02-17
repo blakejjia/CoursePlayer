@@ -1,6 +1,6 @@
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 
-import '../../common/data/models/models.dart';
+import '../../../common/data/models/models.dart';
 
 /// format title to fit the screen
 /// - remove file extension
