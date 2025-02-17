@@ -9,9 +9,6 @@ import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 
-// ignore: unused_import
-import '../../../common/data/providers/load_from_db.dart';
-
 part 'song_list_page_event.dart';
 part 'song_lists_page_state.dart';
 

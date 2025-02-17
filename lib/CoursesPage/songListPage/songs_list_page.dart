@@ -1,4 +1,5 @@
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/CoursesPage/songListPage/widgets/song_list_widgets.dart';
 import 'package:lemon/common/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -95,26 +96,9 @@ Widget _songTile(BuildContext context, SongListPageReady state, int index) {
   }, child:
       BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
     if (state is AudioPlayerIdeal && song.id == int.parse(state.mediaItem.id)) {
-      return _songTileSelected(context, song);
+      return selectIndicator(context, song);
     } else {
-      return _songTileNormal(context, song);
+      return songTileNormal(context, song);
     }
   }));
-}
-
-/// when selected, song tile look like this
-Widget _songTileSelected(BuildContext context, Song song) {
-  return Container(
-    color: Theme.of(context).colorScheme.primaryFixed.withAlpha(100),
-    child: _songTileNormal(context, song),
-  );
-}
-
-/// when not selected, song tile look like this
-Widget _songTileNormal(BuildContext context, Song song) {
-  return ListTile(
-    leading: Text("${song.track}", style: Theme.of(context).textTheme.titleMedium),
-    title: Text(formatTitle(song)),
-    subtitle: Text(formatSubtitle(song)),
-  );
 }

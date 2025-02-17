@@ -7,10 +7,8 @@ import '../data/models/models.dart';
 /// [washArtist] was applied when loading data from file
 /// this function is used to clean up the artist name
 String washArtist(String? artist) {
-  if (artist == null) {
-    return 'Unknown Artist';
-  } else if (artist.length > 20) {
-    return '${artist.substring(0, 20)}...';
+  if (artist == null || artist.length > 30) {
+    return "";
   }
   return artist;
 }
@@ -29,13 +27,11 @@ String getAlbumArtistBySet(Set<String> artists) {
 
 /// [sortSongs] was applied when loading data from file
 /// this function is used to sort the songs by title
-/// TODO: ignore artist depends on user selection
 /// sort definition:
-///  1. sort by artist
-///  2. sort by parts, same parts should be together
-///  3. sort by title. especially if number on title.
+///  1. sort by parts, same parts should be together
+///  2. sort by number in the title
+///  3. sort by title
 /// 1 > 2 > 3
-/// After sorting, write the "track" field into database
 void sortSongs(List<Song> songs) async {
   // Sort songs based on the defined criteria
   List<String> specialTitle = ["发刊词", "欢迎词"];
@@ -47,15 +43,26 @@ void sortSongs(List<Song> songs) async {
     }
 
     int partsComparison = a.parts.compareTo(b.parts);
-    print("${a.parts} ${b.parts} $partsComparison");
     if (partsComparison != 0) return partsComparison;
 
-    return a.title.compareTo(b.title);
+    int? aNumber = extractNumber(a.title);
+    int? bNumber = extractNumber(b.title);
+    if (aNumber != null && bNumber != null) {
+      return aNumber.compareTo(bNumber);
+    }
+
+    return a.title.toLowerCase().compareTo(b.title.toLowerCase());
   });
 
   for (int i = 0; i < songs.length; i++) {
     songs[i] = songs[i].copyWith(track: Value(i + 1));
   }
+}
+
+int? extractNumber(String title) {
+  RegExp regExp = RegExp(r'\d+');
+  Match? match = regExp.firstMatch(title);
+  return match != null ? int.parse(match.group(0)!) : null;
 }
 
 /// [cleanSongTitles] was applied when loading data from file

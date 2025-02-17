@@ -1,6 +1,5 @@
 import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/common/data/models/models.dart';
-import 'package:lemon/common/data/providers/load_from_db.dart';
 import 'package:lemon/common/data/repositories/song_repository.dart';
 import 'package:lemon/common/logic/service/audio_service.dart';
 import 'package:flutter/material.dart';
@@ -33,7 +32,6 @@ Future<void> setup() async {
       CoversRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<AlbumRepository>(
       AlbumRepository(getIt<AppDatabase>()));
-  getIt.registerSingleton<LoadFromDb>(LoadFromDb());
 
   getIt.registerSingleton<SettingsCubit>(SettingsCubit());
   getIt.registerSingleton<SongListPageBloc>(SongListPageBloc());

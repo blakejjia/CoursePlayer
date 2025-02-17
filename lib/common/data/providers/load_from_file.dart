@@ -91,6 +91,11 @@ Future<void> _handleSongs(
       // set cover ID
       int imageId = await _handlePictureSerialize(tag.pictures);
       (imageId != 0) ? playlistImageId = imageId : null;
+      // set song "parts"
+      List<String> parts = split(relative(file.path, from: folder.path));
+      String? part = parts.length > 1 ? parts.first : null;
+
+      // insert song
       getIt<SongRepository>().insertSong(
           artist: washArtist(tag.albumArtist),
           title: basename(file.path),
@@ -98,7 +103,7 @@ Future<void> _handleSongs(
           length: tag.duration ?? 0,
           imageId: imageId,
           path: file.path,
-          parts: split(relative(file.path, from: folder.path)).first,
+          parts: part,
           playedInSecond: 0);
       totalTracks++;
     }

@@ -2,8 +2,6 @@ import 'package:lemon/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 
 import '../../common/data/models/models.dart';
 
-
-
 /// format title to fit the screen
 /// - remove file extension
 String formatTitle(Song song) {
@@ -23,7 +21,11 @@ String formatTitle(Song song) {
 /// - artist (washed)
 /// - duration
 String formatSubtitle(Song song) {
-  String playedPercentage = song.playedInSecond == 0 ? '' : '${(song.playedInSecond / song.length * 100).toStringAsFixed(0)}%';
+  // format played time in percentage
+  String playedPercentage = song.playedInSecond == 0
+      ? ''
+      : '${((song.playedInSecond / song.length * 100).clamp(0, 100)).toStringAsFixed(0)}%';
+  // format duration
   String duration = () {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
     int hours = song.length ~/ 3600;
@@ -37,11 +39,17 @@ String formatSubtitle(Song song) {
       return "$twoDigitMinutes:$twoDigitSeconds";
     }
   }();
-  return '${playedPercentage.isNotEmpty ? '$playedPercentage | ' : ''}${song.artist} | $duration';
+  // format artist
+  String artist = song.artist;
+  // return formatted subtitle
+  return '${playedPercentage.isNotEmpty ? '$playedPercentage | ' : ''}${artist.isNotEmpty ? '$artist | ' : ''}$duration';
 }
 
-String contiButton(SongListPageReady state){
-  return state.album.lastPlayedIndex == -1
-      ? "start playing"
-      : "continue songId: #${state.album.lastPlayedIndex}";
+String contiButton(SongListPageReady state) {
+  int songId = state.album.lastPlayedIndex;
+  if (songId == -1) {
+    return "start playing";
+  }
+  Song? song = state.buffer?.firstWhere((song) => song.id == songId);
+  return "continue: ${formatTitle(song!)}";
 }

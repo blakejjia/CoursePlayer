@@ -17,7 +17,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
     required int length,
     required int imageId,
     required String path,
-    required String parts,
+    String? parts,
     required int playedInSecond,
   }) async {
     return await into(db.songs).insert(
@@ -28,7 +28,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
         length: Value(length),
         imageId: Value(imageId),
         path: Value(path),
-        parts: Value(parts),
+        parts: Value(parts??''),
         playedInSecond: Value(playedInSecond),
       ),
     );
@@ -47,7 +47,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
     return _handleSongs(songs);
   }
 
-  /// this is the sort function for playlist
+  /// Core sorting function
   List<Song> _handleSongs(List<Song> songs) {
     sortSongs(songs);
     if (getIt<SettingsCubit>().state.cleanFileName) {
