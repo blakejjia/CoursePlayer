@@ -91,7 +91,6 @@ Future<void> _handleSongs(
       // set cover ID
       int imageId = await _handlePictureSerialize(tag.pictures);
       (imageId != 0) ? playlistImageId = imageId : null;
-
       getIt<SongRepository>().insertSong(
           artist: washArtist(tag.albumArtist),
           title: basename(file.path),
@@ -99,7 +98,7 @@ Future<void> _handleSongs(
           length: tag.duration ?? 0,
           imageId: imageId,
           path: file.path,
-          parts: basename(folder.parent.path),
+          parts: split(relative(file.path, from: folder.path)).first,
           playedInSecond: 0);
       totalTracks++;
     }

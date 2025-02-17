@@ -48,6 +48,11 @@ class $SongsTable extends Songs with TableInfo<$SongsTable, Song> {
   late final GeneratedColumn<String> parts = GeneratedColumn<String>(
       'parts', aliasedName, false,
       type: DriftSqlType.string, requiredDuringInsert: true);
+  static const VerificationMeta _trackMeta = const VerificationMeta('track');
+  @override
+  late final GeneratedColumn<int> track = GeneratedColumn<int>(
+      'track', aliasedName, true,
+      type: DriftSqlType.int, requiredDuringInsert: false);
   static const VerificationMeta _pathMeta = const VerificationMeta('path');
   @override
   late final GeneratedColumn<String> path = GeneratedColumn<String>(
@@ -60,8 +65,18 @@ class $SongsTable extends Songs with TableInfo<$SongsTable, Song> {
       'played_in_second', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, artist, title, length, imageId, album, parts, path, playedInSecond];
+  List<GeneratedColumn> get $columns => [
+        id,
+        artist,
+        title,
+        length,
+        imageId,
+        album,
+        parts,
+        track,
+        path,
+        playedInSecond
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -111,6 +126,10 @@ class $SongsTable extends Songs with TableInfo<$SongsTable, Song> {
     } else if (isInserting) {
       context.missing(_partsMeta);
     }
+    if (data.containsKey('track')) {
+      context.handle(
+          _trackMeta, track.isAcceptableOrUnknown(data['track']!, _trackMeta));
+    }
     if (data.containsKey('path')) {
       context.handle(
           _pathMeta, path.isAcceptableOrUnknown(data['path']!, _pathMeta));
@@ -148,6 +167,8 @@ class $SongsTable extends Songs with TableInfo<$SongsTable, Song> {
           .read(DriftSqlType.int, data['${effectivePrefix}album'])!,
       parts: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}parts'])!,
+      track: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}track']),
       path: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}path'])!,
       playedInSecond: attachedDatabase.typeMapping
@@ -177,6 +198,9 @@ class Song extends DataClass implements Insertable<Song> {
   /// the name of closest folder, used for sorting
   final String parts;
 
+  /// Track number in the album
+  final int? track;
+
   /// ---------- file information -----------
   final String path;
 
@@ -190,6 +214,7 @@ class Song extends DataClass implements Insertable<Song> {
       required this.imageId,
       required this.album,
       required this.parts,
+      this.track,
       required this.path,
       required this.playedInSecond});
   @override
@@ -202,6 +227,9 @@ class Song extends DataClass implements Insertable<Song> {
     map['image_id'] = Variable<int>(imageId);
     map['album'] = Variable<int>(album);
     map['parts'] = Variable<String>(parts);
+    if (!nullToAbsent || track != null) {
+      map['track'] = Variable<int>(track);
+    }
     map['path'] = Variable<String>(path);
     map['played_in_second'] = Variable<int>(playedInSecond);
     return map;
@@ -216,6 +244,8 @@ class Song extends DataClass implements Insertable<Song> {
       imageId: Value(imageId),
       album: Value(album),
       parts: Value(parts),
+      track:
+          track == null && nullToAbsent ? const Value.absent() : Value(track),
       path: Value(path),
       playedInSecond: Value(playedInSecond),
     );
@@ -232,6 +262,7 @@ class Song extends DataClass implements Insertable<Song> {
       imageId: serializer.fromJson<int>(json['imageId']),
       album: serializer.fromJson<int>(json['album']),
       parts: serializer.fromJson<String>(json['parts']),
+      track: serializer.fromJson<int?>(json['track']),
       path: serializer.fromJson<String>(json['path']),
       playedInSecond: serializer.fromJson<int>(json['playedInSecond']),
     );
@@ -247,6 +278,7 @@ class Song extends DataClass implements Insertable<Song> {
       'imageId': serializer.toJson<int>(imageId),
       'album': serializer.toJson<int>(album),
       'parts': serializer.toJson<String>(parts),
+      'track': serializer.toJson<int?>(track),
       'path': serializer.toJson<String>(path),
       'playedInSecond': serializer.toJson<int>(playedInSecond),
     };
@@ -260,6 +292,7 @@ class Song extends DataClass implements Insertable<Song> {
           int? imageId,
           int? album,
           String? parts,
+          Value<int?> track = const Value.absent(),
           String? path,
           int? playedInSecond}) =>
       Song(
@@ -270,6 +303,7 @@ class Song extends DataClass implements Insertable<Song> {
         imageId: imageId ?? this.imageId,
         album: album ?? this.album,
         parts: parts ?? this.parts,
+        track: track.present ? track.value : this.track,
         path: path ?? this.path,
         playedInSecond: playedInSecond ?? this.playedInSecond,
       );
@@ -282,6 +316,7 @@ class Song extends DataClass implements Insertable<Song> {
       imageId: data.imageId.present ? data.imageId.value : this.imageId,
       album: data.album.present ? data.album.value : this.album,
       parts: data.parts.present ? data.parts.value : this.parts,
+      track: data.track.present ? data.track.value : this.track,
       path: data.path.present ? data.path.value : this.path,
       playedInSecond: data.playedInSecond.present
           ? data.playedInSecond.value
@@ -299,6 +334,7 @@ class Song extends DataClass implements Insertable<Song> {
           ..write('imageId: $imageId, ')
           ..write('album: $album, ')
           ..write('parts: $parts, ')
+          ..write('track: $track, ')
           ..write('path: $path, ')
           ..write('playedInSecond: $playedInSecond')
           ..write(')'))
@@ -306,8 +342,8 @@ class Song extends DataClass implements Insertable<Song> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, artist, title, length, imageId, album, parts, path, playedInSecond);
+  int get hashCode => Object.hash(id, artist, title, length, imageId, album,
+      parts, track, path, playedInSecond);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -319,6 +355,7 @@ class Song extends DataClass implements Insertable<Song> {
           other.imageId == this.imageId &&
           other.album == this.album &&
           other.parts == this.parts &&
+          other.track == this.track &&
           other.path == this.path &&
           other.playedInSecond == this.playedInSecond);
 }
@@ -331,6 +368,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
   final Value<int> imageId;
   final Value<int> album;
   final Value<String> parts;
+  final Value<int?> track;
   final Value<String> path;
   final Value<int> playedInSecond;
   const SongsCompanion({
@@ -341,6 +379,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
     this.imageId = const Value.absent(),
     this.album = const Value.absent(),
     this.parts = const Value.absent(),
+    this.track = const Value.absent(),
     this.path = const Value.absent(),
     this.playedInSecond = const Value.absent(),
   });
@@ -352,6 +391,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
     required int imageId,
     required int album,
     required String parts,
+    this.track = const Value.absent(),
     required String path,
     required int playedInSecond,
   })  : artist = Value(artist),
@@ -370,6 +410,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
     Expression<int>? imageId,
     Expression<int>? album,
     Expression<String>? parts,
+    Expression<int>? track,
     Expression<String>? path,
     Expression<int>? playedInSecond,
   }) {
@@ -381,6 +422,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
       if (imageId != null) 'image_id': imageId,
       if (album != null) 'album': album,
       if (parts != null) 'parts': parts,
+      if (track != null) 'track': track,
       if (path != null) 'path': path,
       if (playedInSecond != null) 'played_in_second': playedInSecond,
     });
@@ -394,6 +436,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
       Value<int>? imageId,
       Value<int>? album,
       Value<String>? parts,
+      Value<int?>? track,
       Value<String>? path,
       Value<int>? playedInSecond}) {
     return SongsCompanion(
@@ -404,6 +447,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
       imageId: imageId ?? this.imageId,
       album: album ?? this.album,
       parts: parts ?? this.parts,
+      track: track ?? this.track,
       path: path ?? this.path,
       playedInSecond: playedInSecond ?? this.playedInSecond,
     );
@@ -433,6 +477,9 @@ class SongsCompanion extends UpdateCompanion<Song> {
     if (parts.present) {
       map['parts'] = Variable<String>(parts.value);
     }
+    if (track.present) {
+      map['track'] = Variable<int>(track.value);
+    }
     if (path.present) {
       map['path'] = Variable<String>(path.value);
     }
@@ -452,6 +499,7 @@ class SongsCompanion extends UpdateCompanion<Song> {
           ..write('imageId: $imageId, ')
           ..write('album: $album, ')
           ..write('parts: $parts, ')
+          ..write('track: $track, ')
           ..write('path: $path, ')
           ..write('playedInSecond: $playedInSecond')
           ..write(')'))
@@ -1193,6 +1241,7 @@ typedef $$SongsTableCreateCompanionBuilder = SongsCompanion Function({
   required int imageId,
   required int album,
   required String parts,
+  Value<int?> track,
   required String path,
   required int playedInSecond,
 });
@@ -1204,6 +1253,7 @@ typedef $$SongsTableUpdateCompanionBuilder = SongsCompanion Function({
   Value<int> imageId,
   Value<int> album,
   Value<String> parts,
+  Value<int?> track,
   Value<String> path,
   Value<int> playedInSecond,
 });
@@ -1236,6 +1286,9 @@ class $$SongsTableFilterComposer extends Composer<_$AppDatabase, $SongsTable> {
 
   ColumnFilters<String> get parts => $composableBuilder(
       column: $table.parts, builder: (column) => ColumnFilters(column));
+
+  ColumnFilters<int> get track => $composableBuilder(
+      column: $table.track, builder: (column) => ColumnFilters(column));
 
   ColumnFilters<String> get path => $composableBuilder(
       column: $table.path, builder: (column) => ColumnFilters(column));
@@ -1275,6 +1328,9 @@ class $$SongsTableOrderingComposer
   ColumnOrderings<String> get parts => $composableBuilder(
       column: $table.parts, builder: (column) => ColumnOrderings(column));
 
+  ColumnOrderings<int> get track => $composableBuilder(
+      column: $table.track, builder: (column) => ColumnOrderings(column));
+
   ColumnOrderings<String> get path => $composableBuilder(
       column: $table.path, builder: (column) => ColumnOrderings(column));
 
@@ -1313,6 +1369,9 @@ class $$SongsTableAnnotationComposer
   GeneratedColumn<String> get parts =>
       $composableBuilder(column: $table.parts, builder: (column) => column);
 
+  GeneratedColumn<int> get track =>
+      $composableBuilder(column: $table.track, builder: (column) => column);
+
   GeneratedColumn<String> get path =>
       $composableBuilder(column: $table.path, builder: (column) => column);
 
@@ -1350,6 +1409,7 @@ class $$SongsTableTableManager extends RootTableManager<
             Value<int> imageId = const Value.absent(),
             Value<int> album = const Value.absent(),
             Value<String> parts = const Value.absent(),
+            Value<int?> track = const Value.absent(),
             Value<String> path = const Value.absent(),
             Value<int> playedInSecond = const Value.absent(),
           }) =>
@@ -1361,6 +1421,7 @@ class $$SongsTableTableManager extends RootTableManager<
             imageId: imageId,
             album: album,
             parts: parts,
+            track: track,
             path: path,
             playedInSecond: playedInSecond,
           ),
@@ -1372,6 +1433,7 @@ class $$SongsTableTableManager extends RootTableManager<
             required int imageId,
             required int album,
             required String parts,
+            Value<int?> track = const Value.absent(),
             required String path,
             required int playedInSecond,
           }) =>
@@ -1383,6 +1445,7 @@ class $$SongsTableTableManager extends RootTableManager<
             imageId: imageId,
             album: album,
             parts: parts,
+            track: track,
             path: path,
             playedInSecond: playedInSecond,
           ),

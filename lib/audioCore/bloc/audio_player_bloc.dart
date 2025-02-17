@@ -115,7 +115,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         MediaItem(id: '0', title: ''), PlaybackState(), event.album));
 
     await audioHandler.locateAudio(
-        songs!
+        songs
             .whereType<Song>()
             .map((song) => MediaItem(
                   id: song.id.toString(),

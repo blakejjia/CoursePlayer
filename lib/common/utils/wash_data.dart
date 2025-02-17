@@ -1,5 +1,7 @@
 // TODO 1: algorithms here weather applied depends on settings bloc
 
+import 'package:drift/drift.dart';
+
 import '../data/models/models.dart';
 
 /// [washArtist] was applied when loading data from file
@@ -25,42 +27,35 @@ String getAlbumArtistBySet(Set<String> artists) {
   }
 }
 
-/// [sortSongsByTitle] was applied when loading data from file
+/// [sortSongs] was applied when loading data from file
 /// this function is used to sort the songs by title
 /// TODO: ignore artist depends on user selection
-void sortSongsByTitle(List<Song> songs) {
+/// sort definition:
+///  1. sort by artist
+///  2. sort by parts, same parts should be together
+///  3. sort by title. especially if number on title.
+/// 1 > 2 > 3
+/// After sorting, write the "track" field into database
+void sortSongs(List<Song> songs) async {
+  // Sort songs based on the defined criteria
+  List<String> specialTitle = ["发刊词", "欢迎词"];
   songs.sort((a, b) {
-    int artistComparison = a.artist.compareTo(b.artist);
-    if (artistComparison != 0) {
-      return artistComparison;
-    }
-
-    bool aContainsPreface = a.title.contains("发刊") || a.title.contains("欢迎词");
-    bool bContainsPreface = b.title.contains("发刊") || b.title.contains("欢迎词");
-
-    if (aContainsPreface && !bContainsPreface) {
+    if (specialTitle.contains(a.title)) {
       return -1;
-    }
-    if (bContainsPreface && !aContainsPreface) {
+    } else if (specialTitle.contains(b.title)) {
       return 1;
     }
 
-    // find number in title, reasonable sort for numbers
-    int? extractNumber(String title) {
-      RegExp regExp = RegExp(r'\d+');
-      Match? match = regExp.firstMatch(title);
-      return match != null ? int.parse(match.group(0)!) : null;
-    }
+    int partsComparison = a.parts.compareTo(b.parts);
+    print("${a.parts} ${b.parts} $partsComparison");
+    if (partsComparison != 0) return partsComparison;
 
-    int? aNumber = extractNumber(a.title);
-    int? bNumber = extractNumber(b.title);
-
-    if (aNumber != null && bNumber != null) {
-      return aNumber.compareTo(bNumber);
-    }
-
-    return a.title.toLowerCase().compareTo(b.title.toLowerCase());
+    return a.title.compareTo(b.title);
   });
+
+  for (int i = 0; i < songs.length; i++) {
+    songs[i] = songs[i].copyWith(track: Value(i + 1));
+  }
 }
 
 /// [cleanSongTitles] was applied when loading data from file
@@ -93,17 +88,7 @@ List<Song> cleanSongTitles(List<Song> songs) {
     cleanedTitle = cleanedTitle.replaceAll('&', '');
 
     // 返回一个新的 Song 实例，保持其他属性不变
-    return Song(
-      id: song.id,
-      artist: song.artist,
-      title: cleanedTitle,
-      album: song.album,
-      parts: song.parts,
-      length: song.length,
-      imageId: song.imageId,
-      path: song.path,
-      playedInSecond: song.playedInSecond,
-    );
+    return song.copyWith(title: cleanedTitle);
   }).toList();
 }
 

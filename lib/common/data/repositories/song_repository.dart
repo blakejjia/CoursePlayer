@@ -1,6 +1,10 @@
 import 'package:lemon/common/data/models/models.dart';
 import 'package:drift/drift.dart';
 
+import '../../../main.dart';
+import '../../../settingsPage/bloc/settings_cubit.dart';
+import '../../utils/wash_data.dart';
+
 @DriftAccessor(tables: [Songs])
 class SongRepository extends DatabaseAccessor<AppDatabase> {
   SongRepository(super.db);
@@ -37,18 +41,29 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
         .getSingleOrNull();
   }
 
-  // TODO: change model and change this
   Future<List<Song>?> getSongsByAlbumId(int id) async {
     if (id == 0) return null;
-    return await (db.select(db.songs)..where((tbl) => tbl.album.equals(id)))
-        .get();
+    List<Song> songs = await (db.select(db.songs)..where((tbl) => tbl.album.equals(id))).get();
+    return _handleSongs(songs);
+  }
+
+  /// this is the sort function for playlist
+  List<Song> _handleSongs(List<Song> songs) {
+    sortSongs(songs);
+    if (getIt<SettingsCubit>().state.cleanFileName) {
+      List<Song> cleanedSongList = cleanSongTitles(songs);
+      return cleanedSongList;
+    }
+    return songs;
   }
 
   // update
-  Future<bool> updateSong(Song song) => db.update(db.songs).replace(song);
   Future<int> updateSongProgress(int id, int playedInSecond) =>
       (db.update(db.songs)..where((s) => s.id.equals(id)))
           .write(SongsCompanion(playedInSecond: Value(playedInSecond)));
+  Future<int> updateSongTrack(int id, int track) =>
+      (db.update(db.songs)..where((s) => s.id.equals(id)))
+          .write(SongsCompanion(track: Value(track)));
 
   // delete
   Future<int> deleteSong(int id) =>

@@ -58,16 +58,14 @@ class SongsListPage extends StatelessWidget {
                           ElevatedButton(
                               onPressed: () {
                                 context.read<AudioPlayerBloc>().add(LocateAudio(
-                                    state.album,
-                                    state.album.lastPlayedIndex));
+                                    state.album, state.album.lastPlayedIndex));
                               },
                               child: Text(contiButton(state)))
                         ],
                       );
                     } else {
                       /// song tile section
-                      return _songTile(
-                          context, state, index);
+                      return _songTile(context, state, index);
                     }
                   },
                 ),
@@ -88,43 +86,35 @@ class SongsListPage extends StatelessWidget {
 
 Widget _songTile(BuildContext context, SongListPageReady state, int index) {
   Album album = state.album;
-  List<Song>? buffer= state.buffer;
+  List<Song>? buffer = state.buffer;
   Song song = state.buffer![index - 1];
   return InkWell(onTap: () {
-    context.read<AudioPlayerBloc>().add(LocateAudio(album, song.id, buffer: buffer));
+    context
+        .read<AudioPlayerBloc>()
+        .add(LocateAudio(album, song.id, buffer: buffer));
   }, child:
       BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
     if (state is AudioPlayerIdeal && song.id == int.parse(state.mediaItem.id)) {
       return _songTileSelected(context, song);
     } else {
-      return _songTileNormal(song);
+      return _songTileNormal(context, song);
     }
   }));
 }
 
 /// when selected, song tile look like this
-Container _songTileSelected(BuildContext context, Song song) {
+Widget _songTileSelected(BuildContext context, Song song) {
   return Container(
     color: Theme.of(context).colorScheme.primaryFixed.withAlpha(100),
-    child: _songTileNormal(song),
+    child: _songTileNormal(context, song),
   );
 }
 
 /// when not selected, song tile look like this
-ListTile _songTileNormal(Song song) {
+Widget _songTileNormal(BuildContext context, Song song) {
   return ListTile(
-      title: Text(formatTitle(song.title)),
-      subtitle: Row(
-        children: [
-          Text(
-            song.artist,
-            overflow: TextOverflow.ellipsis,
-          ),
-          const SizedBox(
-            width: 20,
-          ),
-          Text(formatDuration(song.length))
-        ],
-      ),
-      trailing: (song.playedInSecond == 0) ? null : Text(formatProgress(song)));
+    leading: Text("${song.track}", style: Theme.of(context).textTheme.titleMedium),
+    title: Text(formatTitle(song)),
+    subtitle: Text(formatSubtitle(song)),
+  );
 }

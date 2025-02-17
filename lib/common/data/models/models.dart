@@ -14,9 +14,10 @@ class Songs extends Table{
 
   /// name of head folder at indexing folder
   IntColumn get album => integer()();
-
   /// the name of closest folder, used for sorting
   TextColumn get parts => text()();
+  /// Track number in the album
+  IntColumn get track => integer().nullable()();
 
   /// ---------- file information -----------
   TextColumn get path => text()();
