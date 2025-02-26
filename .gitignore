@@ -10,12 +10,15 @@
 .svn/
 migrate_working_dir/
 
-# IntelliJ related
+# IntelliJ / Android Studio related
 *.iml
 *.ipr
 *.iws
 .idea/
+.gradle/
+.cxx/
 
+# VS Code related
 # The .vscode folder contains launch configuration and tasks you configure in
 # VS Code which you may wish to be included in version control, so this line
 # is commented out by default.
@@ -27,9 +30,26 @@ migrate_working_dir/
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
+build/
+
+# Android related
+/android/app/debug/
+/android/app/profile/
+/android/app/release/
+/android/app/.cxx/
+/android/.gradle/
+/android/.idea/
+/android/local.properties
+/android/app/libs/
+
+# iOS related
+ios/.symlinks/
+/ios/Flutter/Flutter.podspec
+ios/Pods/
+/ios/.generated/
 
 # Symbolication related
 app.*.symbols
@@ -37,7 +57,12 @@ app.*.symbols
 # Obfuscation related
 app.*.map.json
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Generated key stores
+android/app/*.keystore
+android/app/key.properties
+
+# Fastlane related
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/
+fastlane/test_output/

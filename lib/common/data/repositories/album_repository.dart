@@ -7,7 +7,7 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
 
   /// update last played index with id
   Future<int> updateLastPlayedTimeWithId(int id) async {
-    int timestamp = double.parse(DateTime.timestamp().toString()).round();
+    int timestamp = DateTime.now().millisecondsSinceEpoch;
     return await (update(db.albums)..where((tbl) => tbl.id.equals(id)))
         .write(AlbumsCompanion(lastPlayedTime: Value(timestamp)));
   }
@@ -37,19 +37,6 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
         playedTracks: Value(playedTracks),
       ),
     );
-  }
-
-  /// Update all album progress
-  Future<int> updateAllAlbumProgress() async {
-    final albums = await getAllAlbums();
-    int updatedCount = 0;
-
-    for (var album in albums) {
-      await updateAlbumProgress(album);
-      updatedCount++;
-    }
-
-    return updatedCount;
   }
 
   /// insert a new album to the database
@@ -90,8 +77,12 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
   }
 
   /// get all albums from the database
-  Future<List<Album>> getAllAlbums() async {
-    return await select(db.albums).get();
+  Future<List<Album>> getAlbumsByLastPlayedTime() async {
+    return await (select(db.albums)
+          ..orderBy([
+            (tbl) => OrderingTerm(expression: tbl.lastPlayedTime, mode: OrderingMode.desc),
+          ]))
+        .get();
   }
 
   /// destroy the album database

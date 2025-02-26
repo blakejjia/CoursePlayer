@@ -15,13 +15,15 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
   /// Initialize the data for all albums, from database
   /// called when album page init state.
   Future<void> load() async {
-    await getIt<AlbumRepository>().updateAllAlbumProgress();
-    final albums = await getIt<AlbumRepository>().getAllAlbums();
+    final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
     emit(state.copyWith(albums: albums));
   }
 
+  // Update the last played time of the album
+  // And, update the last played index of the album
   void updateHistory(LatestPlayed history){
     emit(state.copyWith(latestPlayed: history));
+    getIt<AlbumRepository>().updateLastPlayedTimeWithId(history.album.id);
   }
 
   @override

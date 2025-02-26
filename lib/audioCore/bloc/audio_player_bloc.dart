@@ -66,6 +66,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         playbackState: event.playbackState,
       ));
       if (event.playbackState.playing) {
+        // update song progress
         getIt<SongRepository>().updateSongProgress(
             int.parse(event.mediaItem.id),
             event.playbackState.position.inSeconds);
