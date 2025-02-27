@@ -21,7 +21,7 @@ Future<void> writeArtistTag(String baseFolderPath, String artist,
       // TODO: 定向rebuild database
       await AudioTags.write(file.path, newTag);
     } catch (e) {
-      print(e);
+      print('Error writing tag to file: $e');
     }
   }
 }

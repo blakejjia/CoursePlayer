@@ -14,11 +14,11 @@ part 'song_lists_page_state.dart';
 
 class SongListPageBloc extends Bloc<SongListPageEvent, SongListPageState> {
   SongListPageBloc() : super(SongListPageLoading()) {
-    on<SongListLocatePlaylist>(_onLocatePlaylist);
+    on<SongListLocateAlbum>(_onLocateAlbum);
     on<UpdateSongListEvent>(_onUpdateSongList);
   }
 
-  Future<void> _onLocatePlaylist(event, emit) async {
+  Future<void> _onLocateAlbum(event, emit) async {
     emit(SongListPageLoading());
     List<Song>? songList =
         await getIt<SongRepository>().getSongsByAlbumId(event.album.id);

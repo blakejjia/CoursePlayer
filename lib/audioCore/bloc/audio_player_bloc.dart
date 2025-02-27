@@ -109,11 +109,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
   Future<void> _onLocateAudio(event, emit) async {
     List<Song>? songs = (event.buffer) ??
         await getIt<SongRepository>().getSongsByAlbumId(event.album.id);
-    int index = songs?.indexWhere((song) => song.id == event.songId) ?? 0;
-    int position = songs![index].playedInSecond;
+    int index = songs!.indexWhere((song) => song.id == event.songId);
+    songs = songs.sublist(index);
+    int position = songs[0].playedInSecond;
 
     emit(AudioPlayerIdeal(
-        MediaItem(id: '0', title: ''), PlaybackState(), event.album));
+        MediaItem(id: '', title: ''), PlaybackState(), event.album));
 
     await audioHandler.locateAudio(
         songs
@@ -130,7 +131,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
             .cast<MediaItem>()
             .toList(),
         songs.map((song) => song.path).toList().cast<String>(),
-        index,
+        0,
         position);
   }
 
