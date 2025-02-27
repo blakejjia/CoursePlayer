@@ -65,9 +65,10 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
       (db.update(db.songs)..where((s) => s.id.equals(id)))
           .write(SongsCompanion(track: Value(track)));
 
-  // delete
+  /// -------------- delete ----------------
   Future<int> deleteSong(int id) =>
       (db.delete(db.songs)..where((s) => s.id.equals(id))).go();
-  // destroy
   Future<int> destroySongDb() => db.delete(db.songs).go();
+  Future<int> deleteSongsByAlbumId(int id) =>
+      (db.delete(db.songs)..where((s) => s.album.equals(id))).go();
 }

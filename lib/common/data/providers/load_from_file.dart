@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/common/utils/wash_data.dart';
 import 'package:lemon/main.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,9 @@ import '../repositories/covers_repository.dart';
 import '../repositories/album_repository.dart';
 import '../repositories/song_repository.dart';
 
-Future<void> load(String path) async {
+/// This function rebuilds the database from the given path.
+/// Given path is the base folder where all the albums are stored.
+Future<int> rebuildDb(String path) async {
   // init
   getIt<SettingsCubit>().stateRebuilding();
   await getIt<SongRepository>().destroySongDb();
@@ -29,6 +32,31 @@ Future<void> load(String path) async {
     }
   }
   getIt<SettingsCubit>().updateRebuiltTime();
+  return 0;
+}
+
+/// This function rebuilds the database from the given path.
+/// Given path is the base folder of only one album.
+/// If the album is already in the database (same sourcePath), it will be updated.
+/// If not, add it to database
+Future<int> partialRebuild(String baseFolderPath) async {
+  Fluttertoast.showToast(msg: 'Rebuilding database...');
+  final directory = Directory(baseFolderPath);
+  if (await directory.exists()) {
+    int? albumId = await getIt<AlbumRepository>().getAlbumIdByPath(baseFolderPath).then((album) => album?.id);
+    if (albumId != null) {
+      await getIt<AlbumRepository>().deleteAlbumById(albumId);
+      await getIt<SongRepository>().deleteSongsByAlbumId(albumId);
+    } else {
+      albumId = await getIt<AlbumRepository>().getNextAlbumId();
+    }
+    await _handleAlbum(directory, albumId);
+    Fluttertoast.showToast(msg: 'Database rebuilt');
+    getIt<SettingsCubit>().updateRebuiltTime();
+    return 0;
+  }
+  Fluttertoast.showToast(msg: 'Error: Directory not found');
+  return 1;
 }
 
 /// Handling one playlist, write to both [Song] and [Playlist] table

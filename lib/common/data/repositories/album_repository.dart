@@ -39,7 +39,7 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
     );
   }
 
-  /// insert a new album to the database
+  /// insert
   Future<int> insertAlbum(
       {int? id,
       required String title,
@@ -76,32 +76,45 @@ class AlbumRepository extends DatabaseAccessor<AppDatabase> {
     );
   }
 
-  /// get all albums from the database
+  ///  ------------------ get -----------------------
   Future<List<Album>> getAlbumsByLastPlayedTime() async {
     return await (select(db.albums)
           ..orderBy([
-            (tbl) => OrderingTerm(expression: tbl.lastPlayedTime, mode: OrderingMode.desc),
+            (tbl) => OrderingTerm(
+                expression: tbl.lastPlayedTime, mode: OrderingMode.desc),
           ]))
         .get();
   }
 
-  /// destroy the album database
-  Future<int> destroyAlbumDb() => db.delete(db.albums).go();
-
-  /// get album by name
-  Future<Album?> getAlbumByName(String name) async {
-    return await (select(db.albums)..where((tbl) => tbl.title.equals(name)))
-        .getSingleOrNull();
-  }
-
-  /// get album by id
   Future<Album?> getAlbumById(int id) async {
     return await (select(db.albums)..where((tbl) => tbl.id.equals(id)))
         .getSingleOrNull();
   }
 
-  /// delete album
-  Future<int> deleteAlbum(int id) async {
+  Future<Album?> getAlbumIdByPath(String path) async {
+    return await (select(db.albums)
+          ..where((tbl) => tbl.sourcePath.equals(path)))
+        .getSingleOrNull();
+  }
+
+  Future<Album?> getAlbumByName(String name) async {
+    return await (select(db.albums)..where((tbl) => tbl.title.equals(name)))
+        .getSingleOrNull();
+  }
+
+  Future<int> getNextAlbumId() async {
+    final album = await (select(db.albums)
+          ..orderBy([
+            (tbl) => OrderingTerm(expression: tbl.id, mode: OrderingMode.desc)
+          ]))
+        .getSingleOrNull();
+    return album?.id ?? 0;
+  }
+
+  /// ------------------------ delete ------------------------
+  Future<int> deleteAlbumById(int id) async {
     return await (delete(db.albums)..where((tbl) => tbl.id.equals(id))).go();
   }
+
+  Future<int> destroyAlbumDb() => db.delete(db.albums).go();
 }

@@ -40,7 +40,7 @@ class SettingPage extends StatelessWidget {
                 title: Text("rebuild index"),
                 trailing: Text(state.dbRebuiltTime?.split('.')[0] ?? "not yet built"),
                 onTap: () =>
-                    load(context.read<SettingsCubit>().state.audioPath),
+                    rebuildDb(context.read<SettingsCubit>().state.audioPath),
               ),
             ]),
 
@@ -105,6 +105,6 @@ Future<void> _handleChangeDir(SettingsCubit settingsCubit) async {
   String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
   if (selectedDirectory != null) {
     settingsCubit.setPath(selectedDirectory);
-    load(selectedDirectory);
+    rebuildDb(selectedDirectory);
   }
 }

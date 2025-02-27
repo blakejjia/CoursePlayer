@@ -28,6 +28,7 @@ dependencies:
   share_plus: ^10.1.2
   flutter_launcher_icons: ^0.14.3
   audiotags: ^1.4.3
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
