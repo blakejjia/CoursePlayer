@@ -19,16 +19,15 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
   /// called when album page init state.
   Future<void> load() async {
     emit(
-      AlbumPageInitial(isGridView: state.isGridView),
+      AlbumPageInitial(
+          isGridView: state.isGridView, latestPlayed: state.latestPlayed),
     );
     final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
     emit(
       AlbumPageIdeal(
         isGridView: state.isGridView,
         albums: albums,
-        latestPlayed: state is AlbumPageIdeal
-            ? (state as AlbumPageIdeal).latestPlayed
-            : null,
+        latestPlayed: state.latestPlayed,
       ),
     );
   }
@@ -36,13 +35,7 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
   // Update the last played time of the album
   // And, update the last played index of the album
   void updateHistory(LatestPlayed history) {
-    emit(
-      AlbumPageIdeal(
-        isGridView: state.isGridView,
-        albums: (state as AlbumPageIdeal).albums,
-        latestPlayed: history,
-      ),
-    );
+    emit(state.copyWith(latestPlayed: history));
     getIt<AlbumRepository>().updateLastPlayedTimeWithId(history.album.id);
   }
 

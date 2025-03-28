@@ -66,10 +66,12 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         playbackState: event.playbackState,
       ));
       if (event.playbackState.playing) {
-        // update song progress
+        // update song progresses
         getIt<SongRepository>().updateSongProgress(
             int.parse(event.mediaItem.id),
             event.playbackState.position.inSeconds);
+        getIt<AlbumPageCubit>().updateHistory(LatestPlayed(
+            (state as AudioPlayerIdeal).album, int.parse(event.mediaItem.id)));
       }
     }
   }
@@ -157,9 +159,6 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     // refresh blocs
     getIt<SongListPageBloc>().add(UpdateSongListEvent());
     getIt<AlbumPageCubit>().load();
-    // TODO: move this logic to settings
-    getIt<AlbumPageCubit>().updateHistory(LatestPlayed(
-        (state as AudioPlayerIdeal).album, int.parse(event.mediaItem.id)));
   }
 
   @override

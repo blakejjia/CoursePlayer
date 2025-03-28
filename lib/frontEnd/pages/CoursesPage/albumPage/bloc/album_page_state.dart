@@ -26,10 +26,11 @@ class LatestPlayed {
 abstract class AlbumPageState {
   /// Whether the playlist is displayed in grid view or list view.
   final bool isGridView;
+  final LatestPlayed? latestPlayed;
 
-  const AlbumPageState({required this.isGridView});
+  const AlbumPageState({required this.isGridView, this.latestPlayed});
 
-  AlbumPageState copyWith({bool? isGridView});
+  AlbumPageState copyWith({bool? isGridView, LatestPlayed? latestPlayed});
   Map<String, dynamic> toMap();
   factory AlbumPageState.fromMap(Map<String, dynamic> map) {
     if (map['isGridView'] == null) {
@@ -44,12 +45,13 @@ abstract class AlbumPageState {
 
 /// [AlbumPageInitial] represents the initial state of the [AlbumPageCubit].
 class AlbumPageInitial extends AlbumPageState {
-  const AlbumPageInitial({required super.isGridView});
+  const AlbumPageInitial({required super.isGridView, super.latestPlayed});
 
   @override
-  AlbumPageInitial copyWith({bool? isGridView}) {
+  AlbumPageInitial copyWith({bool? isGridView, LatestPlayed? latestPlayed}) {
     return AlbumPageInitial(
       isGridView: isGridView ?? this.isGridView,
+      latestPlayed: latestPlayed ?? this.latestPlayed,
     );
   }
 
@@ -57,12 +59,16 @@ class AlbumPageInitial extends AlbumPageState {
   Map<String, dynamic> toMap() {
     return {
       'isGridView': isGridView,
+      'latestPlayed': latestPlayed?.toMap(),
     };
   }
 
   factory AlbumPageInitial.fromMap(Map<String, dynamic> map) {
     return AlbumPageInitial(
       isGridView: map['isGridView'] as bool? ?? false,
+      latestPlayed: map['latestPlayed'] != null
+          ? LatestPlayed.fromMap(map['latestPlayed'] as Map<String, dynamic>)
+          : null,
     );
   }
 }
@@ -72,13 +78,10 @@ class AlbumPageIdeal extends AlbumPageState {
   /// All albums in the database to display, initialized when app loads.
   final List<Album> albums;
 
-  /// The latest played song, represented as a pair of [Album] and [SongId].
-  final LatestPlayed? latestPlayed;
-
   const AlbumPageIdeal({
     required super.isGridView,
     required this.albums,
-    this.latestPlayed,
+    super.latestPlayed,
   });
 
   @override

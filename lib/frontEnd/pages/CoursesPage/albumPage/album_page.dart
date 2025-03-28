@@ -33,6 +33,8 @@ class _AlbumPageState extends State<AlbumPage> {
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<AlbumPageCubit, AlbumPageState>(
+      buildWhen: (previous, current) =>
+          previous.latestPlayed == current.latestPlayed,
       builder: (context, state) {
         return Scaffold(
             appBar: AppBar(
@@ -77,13 +79,11 @@ class _AlbumPageState extends State<AlbumPage> {
   }
 
   void _continueWithHistory(AlbumPageState state) {
-    if (state is AlbumPageIdeal && state.latestPlayed != null) {
-      final playHistory = state.latestPlayed;
-      if (playHistory != null) {
-        context
-            .read<AudioPlayerBloc>()
-            .add(LocateAudio(playHistory.album, playHistory.songId));
-      }
+    final playHistory = state.latestPlayed;
+    if (playHistory != null) {
+      context
+          .read<AudioPlayerBloc>()
+          .add(LocateAudio(playHistory.album, playHistory.songId));
     }
   }
 }
