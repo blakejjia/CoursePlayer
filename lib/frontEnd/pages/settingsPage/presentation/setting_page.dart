@@ -2,6 +2,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/grouped_tile.dart';
+import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/speedSelectionBS.dart';
 
 import '../../../../backEnd/load_db.dart';
 import '../bloc/settings_cubit.dart';
@@ -43,6 +44,22 @@ class SettingPage extends StatelessWidget {
                 onTap: () =>
                     rebuildDb(context.read<SettingsCubit>().state.audioPath),
               ),
+              ListTile(
+                  title: Text("default speed"),
+                  trailing: Text(state.defaultPlaybackSpeed.toString()),
+                  onTap: () => {
+                        showModalBottomSheet(
+                          context: context,
+                          builder: (context) => SpeedSelectionBottomSheet(
+                            initialSpeed: state.defaultPlaybackSpeed,
+                            onSpeedSelected: (newSpeed) {
+                              context
+                                  .read<SettingsCubit>()
+                                  .changeDefaultPlaybackSpeed(newSpeed);
+                            },
+                          ),
+                        ),
+                      }),
             ]),
 
             /// == GroupedTile: Appearance ==

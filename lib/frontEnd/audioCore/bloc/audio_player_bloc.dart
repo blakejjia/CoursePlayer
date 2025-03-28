@@ -4,6 +4,7 @@ import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/bloc/album_page_cubit
 import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/song_repository.dart';
+import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
@@ -39,9 +40,14 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
 
     on<FinishedEvent>(_onFinished);
     on<SeekToPosition>(_onSeekToPosition);
+
+    // make to default playback speed
+    double defaultPlaybackRate =
+        getIt<SettingsCubit>().state.defaultPlaybackSpeed;
+    add(SetSpeed(defaultPlaybackRate));
   }
 
-  void _initBloc() {
+  void _initBloc() async {
     audioHandler = getIt<MyAudioHandler>();
 
     playerInfoStream = CombineLatestStream.combine2(

@@ -9,7 +9,8 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
             dbRebuiltTime: null,
             seedColor: Colors.blue,
             showCover: true,
-            cleanFileName: true));
+            cleanFileName: true,
+            defaultPlaybackSpeed: 1.0));
 
   void setPath(String path) {
     emit(state.copyWith(audioPath: path));
@@ -31,6 +32,10 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
 
   void changeCleanFileName() {
     emit(state.copyWith(cleanFileName: !state.cleanFileName));
+  }
+
+  void changeDefaultPlaybackSpeed(double speed) {
+    emit(state.copyWith(defaultPlaybackSpeed: speed));
   }
 
   void changeSeedColor() {

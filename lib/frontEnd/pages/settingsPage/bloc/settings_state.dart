@@ -6,13 +6,15 @@ class SettingsState {
   final bool showCover;
   final bool cleanFileName;
   final Color seedColor;
+  final double defaultPlaybackSpeed;
 
   const SettingsState(
       {required this.audioPath,
       required this.dbRebuiltTime,
       required this.cleanFileName,
       required this.showCover,
-      required this.seedColor});
+      required this.seedColor,
+      required this.defaultPlaybackSpeed});
 
   Map<String, dynamic> toMap() {
     return {
@@ -20,7 +22,8 @@ class SettingsState {
       'dbRebuiltTime': dbRebuiltTime,
       'showCover': showCover,
       'cleanFileName': cleanFileName,
-      'seedColor': seedColor.value
+      'seedColor': seedColor.value,
+      'defaultPlaybackSpeed': defaultPlaybackSpeed
     };
   }
 
@@ -30,7 +33,8 @@ class SettingsState {
         dbRebuiltTime: map['dbRebuiltTime'] as String?,
         cleanFileName: map['cleanFileName'] as bool,
         showCover: map['showCover'] as bool,
-        seedColor: Color(map['seedColor'] as int));
+        seedColor: Color(map['seedColor'] as int),
+        defaultPlaybackSpeed: map['defaultPlaybackSpeed'] as double);
   }
 
   SettingsState copyWith(
@@ -38,12 +42,15 @@ class SettingsState {
       String? indexInfo,
       bool? cleanFileName,
       bool? showCover,
-      Color? seedColor}) {
+      Color? seedColor,
+      double? defaultPlaybackSpeed}) {
     return SettingsState(
         audioPath: audioPath ?? this.audioPath,
         dbRebuiltTime: indexInfo ?? dbRebuiltTime,
         cleanFileName: cleanFileName ?? this.cleanFileName,
         showCover: showCover ?? this.showCover,
-        seedColor: seedColor ?? this.seedColor);
+        seedColor: seedColor ?? this.seedColor,
+        defaultPlaybackSpeed:
+            defaultPlaybackSpeed ?? this.defaultPlaybackSpeed);
   }
 }
