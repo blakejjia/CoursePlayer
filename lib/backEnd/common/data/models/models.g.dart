@@ -934,7 +934,6 @@ class Album extends DataClass implements Insertable<Album> {
 
   /// playedTracks is the number of tracks that have been played
   /// for showing the progress of the playlist
-  /// TODO: function to change the playedTracks
   final int playedTracks;
   const Album(
       {required this.id,

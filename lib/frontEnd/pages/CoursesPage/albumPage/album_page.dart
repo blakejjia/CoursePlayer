@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/backEnd/load_db.dart';
 import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/views/loading_view.dart';
+import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/views/welcom_view.dart';
 import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/songs_list_page.dart';
 import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
@@ -66,10 +66,10 @@ class _AlbumPageState extends State<AlbumPage> {
             body: RefreshIndicator(
                 onRefresh: _refreshData,
                 child: (state is AlbumPageIdeal)
-                    ? (state.albums.isEmpty)
-                        ? BlankView()
-                        : AlbumsView(state)
-                    : LoadingView()));
+                    ? (state.albums.isEmpty ? BlankView() : AlbumsView(state))
+                    : (state is AlbumPageLoading
+                        ? LoadingView()
+                        : BlankView())));
       },
     );
   }

@@ -1,6 +1,6 @@
 name: lemon
 description: "Lemon🍋‍ - offline music player"
-version: 0.1.0
+version: 0.1.1+2
 
 environment:
   sdk: ^3.5.3
@@ -29,6 +29,7 @@ dependencies:
   flutter_launcher_icons: ^0.14.3
   audiotags: ^1.4.3
   fluttertoast: ^8.2.12
+  smooth_page_indicator: ^1.2.1
 
 dev_dependencies:
   flutter_test:

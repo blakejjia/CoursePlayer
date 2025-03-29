@@ -39,14 +39,14 @@ class SettingsState {
 
   SettingsState copyWith(
       {String? audioPath,
-      String? indexInfo,
+      String? dbRebuiltTime,
       bool? cleanFileName,
       bool? showCover,
       Color? seedColor,
       double? defaultPlaybackSpeed}) {
     return SettingsState(
         audioPath: audioPath ?? this.audioPath,
-        dbRebuiltTime: indexInfo ?? dbRebuiltTime,
+        dbRebuiltTime: dbRebuiltTime ?? dbRebuiltTime,
         cleanFileName: cleanFileName ?? this.cleanFileName,
         showCover: showCover ?? this.showCover,
         seedColor: seedColor ?? this.seedColor,

@@ -1,10 +1,7 @@
-import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/grouped_tile.dart';
 import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/speedSelectionBS.dart';
-
-import '../../../../backEnd/load_db.dart';
 import '../bloc/settings_cubit.dart';
 import 'InnerPages/info_page.dart';
 
@@ -35,14 +32,13 @@ class SettingPage extends StatelessWidget {
               ListTile(
                 title: Text("select dictionary"),
                 trailing: Text(state.audioPath),
-                onTap: () => _handleChangeDir(context.read<SettingsCubit>()),
+                onTap: () => context.read<SettingsCubit>().updatePath(),
               ),
               ListTile(
                 title: Text("rebuild index"),
                 trailing:
                     Text(state.dbRebuiltTime?.split('.')[0] ?? "not yet built"),
-                onTap: () =>
-                    rebuildDb(context.read<SettingsCubit>().state.audioPath),
+                onTap: () => context.read<SettingsCubit>().rebuildDb(),
               ),
               ListTile(
                   title: Text("default speed"),
@@ -116,13 +112,5 @@ class SettingPage extends StatelessWidget {
         );
       },
     );
-  }
-}
-
-Future<void> _handleChangeDir(SettingsCubit settingsCubit) async {
-  String? selectedDirectory = await FilePicker.platform.getDirectoryPath();
-  if (selectedDirectory != null) {
-    settingsCubit.setPath(selectedDirectory);
-    rebuildDb(selectedDirectory);
   }
 }

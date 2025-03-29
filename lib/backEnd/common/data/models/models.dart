@@ -71,7 +71,6 @@ class Albums extends Table {
 
   /// playedTracks is the number of tracks that have been played
   /// for showing the progress of the playlist
-  /// TODO: function to change the playedTracks
   IntColumn get playedTracks => integer()();
 }
 

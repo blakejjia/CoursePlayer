@@ -19,40 +19,40 @@ class _BlankViewState extends State<BlankView> {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            "There's nothing here, try:",
-            style: Theme.of(context).textTheme.bodyLarge,
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: (_isPermissionGranted)
-                ? ElevatedButton(
-                    onPressed: () {
-                      rebuildDb(context.read<SettingsCubit>().state.audioPath);
+        child: _isPermissionGranted
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "choose your mp3 files location",
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    onPressed: () async {
+                      await context.read<SettingsCubit>().updatePath();
                     },
-                    child: Text("rebuild database"))
-                : ElevatedButton(
-                    onPressed: () {
-                      Permission.manageExternalStorage.request().then((value) {
-                        if (value.isGranted) {
-                          setState(() {
-                            _isPermissionGranted = true;
-                          });
-                        } else {
-                          setState(() {
-                            _isPermissionGranted = false;
-                          });
-                        }
-                      });
-                    },
-                    child: Text("Grant permission")),
-          ),
-        ],
-      ),
-    );
+                    icon: const Icon(Icons.folder_open),
+                    label: const Text("Choose Root Directory"),
+                    style: ElevatedButton.styleFrom(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 12,
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            : WelcomeView(onPermissionChanged));
+  }
+
+  onPermissionChanged(bool value) {
+    setState(() {
+      _isPermissionGranted = value;
+    });
   }
 
   Future<void> _checkPermissionInBackground() async {

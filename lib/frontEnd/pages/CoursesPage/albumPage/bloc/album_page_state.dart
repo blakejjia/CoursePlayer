@@ -43,7 +43,7 @@ abstract class AlbumPageState {
   }
 }
 
-/// [AlbumPageInitial] represents the initial state of the [AlbumPageCubit].
+/// [AlbumPageInitial] and [AlbumPageLoading] share the same implementation.
 class AlbumPageInitial extends AlbumPageState {
   const AlbumPageInitial({required super.isGridView, super.latestPlayed});
 
@@ -72,6 +72,9 @@ class AlbumPageInitial extends AlbumPageState {
     );
   }
 }
+
+/// [AlbumPageLoading] reuses the implementation of [AlbumPageInitial].
+typedef AlbumPageLoading = AlbumPageInitial;
 
 /// [AlbumPageIdeal] represents the ideal state of the [AlbumPageCubit].
 class AlbumPageIdeal extends AlbumPageState {

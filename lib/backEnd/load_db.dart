@@ -14,7 +14,7 @@ import 'data/repositories/song_repository.dart';
 
 /// This function rebuilds the database from the given path.
 /// Given path is the base folder where all the albums are stored.
-Future<int> rebuildDb(String path) async {
+Stream<int> rebuildDb(String path) async* {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   // init
   getIt<SettingsCubit>().stateRebuilding();
@@ -30,11 +30,11 @@ Future<int> rebuildDb(String path) async {
     for (var folder in directory.listSync().whereType<Directory>()) {
       await _handleAlbum(folder, albumId);
       albumId++;
+      yield 0;
     }
   }
   getIt<SettingsCubit>().updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Database rebuilt');
-  return 0;
 }
 
 /// This function rebuilds the database from the given path.

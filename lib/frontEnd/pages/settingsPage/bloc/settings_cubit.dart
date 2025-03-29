@@ -1,5 +1,8 @@
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
+import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/bloc/album_page_cubit.dart';
+import 'package:lemon/main.dart';
 part 'settings_state.dart';
 
 class SettingsCubit extends HydratedCubit<SettingsState> {
@@ -12,18 +15,30 @@ class SettingsCubit extends HydratedCubit<SettingsState> {
             cleanFileName: true,
             defaultPlaybackSpeed: 1.0));
 
-  void setPath(String path) {
-    emit(state.copyWith(audioPath: path));
+  Future<void> updatePath() async {
+    String? path = await FilePicker.platform.getDirectoryPath();
+    if (path != null) {
+      emit(state.copyWith(audioPath: path));
+    }
+    getIt<AlbumPageCubit>().loaddb();
   }
 
   void stateRebuilding() {
-    emit(state.copyWith(indexInfo: "indexing songs..."));
+    emit(state.copyWith(dbRebuiltTime: "indexing songs..."));
+  }
+
+  void rebuildDb() {
+    if (state.dbRebuiltTime == "indexing songs...") {
+      return;
+    }
+    emit(state.copyWith(dbRebuiltTime: "indexing songs..."));
+    getIt<AlbumPageCubit>().loaddb();
   }
 
   void updateRebuiltTime() async {
-    emit(state.copyWith(indexInfo: "index finished"));
+    emit(state.copyWith(dbRebuiltTime: "index finished"));
     await Future.delayed(Duration(seconds: 1));
-    emit(state.copyWith(indexInfo: "latest index: ${DateTime.now()}"));
+    emit(state.copyWith(dbRebuiltTime: "latest index: ${DateTime.now()}"));
   }
 
   void changeShowCover() {

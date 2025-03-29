@@ -1,6 +1,8 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/album_repository.dart';
+import 'package:lemon/backEnd/load_db.dart';
+import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
 
 import '../../../../../main.dart';
 
@@ -30,6 +32,26 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
         latestPlayed: state.latestPlayed,
       ),
     );
+  }
+
+  /// Initialize the data for all albums, from database
+  /// called when album page init state.
+  Future<void> loaddb() async {
+    emit(
+      AlbumPageLoading(
+          isGridView: state.isGridView, latestPlayed: state.latestPlayed),
+    );
+    Stream<int> result = rebuildDb(getIt<SettingsCubit>().state.audioPath);
+    await for (final _ in result) {
+      final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
+      emit(
+        AlbumPageIdeal(
+          isGridView: state.isGridView,
+          albums: albums,
+          latestPlayed: state.latestPlayed,
+        ),
+      );
+    }
   }
 
   // Update the last played time of the album
