@@ -1,16 +1,4 @@
-part of '../album_page.dart';
-
-class AlbumsView extends StatelessWidget {
-  final AlbumPageIdeal state;
-  const AlbumsView(this.state, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return (state.isGridView)
-        ? _showInCard(state.albums)
-        : _showInList(state.albums);
-  }
-}
+part of './albums_view.dart';
 
 Widget _showInCard(List<Album> albums) {
   return GridView.builder(
@@ -20,26 +8,17 @@ Widget _showInCard(List<Album> albums) {
     itemCount: albums.length, // Playlist数量
     itemBuilder: (context, index) {
       final playlist = albums[index];
-      return AlbumCard(album: playlist);
+      return AlbumCardView(album: playlist);
     },
   );
 }
 
-Widget _showInList(List<Album> albums) {
-  return ListView.builder(
-    itemCount: albums.length,
-    itemBuilder: (context, index) {
-      return AlbumTile(albums[index]);
-    },
-  );
-}
-
-/// [AlbumCard] is a card that displays a playlist.
+/// [AlbumCardView] is a card that displays a playlist.
 ///
-class AlbumCard extends StatelessWidget {
+class AlbumCardView extends StatelessWidget {
   final Album album;
 
-  const AlbumCard({super.key, required this.album});
+  const AlbumCardView({super.key, required this.album});
 
   @override
   Widget build(BuildContext context) {
@@ -92,43 +71,6 @@ class AlbumCard extends StatelessWidget {
   }
 }
 
-/// [AlbumTile] is a list tile that displays a playlist.
-class AlbumTile extends StatelessWidget {
-  final Album album;
-
-  const AlbumTile(this.album, {super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List?>(
-      future: getIt<CoversRepository>().getCoverUint8ListByPlaylist(album),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const ListTile(
-            leading: CircularProgressIndicator(),
-            title: Text('Loading...'),
-          );
-        } else if (snapshot.hasError || snapshot.data == null) {
-          return ListTile(
-            leading: const Icon(Icons.error),
-            title: Text(album.title),
-            subtitle: Text(album.author),
-            trailing: Text(formatAlbumProgress(album)),
-          );
-        } else {
-          return ListTile(
-            onTap: () => _navigateToSongsListPage(context, album),
-            leading: Image.memory(snapshot.data!),
-            title: Text(album.title),
-            subtitle: Text(album.author),
-            trailing: Text(formatAlbumProgress(album)),
-          );
-        }
-      },
-    );
-  }
-}
-
 Widget _buildAlbumCover(BuildContext context, Album album,
     {required double height, required double width}) {
   return FutureBuilder<Uint8List?>(
@@ -155,19 +97,4 @@ Widget _buildAlbumCover(BuildContext context, Album album,
       }
     },
   );
-}
-
-void _navigateToSongsListPage(BuildContext context, Album album) {
-  context.read<SongListPageBloc>().add(SongListLocateAlbum(album));
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const SongsListPage(),
-    ),
-  );
-}
-
-String formatAlbumProgress(Album album) {
-  int progress = (album.playedTracks * 100 / album.totalTracks).round();
-  return "$progress%";
 }

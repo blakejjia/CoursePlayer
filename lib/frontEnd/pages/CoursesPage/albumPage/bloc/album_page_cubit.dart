@@ -27,10 +27,10 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
     final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
     emit(
       AlbumPageIdeal(
-        isGridView: state.isGridView,
-        albums: albums,
-        latestPlayed: state.latestPlayed,
-      ),
+          isGridView: state.isGridView,
+          albums: albums,
+          latestPlayed: state.latestPlayed,
+          info: {}),
     );
   }
 
@@ -41,14 +41,16 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
       AlbumPageLoading(
           isGridView: state.isGridView, latestPlayed: state.latestPlayed),
     );
-    Stream<int> result = rebuildDb(getIt<SettingsCubit>().state.audioPath);
-    await for (final _ in result) {
+    Stream<Map<String, int>> result =
+        rebuildDb(getIt<SettingsCubit>().state.audioPath);
+    await for (final loadinfo in result) {
       final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
       emit(
         AlbumPageIdeal(
           isGridView: state.isGridView,
           albums: albums,
           latestPlayed: state.latestPlayed,
+          info: loadinfo,
         ),
       );
     }

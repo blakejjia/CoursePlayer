@@ -81,9 +81,13 @@ class AlbumPageIdeal extends AlbumPageState {
   /// All albums in the database to display, initialized when app loads.
   final List<Album> albums;
 
+  /// Additional information related to the album page.
+  final Map<dynamic, dynamic> info;
+
   const AlbumPageIdeal({
     required super.isGridView,
     required this.albums,
+    required this.info,
     super.latestPlayed,
   });
 
@@ -92,11 +96,13 @@ class AlbumPageIdeal extends AlbumPageState {
     bool? isGridView,
     LatestPlayed? latestPlayed,
     List<Album>? albums,
+    Map<dynamic, dynamic>? info,
   }) {
     return AlbumPageIdeal(
       isGridView: isGridView ?? this.isGridView,
       latestPlayed: latestPlayed ?? this.latestPlayed,
       albums: albums ?? this.albums,
+      info: info ?? this.info,
     );
   }
 
@@ -106,6 +112,7 @@ class AlbumPageIdeal extends AlbumPageState {
       'isGridView': isGridView,
       'latestPlayed': latestPlayed?.toMap(),
       // albums 的序列化方式依据 Album 的实现而定
+      'info': info,
     };
   }
 
@@ -115,7 +122,8 @@ class AlbumPageIdeal extends AlbumPageState {
       latestPlayed: map['latestPlayed'] != null
           ? LatestPlayed.fromMap(map['latestPlayed'] as Map<String, dynamic>)
           : null,
-      albums: [],
+      albums: [], // albums 的反序列化方式依据 Album 的实现而定
+      info: map['info'] as Map<dynamic, dynamic>? ?? {},
     );
   }
 }

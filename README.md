@@ -26,5 +26,8 @@ supported language: [CN](README_zh.md)& EN
 3. 🍬user determine how to sort, rename music
 4. 🗂️auto-rebuild index, detecting folder change
 
+# Known Issues
+1. have error playing music while loading db
+
 # other information
 Developed by Blake Jia, built with flutter. 

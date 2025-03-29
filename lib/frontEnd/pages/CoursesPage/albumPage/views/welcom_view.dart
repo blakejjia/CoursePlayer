@@ -48,7 +48,7 @@ class _WelcomeViewState extends State<WelcomeView> {
               ),
               _buildPage(
                 context,
-                icon: Icons.emoji_emotions,
+                icon: Icons.celebration,
                 title: "Your Journey Starts Here",
                 description:
                     "We need access to your folders to load your mp3 files",
