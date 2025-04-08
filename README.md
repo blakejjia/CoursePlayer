@@ -13,12 +13,12 @@ supported language: [CN](README_zh.md)& EN
 - 🌟open-source, total-free💸
 
 # Screen shots
-<p style="display: flex; justify-content: center; gap: 10px;">
-  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/SongView.png" width="200px" alt="screenshot1">
-  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/main.png" width="200px" alt="screenshot2">
-  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/settings.png" width="200px" alt="screenshot3">
-  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/songList.png" width="200px" alt="screenshot4">
-</p>
+<div class="flex flex-wrap justify-center gap-4 my-4">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/SongView.png" width="180" alt="screenshot1"/>
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/main.png" width="180" alt="screenshot2"/>
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/settings.png" width="180" alt="screenshot3"/>
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/songList.png" width="180" alt="screenshot4"/>
+</div>
 
 # future goals
 1. ⚡Autodetect pdf resource and show an icon beside, show pdf if clicked
