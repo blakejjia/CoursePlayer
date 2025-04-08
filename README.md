@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/launch_icon/launchIcon.png" width="300px" alt="lunch icon">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/launch_icon/launchIcon.png" width="300px" alt="lunch icon">
 </p>
 <h2 align="center">Lemon🍋‍🟩 - offline course player</h2>
 A user-orientated audio player, specially designed for audiobook📖 and courses🎓. 
@@ -14,10 +14,10 @@ supported language: [CN](README_zh.md)& EN
 
 # Screen shots
 <p style="display: flex; justify-content: center; gap: 10px;">
-  <img src="assets/screenshots/continue_playing.jpg" width="200px" alt="screenshot1">
-  <img src="assets/screenshots/settings_page.jpg" width="200px" alt="screenshot2">
-  <img src="assets/screenshots/playlist_view.jpg" width="200px" alt="screenshot3">
-  <img src="assets/screenshots/else.jpg" width="200px" alt="screenshot4">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/SongView.png" width="200px" alt="screenshot1">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/main.png" width="200px" alt="screenshot2">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/settings.png" width="200px" alt="screenshot3">
+  <img src="https://raw.githubusercontent.com/blakejjia/CoursePlayer/master/assets/shopListing/phone%20screenshots/songList.png" width="200px" alt="screenshot4">
 </p>
 
 # future goals
