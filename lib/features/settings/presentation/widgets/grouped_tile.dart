@@ -25,7 +25,7 @@ class GroupedTile extends StatelessWidget {
                 child: Text(title!),
               )
             : SizedBox(
-                height: 12,
+                height: 20,
               ),
         Container(
             decoration: BoxDecoration(

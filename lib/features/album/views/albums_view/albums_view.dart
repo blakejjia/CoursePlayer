@@ -1,11 +1,11 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:lemon/core/backEnd/data/repositories/covers_repository.dart';
 import 'package:lemon/features/album/bloc/album_page_cubit.dart';
-import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';
 import 'package:lemon/main.dart';
 
@@ -60,7 +60,9 @@ Widget _progressIndicator(BuildContext context, AlbumPageIdeal state) {
 }
 
 void _navigateToSongsListPage(BuildContext context, Album album) {
-  context.read<SongListPageBloc>().add(SongListLocateAlbum(album));
+  // initialize riverpod provider
+  final container = getIt<ProviderContainer>();
+  container.read(songListProvider.notifier).locateAlbum(album);
   Navigator.push(
     context,
     MaterialPageRoute(

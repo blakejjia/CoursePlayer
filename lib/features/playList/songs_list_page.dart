@@ -1,9 +1,10 @@
-import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/widgets/ChangeArtistPopUp.dart';
 import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/bloc/audio_player_bloc.dart';
 import '../../core/audio/audio_bottom_sheet.dart';
@@ -11,99 +12,97 @@ import 'logic/functions.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.
 /// listens to [AlbumPageBloc] and [AudioPlayerBloc].
-class SongsListPage extends StatelessWidget {
+class SongsListPage extends ConsumerWidget {
   const SongsListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<SongListPageBloc, SongListPageState>(
-      builder: (context, state) {
-        if (state is SongListPageLoading) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (state is SongListPageReady) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(state.album.title),
-              actions: [
-                PopupMenuButton<String>(
-                  onSelected: (_) {
-                    showDialog(
-                        context: context,
-                        builder: (BuildContext context) => ChangeArtistPopUp(
-                            state.album.sourcePath, state.buffer));
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                          value: 'ListView', child: Text("change artist name")),
-                    ];
-                  },
-                ),
-              ],
-            ),
-            bottomNavigationBar: const AudioBottomSheet(),
-            body: switch (state.buffer) {
-              [...] => ListView.builder(
-                  itemCount: state.buffer!.length + 1,
-                  itemBuilder: (context, index) {
-                    /// Title section
-                    if (index == 0) {
-                      return Column(
-                        children: [
-                          SizedBox(
-                            width: MediaQuery.of(context).size.width / 2,
-                            height: MediaQuery.of(context).size.width / 2,
-                            child: state.picture != null
-                                ? Image.memory(state.picture!)
-                                : Image.asset("assets/default_cover.jpeg"),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
-                            child: Text(
-                              state.album.title,
-                              style: Theme.of(context).textTheme.titleLarge,
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
-                            child: Text(
-                              state.album.author,
-                              style: Theme.of(context).textTheme.bodyMedium,
-                            ),
-                          ),
-                          ElevatedButton(
-                              onPressed: () {
-                                context.read<AudioPlayerBloc>().add(LocateAudio(
-                                    state.album, state.album.lastPlayedIndex));
-                              },
-                              child: Text(contiButton(state)))
-                        ],
-                      );
-                    } else {
-                      /// song tile section
-                      return _songTile(context, state, index);
-                    }
-                  },
-                ),
-              null => const Center(
-                  child: Text("nothing here"),
-                ),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(songListProvider);
+    if (state.isLoading) {
+      return const Center(
+        child: CircularProgressIndicator(),
+      );
+    }
+    if (!state.isReady || state.album == null) {
+      return const Scaffold(
+        body: Center(child: Text('nothing here')),
+      );
+    }
+    final ready = state; // convenience alias
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(ready.album!.title),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (_) {
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) =>
+                      ChangeArtistPopUp(ready.album!.sourcePath, ready.buffer));
             },
-          );
-        } else {
-          return Center(
-            child: Text(state.toString()),
-          );
-        }
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                    value: 'ListView', child: Text("change artist name")),
+              ];
+            },
+          ),
+        ],
+      ),
+      bottomNavigationBar: const AudioBottomSheet(),
+      body: switch (ready.buffer) {
+        [...] => ListView.builder(
+            itemCount: ready.buffer!.length + 1,
+            itemBuilder: (context, index) {
+              /// Title section
+              if (index == 0) {
+                return Column(
+                  children: [
+                    SizedBox(
+                      width: MediaQuery.of(context).size.width / 2,
+                      height: MediaQuery.of(context).size.width / 2,
+                      child: ready.picture != null
+                          ? Image.memory(ready.picture!)
+                          : Image.asset("assets/default_cover.jpeg"),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),
+                      child: Text(
+                        ready.album!.title,
+                        style: Theme.of(context).textTheme.titleLarge,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(8, 0, 8, 8),
+                      child: Text(
+                        ready.album!.author,
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ),
+                    ElevatedButton(
+                        onPressed: () {
+                          context.read<AudioPlayerBloc>().add(LocateAudio(
+                              ready.album!, ready.album!.lastPlayedIndex));
+                        },
+                        child: Text(contiButton(ready)))
+                  ],
+                );
+              } else {
+                /// song tile section
+                return _songTile(context, ready, index);
+              }
+            },
+          ),
+        null => const Center(
+            child: Text("nothing here"),
+          ),
       },
     );
   }
 }
 
-Widget _songTile(BuildContext context, SongListPageReady state, int index) {
-  Album album = state.album;
+Widget _songTile(BuildContext context, dynamic state, int index) {
+  Album album = state.album!;
   List<Song>? buffer = state.buffer;
   Song song = state.buffer![index - 1];
   return InkWell(onTap: () {

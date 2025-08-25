@@ -1,4 +1,4 @@
-import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/playList/providers/song_list_state.dart';
 
 import '../../../core/backEnd/data/models/models.dart';
 
@@ -45,8 +45,8 @@ String formatSubtitle(Song song) {
   return '${playedPercentage.isNotEmpty ? '$playedPercentage | ' : ''}${artist.isNotEmpty ? '$artist | ' : ''}$duration';
 }
 
-String contiButton(SongListPageReady state) {
-  int songId = state.album.lastPlayedIndex;
+String contiButton(SongListState state) {
+  int songId = state.album!.lastPlayedIndex;
   if (songId == -1) {
     return "start playing";
   }

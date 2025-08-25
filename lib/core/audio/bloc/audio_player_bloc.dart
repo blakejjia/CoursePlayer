@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:lemon/features/album/bloc/album_page_cubit.dart';
-import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -163,8 +163,8 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     await getIt<AlbumRepository>().updateLastPlayedSongWithId(
         int.parse((state as AudioPlayerIdeal).mediaItem.album!),
         int.parse((state as AudioPlayerIdeal).mediaItem.id));
-    // refresh blocs
-    getIt<SongListPageBloc>().add(UpdateSongListEvent());
+    // refresh providers
+    getIt<ProviderContainer>().read(songListProvider.notifier).refreshSongs();
     getIt<AlbumPageCubit>().load();
   }
 

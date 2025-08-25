@@ -5,7 +5,6 @@ import 'dart:convert';
 /// [InfoPage] is where information present
 ///
 /// loaded from json file located in "assets/lang/"
-/// TODO:multi-language support
 class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
 
@@ -24,8 +23,10 @@ class _InfoPageState extends State<InfoPage> {
 
   // read json file here
   Future<void> _loadJson() async {
-    String jsonString = await rootBundle.loadString('assets/lang/appInfo/en.json');
-    final Map<String, List<dynamic>> jsonData = Map<String, List<dynamic>>.from(jsonDecode(jsonString));
+    String jsonString =
+        await rootBundle.loadString('assets/lang/appInfo/en.json');
+    final Map<String, List<dynamic>> jsonData =
+        Map<String, List<dynamic>>.from(jsonDecode(jsonString));
 
     // update state is json file is read
     setState(() {
