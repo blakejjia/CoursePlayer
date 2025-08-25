@@ -6,9 +6,6 @@ import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'InnerPages/info_page.dart';
 
 /// This is settings page
-///
-/// [SettingPage] contains a title and several [GroupedTile]
-/// wrapped by [Column]
 class SettingPage extends ConsumerWidget {
   const SettingPage({super.key});
 
@@ -45,7 +42,9 @@ class SettingPage extends ConsumerWidget {
               onTap: () => {
                     showModalBottomSheet(
                       context: context,
-                      builder: (context) => SpeedSelectionBottomSheet(
+                      showDragHandle: true,
+                      useSafeArea: true,
+                      builder: (context) => SpeedSelectionBS(
                         initialSpeed: state.defaultPlaybackSpeed,
                         onSpeedSelected: (newSpeed) {
                           ref
