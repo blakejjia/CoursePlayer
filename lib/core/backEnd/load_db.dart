@@ -1,13 +1,14 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lemon/backEnd/wash_data.dart';
+import 'package:lemon/core/backEnd/wash_data.dart';
 import 'package:lemon/main.dart';
 import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 
-import '../features/settings/bloc/settings_cubit.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../features/settings/providers/settings_provider.dart';
 import 'data/repositories/covers_repository.dart';
 import 'data/repositories/album_repository.dart';
 import 'data/repositories/song_repository.dart';
@@ -22,7 +23,7 @@ import 'data/repositories/song_repository.dart';
 Stream<Map<String, int>> rebuildDb(String path) async* {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   // init
-  getIt<SettingsCubit>().stateRebuilding();
+  getIt<ProviderContainer>().read(settingsProvider.notifier).stateRebuilding();
   await getIt<SongRepository>().destroySongDb();
   await getIt<AlbumRepository>().destroyAlbumDb();
   await getIt<CoversRepository>().destroyCoversDb();
@@ -55,7 +56,9 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
     }
   }
 
-  getIt<SettingsCubit>().updateRebuiltTime();
+  getIt<ProviderContainer>()
+      .read(settingsProvider.notifier)
+      .updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Database rebuilt');
 }
 
@@ -78,7 +81,9 @@ Future<int> partialRebuild(String baseFolderPath) async {
     }
     await _handleAlbum(directory, albumId);
     Fluttertoast.showToast(msg: 'Database rebuilt');
-    getIt<SettingsCubit>().updateRebuiltTime();
+    getIt<ProviderContainer>()
+        .read(settingsProvider.notifier)
+        .updateRebuiltTime();
     return 0;
   }
   Fluttertoast.showToast(msg: 'Error: Directory not found');

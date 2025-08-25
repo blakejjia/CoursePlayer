@@ -1,8 +1,9 @@
-import 'package:lemon/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:drift/drift.dart';
 
-import '../../../main.dart';
-import '../../../features/settings/bloc/settings_cubit.dart';
+import '../../../../main.dart';
+import '../../../../features/settings/providers/settings_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @DriftAccessor(tables: [Covers])
 class CoversRepository extends DatabaseAccessor<AppDatabase> {
@@ -38,7 +39,8 @@ class CoversRepository extends DatabaseAccessor<AppDatabase> {
 
   // This function is not goof
   Future<Uint8List?> getCoverUint8ListByPlaylist(Album playlist) async {
-    if (!getIt<SettingsCubit>().state.showCover) {
+    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    if (!settings.showCover) {
       Cover? defaultCover = await getCoverById(0);
       return defaultCover?.cover;
     }

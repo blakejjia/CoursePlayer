@@ -1,4 +1,4 @@
-import 'package:lemon/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:drift/drift.dart';
 
 @DriftAccessor(tables: [Album])

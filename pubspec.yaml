@@ -30,6 +30,11 @@ dependencies:
   audiotags: ^1.4.3
   fluttertoast: ^8.2.12
   smooth_page_indicator: ^1.2.1
+  flutter_riverpod: ^2.6.1
+  hooks_riverpod: ^2.6.1
+  flutter_hooks: ^0.21.3+1
+  riverpod_annotation: ^2.6.1
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:
@@ -37,6 +42,13 @@ dev_dependencies:
   flutter_lints: ^5.0.0
   drift_dev: ^2.21.0
   build_runner: ^2.4.13
+  custom_lint: ^0.7.3
+  riverpod_lint: ^2.6.4
+  riverpod_generator: ^2.6.4
+
+# Ensure analyzer plugin compatibility with Dart 3.5/analyzer 7
+dependency_overrides:
+  analyzer_plugin: ^0.13.0
 
 flutter:
   uses-material-design: true

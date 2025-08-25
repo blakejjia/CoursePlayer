@@ -1,8 +1,9 @@
-import 'package:lemon/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:drift/drift.dart';
 
-import '../../../main.dart';
-import '../../../features/settings/bloc/settings_cubit.dart';
+import '../../../../main.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../../../features/settings/providers/settings_provider.dart';
 import '../../wash_data.dart';
 
 @DriftAccessor(tables: [Songs])
@@ -51,7 +52,8 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   /// Core sorting function
   List<Song> _handleSongs(List<Song> songs) {
     sortSongs(songs);
-    if (getIt<SettingsCubit>().state.cleanFileName) {
+    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    if (settings.cleanFileName) {
       List<Song> cleanedSongList = cleanSongTitles(songs);
       return cleanedSongList;
     }

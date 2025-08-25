@@ -1,18 +1,19 @@
-import 'package:lemon/backEnd/data/models/models.dart';
-import 'package:lemon/backEnd/data/repositories/song_repository.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lemon/core/audio/audio_service.dart';
 import 'package:lemon/core/audio/bloc/audio_player_bloc.dart';
 import 'package:lemon/core/my_app.dart';
 import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
-import 'package:lemon/features/settings/bloc/settings_cubit.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'backEnd/data/repositories/covers_repository.dart';
-import 'backEnd/data/repositories/album_repository.dart';
+import 'core/backEnd/data/repositories/covers_repository.dart';
+import 'core/backEnd/data/repositories/album_repository.dart';
 
 final getIt = GetIt.instance;
 
@@ -30,8 +31,8 @@ Future<void> setup() async {
       CoversRepository(getIt<AppDatabase>()));
   getIt.registerSingleton<AlbumRepository>(
       AlbumRepository(getIt<AppDatabase>()));
-
-  getIt.registerSingleton<SettingsCubit>(SettingsCubit());
+  // Global ProviderContainer for non-widget access to providers
+  getIt.registerSingleton<ProviderContainer>(ProviderContainer());
   getIt.registerSingleton<SongListPageBloc>(SongListPageBloc());
   getIt.registerSingleton<AlbumPageCubit>(AlbumPageCubit());
   getIt.registerSingleton<MyAudioHandler>(await initAudioService());
@@ -39,7 +40,8 @@ Future<void> setup() async {
 
 void main() async {
   await setup();
-  runApp(const MainApp());
+  runApp(ProviderScope(
+      parent: getIt<ProviderContainer>(), child: const MainApp()));
 }
 
 class MainApp extends StatelessWidget {
@@ -49,28 +51,25 @@ class MainApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<SettingsCubit>(create: (_) => getIt<SettingsCubit>()),
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
         BlocProvider<SongListPageBloc>(
             create: (_) => getIt<SongListPageBloc>()),
         BlocProvider<AlbumPageCubit>(create: (_) => getIt<AlbumPageCubit>()),
       ],
-      child: BlocBuilder<SettingsCubit, SettingsState>(
-        buildWhen: (prev, curr) => prev.seedColor != curr.seedColor,
-        builder: (context, state) {
-          return MaterialApp(
-            theme: ThemeData(
-              colorSchemeSeed: state.seedColor,
-              useMaterial3: true,
-            ),
-            debugShowCheckedModeBanner: false,
-            routes: {
-              "/": (context) => MyApp(),
-            },
-            initialRoute: "/",
-          );
-        },
-      ),
+      child: Consumer(builder: (context, ref, _) {
+        final settings = ref.watch(settingsProvider);
+        return MaterialApp(
+          theme: ThemeData(
+            colorSchemeSeed: settings.seedColor,
+            useMaterial3: true,
+          ),
+          debugShowCheckedModeBanner: false,
+          routes: {
+            "/": (context) => MyApp(),
+          },
+          initialRoute: "/",
+        );
+      }),
     );
   }
 }

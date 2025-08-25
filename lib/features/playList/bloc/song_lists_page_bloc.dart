@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
-import 'package:lemon/backEnd/data/models/models.dart';
-import 'package:lemon/backEnd/data/repositories/album_repository.dart';
-import 'package:lemon/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/backEnd/data/repositories/song_repository.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
+import 'package:lemon/core/backEnd/data/repositories/covers_repository.dart';
+import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';

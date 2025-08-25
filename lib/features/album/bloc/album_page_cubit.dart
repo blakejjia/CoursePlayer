@@ -1,10 +1,10 @@
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:lemon/backEnd/data/models/models.dart';
-import 'package:lemon/backEnd/data/repositories/album_repository.dart';
-import 'package:lemon/backEnd/load_db.dart';
-import 'package:lemon/features/settings/bloc/settings_cubit.dart';
-
-import '../../../main.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
+import 'package:lemon/core/backEnd/load_db.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
+import 'package:lemon/main.dart';
 
 part 'album_page_state.dart';
 
@@ -41,8 +41,9 @@ class AlbumPageCubit extends HydratedCubit<AlbumPageState> {
       AlbumPageLoading(
           isGridView: state.isGridView, latestPlayed: state.latestPlayed),
     );
+    final container = getIt<ProviderContainer>();
     Stream<Map<String, int>> result =
-        rebuildDb(getIt<SettingsCubit>().state.audioPath);
+        rebuildDb(container.read(settingsProvider).audioPath);
     await for (final loadinfo in result) {
       final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
       emit(

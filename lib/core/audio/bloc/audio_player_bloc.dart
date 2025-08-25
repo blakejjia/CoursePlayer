@@ -2,15 +2,16 @@ import 'dart:async';
 import 'package:audio_service/audio_service.dart';
 import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
-import 'package:lemon/backEnd/data/models/models.dart';
-import 'package:lemon/backEnd/data/repositories/song_repository.dart';
-import 'package:lemon/features/settings/bloc/settings_cubit.dart';
+import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';
 import 'package:rxdart/rxdart.dart';
 
-import '../../../backEnd/data/repositories/album_repository.dart';
+import '../../backEnd/data/repositories/album_repository.dart';
 import '../audio_service.dart';
 
 part 'audio_player_event.dart';
@@ -42,8 +43,8 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
     on<SeekToPosition>(_onSeekToPosition);
 
     // make to default playback speed
-    double defaultPlaybackRate =
-        getIt<SettingsCubit>().state.defaultPlaybackSpeed;
+    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    double defaultPlaybackRate = settings.defaultPlaybackSpeed;
     add(SetSpeed(defaultPlaybackRate));
   }
 

@@ -1,6 +1,6 @@
 import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
 
-import '../../../backEnd/data/models/models.dart';
+import '../../../core/backEnd/data/models/models.dart';
 
 /// format title to fit the screen
 /// - remove file extension

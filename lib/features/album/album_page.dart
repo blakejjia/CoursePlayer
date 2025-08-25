@@ -3,13 +3,21 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/features/album/views/albums_view/albums_view.dart';
 import 'package:lemon/features/album/views/loading_view.dart';
 import 'package:lemon/features/album/views/welcom_view.dart';
-import 'package:lemon/features/settings/bloc/settings_cubit.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
+import 'package:lemon/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/audio/bloc/audio_player_bloc.dart';
 import 'bloc/album_page_cubit.dart';
 
 part 'views/blank_view.dart';
+
+// Helper to access settings provider from parts
+Future<void> chooseAudioRootDir() async {
+  final container = getIt<ProviderContainer>();
+  await container.read(settingsProvider.notifier).updatePath();
+}
 
 class AlbumPage extends StatefulWidget {
   const AlbumPage({super.key});
