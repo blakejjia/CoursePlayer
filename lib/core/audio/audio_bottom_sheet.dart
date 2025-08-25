@@ -54,10 +54,10 @@ class AudioBottomSheet extends StatelessWidget {
                         iconSize: 40,
                         onPressed: () {
                           context.read<AudioPlayerBloc>().add(
-                            state.playbackState.playing
-                                ? PauseEvent()
-                                : ContinueEvent(),
-                          );
+                                state.playbackState.playing
+                                    ? PauseEvent()
+                                    : ContinueEvent(),
+                              );
                         },
                       ),
                       IconButton(

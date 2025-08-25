@@ -26,22 +26,23 @@ class _MyAppState extends State<MyApp> {
         mainAxisSize: MainAxisSize.min,
         children: [
           const AudioBottomSheet(),
-          BottomNavigationBar(
-            onTap: (int index) {
+          NavigationBar(
+            selectedIndex: _currentIndex,
+            onDestinationSelected: (int index) {
               setState(() {
                 _currentIndex = index;
               });
             },
-            currentIndex: _currentIndex,
-            items: const [
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.album), label: "Courses"),
-              BottomNavigationBarItem(
-                  icon: Icon(Icons.settings), label: "Settings"),
+            destinations: const [
+              NavigationDestination(
+                icon: Icon(Icons.album),
+                label: "Courses",
+              ),
+              NavigationDestination(
+                icon: Icon(Icons.settings),
+                label: "Settings",
+              ),
             ],
-            iconSize: 25,
-            fixedColor: Theme.of(context).colorScheme.primary,
-            type: BottomNavigationBarType.fixed,
           ),
         ],
       ),
