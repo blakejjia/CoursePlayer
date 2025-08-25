@@ -35,6 +35,10 @@ migrate_working_dir/
 .pub/
 build/
 
+# Exclude desktop platforms we don't support
+/linux/
+/windows/
+
 # Android related
 /android/app/debug/
 /android/app/profile/
