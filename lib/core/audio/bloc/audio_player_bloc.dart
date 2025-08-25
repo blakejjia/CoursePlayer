@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/bloc/album_page_cubit.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/album/bloc/album_page_cubit.dart';
+import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/song_repository.dart';
-import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
+import 'package:lemon/features/settings/bloc/settings_cubit.dart';
 import 'package:lemon/main.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:meta/meta.dart';

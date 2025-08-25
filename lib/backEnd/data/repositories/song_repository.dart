@@ -2,7 +2,7 @@ import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:drift/drift.dart';
 
 import '../../../main.dart';
-import '../../../frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
+import '../../../features/settings/bloc/settings_cubit.dart';
 import '../../wash_data.dart';
 
 @DriftAccessor(tables: [Songs])

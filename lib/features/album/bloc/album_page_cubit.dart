@@ -2,9 +2,9 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/album_repository.dart';
 import 'package:lemon/backEnd/load_db.dart';
-import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
+import 'package:lemon/features/settings/bloc/settings_cubit.dart';
 
-import '../../../../../main.dart';
+import '../../../main.dart';
 
 part 'album_page_state.dart';
 

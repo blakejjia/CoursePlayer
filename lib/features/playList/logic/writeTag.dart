@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../../../../backEnd/load_db.dart';
+import '../../../backEnd/load_db.dart';
 
 /// This function writes the artist tag to the song.
 /// Other tags are copied as is.

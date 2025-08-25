@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/grouped_tile.dart';
-import 'package:lemon/frontEnd/pages/settingsPage/presentation/widgets/speedSelectionBS.dart';
+import 'package:lemon/features/settings/presentation/widgets/grouped_tile.dart';
+import 'package:lemon/features/settings/presentation/widgets/speedSelectionBS.dart';
 import '../bloc/settings_cubit.dart';
 import 'InnerPages/info_page.dart';
 

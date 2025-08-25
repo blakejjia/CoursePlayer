@@ -1,12 +1,12 @@
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/widgets/ChangeArtistPopUp.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/widgets/song_list_widgets.dart';
+import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/playList/widgets/ChangeArtistPopUp.dart';
+import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../audioCore/bloc/audio_player_bloc.dart';
-import '../../../audioCore/audio_bottom_sheet.dart';
+import '../../core/audio/bloc/audio_player_bloc.dart';
+import '../../core/audio/audio_bottom_sheet.dart';
 import 'logic/functions.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.

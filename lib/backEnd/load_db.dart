@@ -7,7 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 
-import '../frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
+import '../features/settings/bloc/settings_cubit.dart';
 import 'data/repositories/covers_repository.dart';
 import 'data/repositories/album_repository.dart';
 import 'data/repositories/song_repository.dart';

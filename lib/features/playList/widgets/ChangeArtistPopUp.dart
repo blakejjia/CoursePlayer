@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../../backEnd/data/models/models.dart';
+import '../../../backEnd/data/models/models.dart';
 import '../logic/writeTag.dart';
 
 class ChangeArtistPopUp extends StatefulWidget {

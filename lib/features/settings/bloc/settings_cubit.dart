@@ -1,7 +1,7 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/bloc/album_page_cubit.dart';
+import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 import 'package:lemon/main.dart';
 part 'settings_state.dart';
 

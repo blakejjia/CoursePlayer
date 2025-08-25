@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'pages/CoursesPage/albumPage/album_page.dart';
-import 'audioCore/audio_bottom_sheet.dart';
-import 'pages/settingsPage/presentation/setting_page.dart';
+import '../features/album/album_page.dart';
+import 'audio/audio_bottom_sheet.dart';
+import '../features/settings/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {
   MyApp({super.key});

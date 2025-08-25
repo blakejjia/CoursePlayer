@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/views/albums_view/albums_view.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/views/loading_view.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/views/welcom_view.dart';
-import 'package:lemon/frontEnd/pages/settingsPage/bloc/settings_cubit.dart';
+import 'package:lemon/features/album/views/albums_view/albums_view.dart';
+import 'package:lemon/features/album/views/loading_view.dart';
+import 'package:lemon/features/album/views/welcom_view.dart';
+import 'package:lemon/features/settings/bloc/settings_cubit.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../../audioCore/bloc/audio_player_bloc.dart';
+import '../../core/audio/bloc/audio_player_bloc.dart';
 import 'bloc/album_page_cubit.dart';
 
-part './views/blank_view.dart';
+part 'views/blank_view.dart';
 
 class AlbumPage extends StatefulWidget {
   const AlbumPage({super.key});

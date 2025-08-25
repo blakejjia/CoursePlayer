@@ -1,4 +1,4 @@
-part of './albums_view.dart';
+part of 'albums_view.dart';
 
 Widget _showInCard(List<Album> albums) {
   return GridView.builder(

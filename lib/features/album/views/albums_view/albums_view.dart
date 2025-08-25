@@ -4,13 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/backEnd/data/models/models.dart';
 import 'package:lemon/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/albumPage/bloc/album_page_cubit.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/bloc/song_lists_page_bloc.dart';
-import 'package:lemon/frontEnd/pages/CoursesPage/songListPage/songs_list_page.dart';
+import 'package:lemon/features/album/bloc/album_page_cubit.dart';
+import 'package:lemon/features/playList/bloc/song_lists_page_bloc.dart';
+import 'package:lemon/features/playList/songs_list_page.dart';
 import 'package:lemon/main.dart';
 
-part './card_view.dart';
-part './list_view.dart';
+part 'card_view.dart';
+part 'list_view.dart';
 
 class AlbumsView extends StatelessWidget {
   final AlbumPageIdeal state;
