@@ -13,6 +13,7 @@ class SettingPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(settingsProvider);
     return ListView(
+      padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
       children: [
         /// == Title ==
         SizedBox(
@@ -24,19 +25,26 @@ class SettingPage extends ConsumerWidget {
             ))),
 
         /// == GroupedTile: information ==
-        GroupedTile(children: [
+        GroupedTile(title: "Index", children: [
           ListTile(
+            leading: Icon(Icons.book_outlined),
             title: Text("select dictionary"),
-            trailing: Text(state.audioPath),
+            subtitle: Text(state.audioPath),
             onTap: () => ref.read(settingsProvider.notifier).updatePath(),
           ),
           ListTile(
+            leading: Icon(Icons.cached_outlined),
             title: Text("rebuild index"),
-            trailing:
+            subtitle:
                 Text(state.dbRebuiltTime?.split('.')[0] ?? "not yet built"),
             onTap: () => ref.read(settingsProvider.notifier).rebuildDb(),
           ),
+        ]),
+
+        /// == GroupedTile: Appearance ==
+        GroupedTile(title: "Other Settings", children: [
           ListTile(
+              leading: Icon(Icons.speed_outlined),
               title: Text("default speed"),
               trailing: Text(state.defaultPlaybackSpeed.toString()),
               onTap: () => {
@@ -54,29 +62,30 @@ class SettingPage extends ConsumerWidget {
                       ),
                     ),
                   }),
-        ]),
-
-        /// == GroupedTile: Appearance ==
-        SizedBox(
-          height: 20,
-        ),
-        GroupedTile(children: [
           ListTile(
+            leading: Icon(Icons.album_outlined),
             title: Text("show album cover"),
-            trailing: state.showCover ? Icon(Icons.check) : null,
-            onTap: () => ref.read(settingsProvider.notifier).changeShowCover(),
+            trailing: Switch(
+                value: state.showCover,
+                onChanged: (value) {
+                  ref.read(settingsProvider.notifier).changeShowCover();
+                }),
           ),
           ListTile(
+            leading: Icon(Icons.cleaning_services_outlined),
             title: Text("clean up file name"),
-            trailing: state.cleanFileName ? Icon(Icons.check) : null,
-            onTap: () =>
-                ref.read(settingsProvider.notifier).changeCleanFileName(),
+            trailing: Switch(
+                value: state.cleanFileName,
+                onChanged: (value) {
+                  ref.read(settingsProvider.notifier).changeCleanFileName();
+                }),
           ),
           ListTile(
+            leading: Icon(Icons.color_lens_outlined),
             title: Text("theme color"),
             trailing: Container(
-              width: 23,
-              height: 23,
+              width: 24,
+              height: 24,
               decoration: BoxDecoration(
                 color: state.seedColor, // 使用传入的seedColor
                 shape: BoxShape.circle, // 圆形
@@ -87,11 +96,9 @@ class SettingPage extends ConsumerWidget {
         ]),
 
         /// == GroupedTile: other ==
-        SizedBox(
-          height: 20,
-        ),
         GroupedTile(children: [
           ListTile(
+            leading: Icon(Icons.info_outline),
             title: Text("tutorial& author"),
             onTap: () {
               Navigator.push(
