@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'package:audio_service/audio_service.dart';
-import 'package:lemon/features/album/bloc/album_page_cubit.dart';
+import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
@@ -77,8 +77,9 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         getIt<SongRepository>().updateSongProgress(
             int.parse(event.mediaItem.id),
             event.playbackState.position.inSeconds);
-        getIt<AlbumPageCubit>().updateHistory(LatestPlayed(
-            (state as AudioPlayerIdeal).album, int.parse(event.mediaItem.id)));
+        getIt<ProviderContainer>().read(albumProvider.notifier).updateHistory(
+            LatestPlayed((state as AudioPlayerIdeal).album,
+                int.parse(event.mediaItem.id)));
       }
     }
   }
@@ -165,7 +166,7 @@ class AudioPlayerBloc extends Bloc<AudioPlayerEvent, AudioPlayerState> {
         int.parse((state as AudioPlayerIdeal).mediaItem.id));
     // refresh providers
     getIt<ProviderContainer>().read(songListProvider.notifier).refreshSongs();
-    getIt<AlbumPageCubit>().load();
+    getIt<ProviderContainer>().read(albumProvider.notifier).load();
   }
 
   @override

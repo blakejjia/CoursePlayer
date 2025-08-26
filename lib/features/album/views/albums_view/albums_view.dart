@@ -3,7 +3,6 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:lemon/core/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';
@@ -13,34 +12,38 @@ part 'card_view.dart';
 part 'list_view.dart';
 
 class AlbumsView extends StatelessWidget {
-  final AlbumPageIdeal state;
-  const AlbumsView(this.state, {super.key});
+  final bool isGridView;
+  final List<Album> albums;
+  final Map<dynamic, dynamic> info;
+  const AlbumsView(
+      {super.key,
+      required this.isGridView,
+      required this.albums,
+      required this.info});
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
         Expanded(
-          child: (state.isGridView)
-              ? _showInCard(state.albums)
-              : _showInList(state.albums),
+          child: (isGridView) ? _showInCard(albums) : _showInList(albums),
         ),
-        _progressIndicator(context, state),
+        _progressIndicator(context, info),
       ],
     );
   }
 }
 
-Widget _progressIndicator(BuildContext context, AlbumPageIdeal state) {
-  if (state.info.containsKey("currentFolder") &&
-      state.info["totalFolder"] != state.info["currentFolder"]) {
+Widget _progressIndicator(BuildContext context, Map info) {
+  if (info.containsKey("currentFolder") &&
+      info["totalFolder"] != info["currentFolder"]) {
     return Column(
       children: [
         Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
             Text(
-              "indexing: Folder ${state.info["currentFolder"]}/${state.info["totalFolder"]}",
+              "indexing: Folder ${info["currentFolder"]}/${info["totalFolder"]}",
               style: Theme.of(context).textTheme.bodySmall,
             ),
             SizedBox(
@@ -49,7 +52,7 @@ Widget _progressIndicator(BuildContext context, AlbumPageIdeal state) {
           ],
         ),
         LinearProgressIndicator(
-          value: state.info["currentFolder"] / state.info["totalFolder"],
+          value: info["currentFolder"] / info["totalFolder"],
           valueColor:
               AlwaysStoppedAnimation<Color>(Theme.of(context).primaryColor),
         ),

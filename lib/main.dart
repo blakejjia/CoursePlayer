@@ -8,7 +8,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lemon/core/audio/audio_service.dart';
 import 'package:lemon/core/audio/bloc/audio_player_bloc.dart';
 import 'package:lemon/core/my_app.dart';
-import 'package:lemon/features/album/bloc/album_page_cubit.dart';
+// import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 // migrated: playlist now uses Riverpod providers
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:path_provider/path_provider.dart';
@@ -33,7 +33,7 @@ Future<void> setup() async {
       AlbumRepository(getIt<AppDatabase>()));
   // Global ProviderContainer for non-widget access to providers
   getIt.registerSingleton<ProviderContainer>(ProviderContainer());
-  getIt.registerSingleton<AlbumPageCubit>(AlbumPageCubit());
+  // Album page now uses Riverpod, no Bloc singleton needed.
   getIt.registerSingleton<MyAudioHandler>(await initAudioService());
 }
 
@@ -51,7 +51,6 @@ class MainApp extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
-        BlocProvider<AlbumPageCubit>(create: (_) => getIt<AlbumPageCubit>()),
       ],
       child: Consumer(builder: (context, ref, _) {
         final settings = ref.watch(settingsProvider);

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/features/settings/providers/settings_state.dart';
-import 'package:lemon/features/album/bloc/album_page_cubit.dart';
+import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:lemon/main.dart';
 
 class SettingsNotifier extends StateNotifier<SettingsState> {
@@ -59,7 +59,10 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       state = next;
       await _persist(next);
     }
-    getIt<AlbumPageCubit>().loaddb();
+    final container = getIt<ProviderContainer>();
+    container
+        .read(albumProvider.notifier)
+        .loaddb(container.read(settingsProvider).audioPath);
   }
 
   void stateRebuilding() {
@@ -71,7 +74,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       return;
     }
     state = state.copyWith(dbRebuiltTime: "indexing songs...");
-    getIt<AlbumPageCubit>().loaddb();
+    final container = getIt<ProviderContainer>();
+    container.read(albumProvider.notifier).loaddb(state.audioPath);
   }
 
   Future<void> updateRebuiltTime() async {

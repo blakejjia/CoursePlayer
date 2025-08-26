@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'audio_page.dart';
-import 'bloc/audio_player_bloc.dart';
+import '../../core/audio/bloc/audio_player_bloc.dart';
 
 class AudioBottomSheet extends StatelessWidget {
   const AudioBottomSheet({super.key});

@@ -7,7 +7,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/bloc/audio_player_bloc.dart';
-import '../../core/audio/audio_bottom_sheet.dart';
+import '../audioPage/audio_bottom_sheet.dart';
 import 'logic/functions.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.

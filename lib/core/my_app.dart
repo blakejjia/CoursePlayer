@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../features/album/album_page.dart';
-import 'audio/audio_bottom_sheet.dart';
+import '../features/audioPage/audio_bottom_sheet.dart';
 import '../features/settings/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {

@@ -9,7 +9,7 @@ import 'package:lemon/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../../core/audio/bloc/audio_player_bloc.dart';
-import 'bloc/album_page_cubit.dart';
+import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';
 
@@ -19,72 +19,51 @@ Future<void> chooseAudioRootDir() async {
   await container.read(settingsProvider.notifier).updatePath();
 }
 
-class AlbumPage extends StatefulWidget {
+class AlbumPage extends ConsumerWidget {
   const AlbumPage({super.key});
 
   @override
-  State<AlbumPage> createState() => _AlbumPageState();
-}
-
-/// [AlbumPage] is the page to display all playlists
-/// reason why is stateful, just to use the refresh indicator
-/// makes app feels reliable.
-/// Program doesn't rely on that.
-class _AlbumPageState extends State<AlbumPage> {
-  @override
-  Widget build(BuildContext context) {
-    return BlocBuilder<AlbumPageCubit, AlbumPageState>(
-      buildWhen: (previous, current) =>
-          previous.latestPlayed == current.latestPlayed,
-      builder: (context, state) {
-        return Scaffold(
-            appBar: AppBar(
-              title: const Text('Courser'),
-              leading: IconButton(
-                icon: Icon(Icons.play_circle_filled),
-                onPressed: () {
-                  _continueWithHistory(state);
-                },
-              ),
-              actions: [
-                PopupMenuButton<String>(
-                  onSelected: (_) {
-                    context.read<AlbumPageCubit>().playListPageChangeView();
-                  },
-                  itemBuilder: (BuildContext context) {
-                    return [
-                      PopupMenuItem<String>(
-                          value: 'ListView',
-                          child: Text(
-                              (state is AlbumPageIdeal && state.isGridView)
-                                  ? 'list view'
-                                  : 'grid view')),
-                    ];
-                  },
-                ),
-              ],
-            ),
-            body: RefreshIndicator(
-                onRefresh: _refreshData,
-                child: (state is AlbumPageIdeal)
-                    ? (state.albums.isEmpty ? BlankView() : AlbumsView(state))
-                    : (state is AlbumPageLoading
-                        ? LoadingView()
-                        : BlankView())));
-      },
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(albumProvider);
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Courser'),
+        leading: IconButton(
+          icon: Icon(Icons.play_circle_filled),
+          onPressed: () {
+            final playHistory = state.latestPlayed;
+            if (playHistory != null) {
+              context.read<AudioPlayerBloc>().add(
+                    LocateAudio(playHistory.album, playHistory.songId),
+                  );
+            }
+          },
+        ),
+        actions: [
+          PopupMenuButton<String>(
+            onSelected: (_) => ref.read(albumProvider.notifier).toggleView(),
+            itemBuilder: (BuildContext context) {
+              return [
+                PopupMenuItem<String>(
+                    value: 'ListView',
+                    child: Text(state.isGridView ? 'list view' : 'grid view')),
+              ];
+            },
+          ),
+        ],
+      ),
+      body: RefreshIndicator(
+        onRefresh: () => ref.read(albumProvider.notifier).load(),
+        child: state.isLoading
+            ? const LoadingView()
+            : (state.albums.isEmpty
+                ? const BlankView()
+                : AlbumsView(
+                    isGridView: state.isGridView,
+                    albums: state.albums,
+                    info: state.info,
+                  )),
+      ),
     );
-  }
-
-  Future<void> _refreshData() async {
-    context.read<AlbumPageCubit>().load();
-  }
-
-  void _continueWithHistory(AlbumPageState state) {
-    final playHistory = state.latestPlayed;
-    if (playHistory != null) {
-      context
-          .read<AudioPlayerBloc>()
-          .add(LocateAudio(playHistory.album, playHistory.songId));
-    }
   }
 }
