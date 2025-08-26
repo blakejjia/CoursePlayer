@@ -1,12 +1,10 @@
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:lemon/core/audio/audio_service.dart';
-import 'package:lemon/core/audio/bloc/audio_player_bloc.dart';
 import 'package:lemon/core/my_app.dart';
 // import 'package:lemon/features/album/bloc/album_page_cubit.dart';
 // migrated: playlist now uses Riverpod providers
@@ -48,11 +46,8 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider<AudioPlayerBloc>(create: (_) => AudioPlayerBloc()),
-      ],
-      child: Consumer(builder: (context, ref, _) {
+    return Consumer(
+      builder: (context, ref, _) {
         final settings = ref.watch(settingsProvider);
         return MaterialApp(
           theme: ThemeData(
@@ -65,7 +60,7 @@ class MainApp extends StatelessWidget {
           },
           initialRoute: "/",
         );
-      }),
+      },
     );
   }
 }

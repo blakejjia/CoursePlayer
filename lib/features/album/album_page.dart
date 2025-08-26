@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lemon/features/album/views/albums_view/albums_view.dart';
 import 'package:lemon/features/album/views/loading_view.dart';
 import 'package:lemon/features/album/views/welcom_view.dart';
@@ -8,7 +7,7 @@ import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../core/audio/bloc/audio_player_bloc.dart';
+import '../../core/audio/providers/audio_player_provider.dart';
 import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';
@@ -33,9 +32,9 @@ class AlbumPage extends ConsumerWidget {
           onPressed: () {
             final playHistory = state.latestPlayed;
             if (playHistory != null) {
-              context.read<AudioPlayerBloc>().add(
-                    LocateAudio(playHistory.album, playHistory.songId),
-                  );
+              ref
+                  .read(audioPlayerProvider.notifier)
+                  .locateAudio(playHistory.album, playHistory.songId);
             }
           },
         ),

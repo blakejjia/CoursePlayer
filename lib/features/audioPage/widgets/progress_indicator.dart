@@ -58,9 +58,10 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
             },
             onChangeEnd: (v) {
               // Commit seek only when user releases the thumb
-              context
-                  .read<AudioPlayerBloc>()
-                  .add(SeekToPosition(Duration(milliseconds: v.round())));
+              final ref = ProviderScope.containerOf(context);
+              ref
+                  .read(audioPlayerProvider.notifier)
+                  .seekTo(Duration(milliseconds: v.round()));
               setState(() => _dragValueMs = null);
             },
           ),

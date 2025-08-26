@@ -3,15 +3,14 @@ import 'package:lemon/features/playList/widgets/ChangeArtistPopUp.dart';
 import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/audio/bloc/audio_player_bloc.dart';
+import '../../core/audio/providers/audio_player_provider.dart';
 import '../audioPage/audio_bottom_sheet.dart';
 import 'logic/functions.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.
-/// listens to [AlbumPageBloc] and [AudioPlayerBloc].
+/// Uses Riverpod providers for album/song list and audio player.
 class SongsListPage extends ConsumerWidget {
   const SongsListPage({super.key});
 
@@ -81,15 +80,15 @@ class SongsListPage extends ConsumerWidget {
                     ),
                     ElevatedButton(
                         onPressed: () {
-                          context.read<AudioPlayerBloc>().add(LocateAudio(
-                              ready.album!, ready.album!.lastPlayedIndex));
+                          ref.read(audioPlayerProvider.notifier).locateAudio(
+                              ready.album!, ready.album!.lastPlayedIndex);
                         },
                         child: Text(contiButton(ready)))
                   ],
                 );
               } else {
                 /// song tile section
-                return _songTile(context, ready, index);
+                return _songTile(context, ref, ready, index);
               }
             },
           ),
@@ -101,20 +100,21 @@ class SongsListPage extends ConsumerWidget {
   }
 }
 
-Widget _songTile(BuildContext context, dynamic state, int index) {
+Widget _songTile(
+    BuildContext context, WidgetRef ref, dynamic state, int index) {
   Album album = state.album!;
   List<Song>? buffer = state.buffer;
   Song song = state.buffer![index - 1];
   return InkWell(onTap: () {
-    context
-        .read<AudioPlayerBloc>()
-        .add(LocateAudio(album, song.id, buffer: buffer));
-  }, child:
-      BlocBuilder<AudioPlayerBloc, AudioPlayerState>(builder: (context, state) {
-    if (state is AudioPlayerIdeal && song.id == int.parse(state.mediaItem.id)) {
+    ref
+        .read(audioPlayerProvider.notifier)
+        .locateAudio(album, song.id, buffer: buffer);
+  }, child: Consumer(builder: (context, ref, _) {
+    final audioState = ref.watch(audioPlayerProvider);
+    if (audioState is AudioPlayerIdeal &&
+        song.id == int.tryParse(audioState.mediaItem.id)) {
       return selectIndicator(context, song);
-    } else {
-      return songTileNormal(context, song);
     }
+    return songTileNormal(context, song);
   }));
 }
