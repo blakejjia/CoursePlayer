@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/presentation/widgets/grouped_tile.dart';
 import 'package:lemon/features/settings/presentation/widgets/speed_selection_bs.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
-import 'InnerPages/info_page.dart';
+import 'package:go_router/go_router.dart';
 
 /// This is settings page
 class SettingPage extends ConsumerWidget {
@@ -101,12 +101,7 @@ class SettingPage extends ConsumerWidget {
             leading: Icon(Icons.info_outline),
             title: Text("tutorial& author"),
             onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const InfoPage(),
-                ),
-              );
+              context.push('/info');
             },
           ),
         ]),
