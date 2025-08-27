@@ -3,7 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/backEnd/json/models/models.dart';
 // Uses the nearest ProviderScope container to dispatch actions
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
-import 'package:lemon/features/playList/songs_list_page.dart';
+import 'package:go_router/go_router.dart';
+import 'package:lemon/core/router/app_router.dart';
 
 part 'card_view.dart';
 part 'list_view.dart';
@@ -64,7 +65,7 @@ void _navigateToSongsListPage(BuildContext context, Album album) {
   final container = ProviderScope.containerOf(context, listen: false);
   container.read(songListProvider.notifier).locateAlbum(album);
   // Navigate via go_router; extra carries typed data if needed later.
-  context.goNamed('album', extra: AlbumRouteData(album));
+  context.pushNamed('album', extra: AlbumRouteData(album));
 }
 
 String formatAlbumProgress(Album album) {

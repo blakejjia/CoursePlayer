@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/my_app.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';
 import 'package:lemon/features/settings/presentation/InnerPages/info_page.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
 
 /// Route names for type-safe navigation.
 abstract class AppRoutes {
@@ -32,7 +32,7 @@ final goRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) => const NoTransitionPage(child: MyApp()),
       ),
       GoRoute(
-        path: '${AppRoutes.album}',
+        path: AppRoutes.album,
         name: 'album',
         pageBuilder: (context, state) {
           final data = state.extra;
