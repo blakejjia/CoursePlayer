@@ -60,9 +60,8 @@ class SongsListPage extends ConsumerWidget {
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
                       height: MediaQuery.of(context).size.width / 2,
-                      child: ready.picture != null
-                          ? Image.memory(ready.picture!)
-                          : Image.asset("assets/default_cover.jpeg"),
+                      child: Image.asset(
+                          "assets/default_cover.jpeg"), // TODO: load cover dynamically
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),

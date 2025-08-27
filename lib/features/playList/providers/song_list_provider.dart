@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/backEnd/json/models.dart';
 import 'package:lemon/features/playList/providers/song_list_state.dart';
@@ -13,13 +11,9 @@ class SongListNotifier extends StateNotifier<SongListState> {
     final songs = await providerContainer
         .read(songRepositoryProvider)
         .getSongsByAlbumId(album.id);
-    final Uint8List? picture = await providerContainer
-        .read(coversRepositoryProvider)
-        .getCoverUint8ListByPlaylist(album);
     state = SongListState(
       album: album,
       buffer: songs,
-      picture: picture,
       isLoading: false,
     );
   }

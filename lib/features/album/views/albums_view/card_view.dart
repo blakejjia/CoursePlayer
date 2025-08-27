@@ -73,30 +73,12 @@ class AlbumCardView extends StatelessWidget {
 
 Widget _buildAlbumCover(BuildContext context, Album album,
     {required double height, required double width}) {
-  return FutureBuilder<Uint8List?>(
-    future: providerContainer
-        .read(coversRepositoryProvider)
-        .getCoverUint8ListByPlaylist(album),
-    builder: (context, snapshot) {
-      if (snapshot.connectionState == ConnectionState.waiting) {
-        return SizedBox(
-          height: height,
-          width: width,
-          child: const Center(child: CircularProgressIndicator()),
-        );
-      } else if (snapshot.hasError || snapshot.data == null) {
-        return SizedBox(
-          height: height,
-          width: width,
-          child: const Center(child: Icon(Icons.error)),
-        );
-      } else {
-        return SizedBox(
-          height: height,
-          width: width,
-          child: Image.memory(snapshot.data!),
-        );
-      }
-    },
-  );
+  return SizedBox(
+    height: height,
+    width: width,
+    child: Image.asset(
+      'assets/default_cover.jpeg',
+      fit: BoxFit.cover,
+    ),
+  ); //TODO:load cover dynamically
 }

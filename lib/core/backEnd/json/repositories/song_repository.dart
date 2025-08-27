@@ -2,7 +2,7 @@ import 'package:lemon/core/backEnd/json/media_library_store.dart';
 import 'package:lemon/core/backEnd/json/media_library_schema.dart';
 import 'package:lemon/core/backEnd/json/models.dart' show Song; // plain model
 
-import '../wash_data.dart';
+import '../../wash_data.dart';
 import 'package:lemon/main.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 
