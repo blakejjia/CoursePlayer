@@ -10,6 +10,7 @@ import 'package:lemon/core/backEnd/json/repositories/album_repository.dart'
 import 'package:lemon/core/backEnd/json/repositories/song_repository.dart'
     as json_repo;
 import 'package:lemon/features/settings/providers/settings_provider.dart';
+import 'package:lemon/core/router/app_router.dart';
 
 // Riverpod providers to replace GetIt
 // Swap DB for JSON MediaLibrary store
@@ -39,16 +40,14 @@ class MainApp extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
-    return MaterialApp(
+    final router = ref.watch(goRouterProvider);
+    return MaterialApp.router(
       theme: ThemeData(
         colorSchemeSeed: settings.seedColor,
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      routes: {
-        "/": (context) => MyApp(),
-      },
-      initialRoute: "/",
+      routerConfig: router,
     );
   }
 }

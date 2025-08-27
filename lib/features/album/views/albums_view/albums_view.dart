@@ -63,12 +63,8 @@ void _navigateToSongsListPage(BuildContext context, Album album) {
   // Use the nearest ProviderScope's container to avoid global container mismatch
   final container = ProviderScope.containerOf(context, listen: false);
   container.read(songListProvider.notifier).locateAlbum(album);
-  Navigator.push(
-    context,
-    MaterialPageRoute(
-      builder: (_) => const SongsListPage(),
-    ),
-  );
+  // Navigate via go_router; extra carries typed data if needed later.
+  context.goNamed('album', extra: AlbumRouteData(album));
 }
 
 String formatAlbumProgress(Album album) {
