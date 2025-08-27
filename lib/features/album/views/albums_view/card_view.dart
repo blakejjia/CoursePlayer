@@ -74,7 +74,9 @@ class AlbumCardView extends StatelessWidget {
 Widget _buildAlbumCover(BuildContext context, Album album,
     {required double height, required double width}) {
   return FutureBuilder<Uint8List?>(
-    future: getIt<CoversRepository>().getCoverUint8ListByPlaylist(album),
+    future: providerContainer
+        .read(coversRepositoryProvider)
+        .getCoverUint8ListByPlaylist(album),
     builder: (context, snapshot) {
       if (snapshot.connectionState == ConnectionState.waiting) {
         return SizedBox(

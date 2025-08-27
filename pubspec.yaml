@@ -9,13 +9,9 @@ dependencies:
   flutter:
     sdk: flutter
   permission_handler: ^11.3.1
-  get_it: ^8.0.0
   drift: ^2.24.0
   drift_flutter: ^0.2.4
   crypto: ^3.0.6
-  bloc: ^8.1.4
-  flutter_bloc: ^8.1.6
-  hydrated_bloc: ^9.1.5
   equatable: ^2.0.5
   path_provider: ^2.1.5
   just_audio: ^0.9.42

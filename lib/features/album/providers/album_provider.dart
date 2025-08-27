@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
-import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
+// Uses albumRepositoryProvider from main.dart
 import 'package:lemon/core/backEnd/load_db.dart';
 import 'package:lemon/main.dart';
 
@@ -80,7 +80,9 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true);
-    final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
+    final albums = await providerContainer
+        .read(albumRepositoryProvider)
+        .getAlbumsByLastPlayedTime();
     state = state.copyWith(isLoading: false, albums: albums, info: {});
   }
 
@@ -88,14 +90,18 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
     state = state.copyWith(isLoading: true);
     Stream<Map<String, int>> result = rebuildDb(audioPath);
     await for (final loadinfo in result) {
-      final albums = await getIt<AlbumRepository>().getAlbumsByLastPlayedTime();
+      final albums = await providerContainer
+          .read(albumRepositoryProvider)
+          .getAlbumsByLastPlayedTime();
       state = state.copyWith(isLoading: false, albums: albums, info: loadinfo);
     }
   }
 
   void updateHistory(LatestPlayed history) {
     state = state.copyWith(latestPlayed: history);
-    getIt<AlbumRepository>().updateLastPlayedTimeWithId(history.album.id);
+    providerContainer
+        .read(albumRepositoryProvider)
+        .updateLastPlayedTimeWithId(history.album.id);
   }
 
   Future<void> _restoreIsGridView() async {

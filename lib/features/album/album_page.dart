@@ -14,8 +14,7 @@ part 'views/blank_view.dart';
 
 // Helper to access settings provider from parts
 Future<void> chooseAudioRootDir() async {
-  final container = getIt<ProviderContainer>();
-  await container.read(settingsProvider.notifier).updatePath();
+  await providerContainer.read(settingsProvider.notifier).updatePath();
 }
 
 class AlbumPage extends ConsumerWidget {

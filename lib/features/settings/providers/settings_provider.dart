@@ -59,10 +59,9 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       state = next;
       await _persist(next);
     }
-    final container = getIt<ProviderContainer>();
-    container
+    providerContainer
         .read(albumProvider.notifier)
-        .loaddb(container.read(settingsProvider).audioPath);
+        .loaddb(providerContainer.read(settingsProvider).audioPath);
   }
 
   void stateRebuilding() {
@@ -74,8 +73,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       return;
     }
     state = state.copyWith(dbRebuiltTime: "indexing songs...");
-    final container = getIt<ProviderContainer>();
-    container.read(albumProvider.notifier).loaddb(state.audioPath);
+    providerContainer.read(albumProvider.notifier).loaddb(state.audioPath);
   }
 
   Future<void> updateRebuiltTime() async {

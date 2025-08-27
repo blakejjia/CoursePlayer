@@ -3,7 +3,6 @@ import 'package:drift/drift.dart';
 
 import '../../../../main.dart';
 import '../../../../features/settings/providers/settings_provider.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 @DriftAccessor(tables: [Covers])
 class CoversRepository extends DatabaseAccessor<AppDatabase> {
@@ -39,13 +38,12 @@ class CoversRepository extends DatabaseAccessor<AppDatabase> {
 
   // This function is not goof
   Future<Uint8List?> getCoverUint8ListByPlaylist(Album playlist) async {
-    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    final settings = providerContainer.read(settingsProvider);
     if (!settings.showCover) {
       Cover? defaultCover = await getCoverById(0);
       return defaultCover?.cover;
     }
-    Cover? cover =
-        await getIt<CoversRepository>().getCoverById(playlist.imageId);
+    Cover? cover = await getCoverById(playlist.imageId);
     return cover?.cover;
   }
 

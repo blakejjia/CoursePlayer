@@ -18,7 +18,9 @@ class AlbumListView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<Uint8List?>(
-      future: getIt<CoversRepository>().getCoverUint8ListByPlaylist(album),
+      future: providerContainer
+          .read(coversRepositoryProvider)
+          .getCoverUint8ListByPlaylist(album),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const ListTile(

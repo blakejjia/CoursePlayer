@@ -5,8 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
 import 'package:lemon/core/backEnd/data/models/models.dart';
-import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
-import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
+// Repositories are accessed via Riverpod providers in main.dart
 import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
@@ -24,7 +23,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   }
 
   Future<void> _init() async {
-    _audioHandler = getIt<MyAudioHandler>();
+    _audioHandler = await providerContainer.read(audioHandlerProvider.future);
 
     // Bridge audio service streams into state updates
     _playerInfoSub = CombineLatestStream.combine2(
@@ -38,7 +37,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
     });
 
     // initialize default playback speed
-    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    final settings = providerContainer.read(settingsProvider);
     final defaultPlaybackRate = settings.defaultPlaybackSpeed;
     setSpeed(defaultPlaybackRate);
   }
@@ -52,12 +51,12 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
       );
       if (playbackState.playing && mediaItem != null) {
         // update song progress
-        getIt<SongRepository>().updateSongProgress(
-          int.parse(mediaItem.id),
-          playbackState.position.inSeconds,
-        );
+        providerContainer.read(songRepositoryProvider).updateSongProgress(
+              int.parse(mediaItem.id),
+              playbackState.position.inSeconds,
+            );
         // update latest played
-        getIt<ProviderContainer>().read(albumProvider.notifier).updateHistory(
+        providerContainer.read(albumProvider.notifier).updateHistory(
               LatestPlayed(current.album, int.parse(mediaItem.id)),
             );
       }
@@ -93,8 +92,10 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
 
   Future<void> locateAudio(Album album, int songId,
       {List<Song>? buffer}) async {
-    List<Song>? songs =
-        buffer ?? await getIt<SongRepository>().getSongsByAlbumId(album.id);
+    List<Song>? songs = buffer ??
+        await providerContainer
+            .read(songRepositoryProvider)
+            .getSongsByAlbumId(album.id);
     final index = songs!.indexWhere((s) => s.id == songId);
     songs = songs.sublist(index);
     final position = songs[0].playedInSecond;
@@ -139,15 +140,16 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
     await _audioHandler.pause();
     if (state is AudioPlayerIdeal) {
       final s = state as AudioPlayerIdeal;
-      await getIt<AlbumRepository>().updateLastPlayedSongWithId(
-        int.parse(s.mediaItem.album!),
-        int.parse(s.mediaItem.id),
-      );
+      await providerContainer
+          .read(albumRepositoryProvider)
+          .updateLastPlayedSongWithId(
+            int.parse(s.mediaItem.album!),
+            int.parse(s.mediaItem.id),
+          );
     }
     // refresh providers
-    final container = getIt<ProviderContainer>();
-    container.read(songListProvider.notifier).refreshSongs();
-    container.read(albumProvider.notifier).load();
+    providerContainer.read(songListProvider.notifier).refreshSongs();
+    providerContainer.read(albumProvider.notifier).load();
   }
 
   @override

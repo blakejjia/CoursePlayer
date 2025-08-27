@@ -7,11 +7,10 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:crypto/crypto.dart';
 
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../features/settings/providers/settings_provider.dart';
 import 'data/repositories/covers_repository.dart';
-import 'data/repositories/album_repository.dart';
-import 'data/repositories/song_repository.dart';
+// album_repository.dart and song_repository.dart are not directly referenced here
+// because we access them via Riverpod providers defined in main.dart.
 
 /// This function rebuilds the database from the given path.
 /// Given path is the base folder where all the albums are stored.
@@ -23,10 +22,10 @@ import 'data/repositories/song_repository.dart';
 Stream<Map<String, int>> rebuildDb(String path) async* {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   // init
-  getIt<ProviderContainer>().read(settingsProvider.notifier).stateRebuilding();
-  await getIt<SongRepository>().destroySongDb();
-  await getIt<AlbumRepository>().destroyAlbumDb();
-  await getIt<CoversRepository>().destroyCoversDb();
+  providerContainer.read(settingsProvider.notifier).stateRebuilding();
+  await providerContainer.read(songRepositoryProvider).destroySongDb();
+  await providerContainer.read(albumRepositoryProvider).destroyAlbumDb();
+  await providerContainer.read(coversRepositoryProvider).destroyCoversDb();
   await _loadDefaultCover();
 
   // locate directory
@@ -56,9 +55,7 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
     }
   }
 
-  getIt<ProviderContainer>()
-      .read(settingsProvider.notifier)
-      .updateRebuiltTime();
+  providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Database rebuilt');
 }
 
@@ -70,20 +67,25 @@ Future<int> partialRebuild(String baseFolderPath) async {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   final directory = Directory(baseFolderPath);
   if (await directory.exists()) {
-    int? albumId = await getIt<AlbumRepository>()
+    int? albumId = await providerContainer
+        .read(albumRepositoryProvider)
         .getAlbumIdByPath(baseFolderPath)
         .then((album) => album?.id);
     if (albumId != null) {
-      await getIt<AlbumRepository>().deleteAlbumById(albumId);
-      await getIt<SongRepository>().deleteSongsByAlbumId(albumId);
+      await providerContainer
+          .read(albumRepositoryProvider)
+          .deleteAlbumById(albumId);
+      await providerContainer
+          .read(songRepositoryProvider)
+          .deleteSongsByAlbumId(albumId);
     } else {
-      albumId = await getIt<AlbumRepository>().getNextAlbumId();
+      albumId = await providerContainer
+          .read(albumRepositoryProvider)
+          .getNextAlbumId();
     }
     await _handleAlbum(directory, albumId);
     Fluttertoast.showToast(msg: 'Database rebuilt');
-    getIt<ProviderContainer>()
-        .read(settingsProvider.notifier)
-        .updateRebuiltTime();
+    providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
     return 0;
   }
   Fluttertoast.showToast(msg: 'Error: Directory not found');
@@ -155,7 +157,7 @@ Future<void> _handleSongs(
       String? part = parts.length > 1 ? parts.first : null;
 
       // insert song
-      getIt<SongRepository>().insertSong(
+      providerContainer.read(songRepositoryProvider).insertSong(
           artist: washArtist(tag.albumArtist),
           title: basename(file.path),
           album: albumId,
@@ -167,7 +169,7 @@ Future<void> _handleSongs(
       totalTracks++;
     }
   }
-  getIt<AlbumRepository>().insertAlbum(
+  providerContainer.read(albumRepositoryProvider).insertAlbum(
       id: albumId,
       title: basename(folder.path),
       author: getAlbumArtistBySet(authors),
@@ -186,7 +188,7 @@ Future<int> _handlePictureSerialize(List<Picture>? pictures) async {
 
   Uint8List pictureBytes = pictures[0].bytes;
   String hash = sha256.convert(pictureBytes).toString();
-  CoversRepository coversDao = getIt<CoversRepository>();
+  CoversRepository coversDao = providerContainer.read(coversRepositoryProvider);
   int? coverId = await coversDao.getCoverIdByHash(hash);
   return coverId ?? coversDao.createCover(pictureBytes, hash);
 }
@@ -195,6 +197,7 @@ Future<int> _loadDefaultCover() async {
   final coverData = await rootBundle
       .load("assets/default_cover.jpeg")
       .then((data) => data.buffer.asUint8List());
-  return getIt<CoversRepository>()
+  return providerContainer
+      .read(coversRepositoryProvider)
       .createCoverWithId(0, coverData, sha256.convert(coverData).toString());
 }

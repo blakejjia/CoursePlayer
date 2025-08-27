@@ -2,7 +2,6 @@ import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:drift/drift.dart';
 
 import '../../../../main.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../../../features/settings/providers/settings_provider.dart';
 import '../../wash_data.dart';
 
@@ -52,7 +51,7 @@ class SongRepository extends DatabaseAccessor<AppDatabase> {
   /// Core sorting function
   List<Song> _handleSongs(List<Song> songs) {
     sortSongs(songs);
-    final settings = getIt<ProviderContainer>().read(settingsProvider);
+    final settings = providerContainer.read(settingsProvider);
     if (settings.cleanFileName) {
       List<Song> cleanedSongList = cleanSongTitles(songs);
       return cleanedSongList;

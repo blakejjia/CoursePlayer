@@ -13,9 +13,12 @@ class SongListNotifier extends StateNotifier<SongListState> {
 
   Future<void> locateAlbum(Album album) async {
     state = const SongListState.loading();
-    final songs = await getIt<SongRepository>().getSongsByAlbumId(album.id);
-    final Uint8List? picture =
-        await getIt<CoversRepository>().getCoverUint8ListByPlaylist(album);
+    final songs = await providerContainer
+        .read(songRepositoryProvider)
+        .getSongsByAlbumId(album.id);
+    final Uint8List? picture = await providerContainer
+        .read(coversRepositoryProvider)
+        .getCoverUint8ListByPlaylist(album);
     state = SongListState(
       album: album,
       buffer: songs,
@@ -27,10 +30,12 @@ class SongListNotifier extends StateNotifier<SongListState> {
   Future<void> refreshSongs() async {
     final current = state;
     if (!current.isReady || current.album == null) return;
-    final songs =
-        await getIt<SongRepository>().getSongsByAlbumId(current.album!.id);
-    final album =
-        await getIt<AlbumRepository>().getAlbumById(current.album!.id);
+    final songs = await providerContainer
+        .read(songRepositoryProvider)
+        .getSongsByAlbumId(current.album!.id);
+    final album = await providerContainer
+        .read(albumRepositoryProvider)
+        .getAlbumById(current.album!.id);
     state = current.copyWith(buffer: songs, album: album);
   }
 }
