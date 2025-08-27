@@ -23,7 +23,7 @@ class SettingsState {
       'dbRebuiltTime': dbRebuiltTime,
       'showCover': showCover,
       'cleanFileName': cleanFileName,
-      'seedColor': seedColor.value,
+      'seedColor': seedColor.toARGB32(),
       'defaultPlaybackSpeed': defaultPlaybackSpeed,
     };
   }

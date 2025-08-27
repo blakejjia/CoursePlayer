@@ -28,7 +28,7 @@ final providerContainer = ProviderContainer();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(ProviderScope(parent: providerContainer, child: const MainApp()));
+  runApp(const ProviderScope(child: MainApp()));
 }
 
 class MainApp extends ConsumerWidget {

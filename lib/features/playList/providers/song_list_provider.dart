@@ -2,9 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
-import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
-import 'package:lemon/core/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
 import 'package:lemon/features/playList/providers/song_list_state.dart';
 import 'package:lemon/main.dart';
 

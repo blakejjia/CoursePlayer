@@ -33,7 +33,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       dbRebuiltTime: prefs.getString(_kDbRebuiltTime),
       showCover: prefs.getBool(_kShowCover) ?? fallback.showCover,
       cleanFileName: prefs.getBool(_kCleanFileName) ?? fallback.cleanFileName,
-      seedColor: Color(prefs.getInt(_kSeedColor) ?? fallback.seedColor.value),
+      seedColor:
+          Color(prefs.getInt(_kSeedColor) ?? fallback.seedColor.toARGB32()),
       defaultPlaybackSpeed: prefs.getDouble(_kDefaultPlaybackSpeed) ??
           fallback.defaultPlaybackSpeed,
     );
@@ -48,7 +49,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     }
     await prefs.setBool(_kShowCover, s.showCover);
     await prefs.setBool(_kCleanFileName, s.cleanFileName);
-    await prefs.setInt(_kSeedColor, s.seedColor.value);
+    await prefs.setInt(_kSeedColor, s.seedColor.toARGB32());
     await prefs.setDouble(_kDefaultPlaybackSpeed, s.defaultPlaybackSpeed);
   }
 

@@ -9,7 +9,7 @@ class InfoPage extends StatefulWidget {
   const InfoPage({super.key});
 
   @override
-  _InfoPageState createState() => _InfoPageState();
+  State<InfoPage> createState() => _InfoPageState();
 }
 
 class _InfoPageState extends State<InfoPage> {

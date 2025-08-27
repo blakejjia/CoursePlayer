@@ -36,9 +36,9 @@ class _PlayerProgressBarState extends State<PlayerProgressBar> {
           child: LinearProgressIndicator(
             value: bufferedRatio.clamp(0.0, 1.0),
             minHeight: 4,
-            backgroundColor: theme.colorScheme.surfaceVariant,
+            backgroundColor: theme.colorScheme.surfaceContainerHighest,
             valueColor: AlwaysStoppedAnimation<Color>(
-              theme.colorScheme.onSurface.withOpacity(0.25),
+              theme.colorScheme.onSurface.withValues(alpha: 0.25),
             ),
           ),
         ),

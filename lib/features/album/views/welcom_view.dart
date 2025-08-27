@@ -106,7 +106,7 @@ class _WelcomeViewState extends State<WelcomeView> {
                       .textTheme
                       .bodyMedium
                       ?.color
-                      ?.withOpacity(0.7),
+                      ?.withValues(alpha: 0.7),
                 ),
             textAlign: TextAlign.center,
           ),

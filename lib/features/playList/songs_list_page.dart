@@ -1,5 +1,5 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
-import 'package:lemon/features/playList/widgets/ChangeArtistPopUp.dart';
+import 'package:lemon/features/playList/widgets/change_artist_pop_up.dart';
 import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
 import 'package:lemon/core/backEnd/data/models/models.dart';
 import 'package:flutter/material.dart';

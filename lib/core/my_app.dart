@@ -4,7 +4,7 @@ import '../features/audioPage/audio_bottom_sheet.dart';
 import '../features/settings/presentation/setting_page.dart';
 
 class MyApp extends StatefulWidget {
-  MyApp({super.key});
+  const MyApp({super.key});
 
   @override
   State<MyApp> createState() => _MyAppState();
