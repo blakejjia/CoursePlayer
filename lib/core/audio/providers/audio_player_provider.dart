@@ -4,7 +4,7 @@ import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models.dart';
 // Repositories are accessed via Riverpod providers in main.dart
 import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';

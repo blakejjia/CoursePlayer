@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models.dart';
 // Using providerContainer from main.dart for non-widget access
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';

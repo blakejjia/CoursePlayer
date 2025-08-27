@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models.dart';
 // Uses albumRepositoryProvider from main.dart
 import 'package:lemon/core/backEnd/load_db.dart';
 import 'package:lemon/main.dart';
@@ -12,12 +12,32 @@ class LatestPlayed {
   const LatestPlayed(this.album, this.songId);
 
   Map<String, dynamic> toMap() => {
-        'album': album.toJson(),
+        'album': {
+          'id': album.id,
+          'title': album.title,
+          'author': album.author,
+          'imageId': album.imageId,
+          'sourcePath': album.sourcePath,
+          'lastPlayedTime': album.lastPlayedTime,
+          'lastPlayedIndex': album.lastPlayedIndex,
+          'totalTracks': album.totalTracks,
+          'playedTracks': album.playedTracks,
+        },
         'songId': songId,
       };
 
   factory LatestPlayed.fromMap(Map<String, dynamic> map) => LatestPlayed(
-        Album.fromJson(map['album'] as Map<String, dynamic>),
+        Album(
+          id: map['album']['id'] as int,
+          title: map['album']['title'] as String,
+          author: map['album']['author'] as String,
+          imageId: map['album']['imageId'] as int,
+          sourcePath: map['album']['sourcePath'] as String,
+          lastPlayedTime: map['album']['lastPlayedTime'] as int,
+          lastPlayedIndex: map['album']['lastPlayedIndex'] as int,
+          totalTracks: map['album']['totalTracks'] as int,
+          playedTracks: map['album']['playedTracks'] as int,
+        ),
         map['songId'] as int,
       );
 }
