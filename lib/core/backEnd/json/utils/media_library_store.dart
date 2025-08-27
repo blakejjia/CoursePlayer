@@ -1,0 +1,232 @@
+import 'dart:async';
+import 'dart:io';
+import 'dart:convert';
+import 'dart:math' as math;
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
+import '../models/media_library_schema.dart';
+
+/// Handles reading/writing MediaLibrary.json with atomic writes.
+class MediaLibraryStore {
+  final String jsonFileName;
+  // Covers are not persisted; load dynamically on demand.
+
+  MediaLibraryFileRoot _cache = MediaLibraryFileRoot.empty();
+  bool _loaded = false;
+  final _changes = StreamController<MediaLibraryFileRoot>.broadcast();
+  Completer<void>? _writeLock;
+
+  MediaLibraryStore({
+    this.jsonFileName = 'MediaLibrary.json',
+  });
+
+  Stream<MediaLibraryFileRoot> get changes => _changes.stream;
+
+  Future<Directory> _appDir() async {
+    final dir = await getApplicationDocumentsDirectory();
+    return dir;
+  }
+
+  Future<File> _jsonFile() async {
+    final dir = await _appDir();
+    return File(p.join(dir.path, jsonFileName));
+  }
+
+  // No covers directory helpers needed.
+
+  /// Load JSON from disk into memory. Creates an empty one if missing or invalid.
+  Future<MediaLibraryFileRoot> load() async {
+    if (_loaded) return _cache;
+    final file = await _jsonFile();
+    try {
+      if (await file.exists()) {
+        final text = await file.readAsString();
+        _cache = MediaLibraryFileRoot.decode(text);
+      } else {
+        _cache = MediaLibraryFileRoot.empty();
+        await save();
+      }
+      _loaded = true;
+      return _cache;
+    } catch (e) {
+      // backup corrupted file and start fresh
+      try {
+        if (await file.exists()) {
+          final backupPath =
+              '${file.path}.bak-${DateTime.now().millisecondsSinceEpoch}';
+          await file.copy(backupPath);
+        }
+      } catch (_) {}
+      _cache = MediaLibraryFileRoot.empty();
+      _loaded = true;
+      await save();
+      return _cache;
+    }
+  }
+
+  /// Save the in-memory cache to disk atomically.
+  Future<void> save() async {
+    // serialize writes
+    while (_writeLock != null) {
+      await _writeLock!.future;
+    }
+    _writeLock = Completer<void>();
+    try {
+      final file = await _jsonFile();
+      final dir = file.parent;
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+      final tmp = File('${file.path}.tmp');
+      final bytes = utf8.encode(_cache.encode());
+      await tmp.writeAsBytes(bytes, flush: true);
+      // atomic replace if supported; else rename best-effort
+      if (await file.exists()) {
+        await file.delete();
+      }
+      await tmp.rename(file.path);
+      _changes.add(_cache);
+    } finally {
+      _writeLock!.complete();
+      _writeLock = null;
+    }
+  }
+
+  MediaLibraryFileRoot get snapshot => _cache;
+
+  /// Replace entire library and persist.
+  Future<void> replace(MediaLibraryFileRoot next) async {
+    _cache = next.copyWith(
+      generatedAt: DateTime.now().toIso8601String(),
+    );
+    await save();
+  }
+
+  // Covers are loaded on demand from audio files; nothing persisted here.
+}
+
+/// Batch editor that groups multiple changes into a single load+save cycle.
+class MediaLibraryBatch {
+  final MediaLibraryStore _store;
+  MediaLibraryFileRoot _root;
+  bool _committed = false;
+
+  MediaLibraryBatch._(this._store, this._root);
+
+  MediaLibraryFileRoot get root => _root;
+
+  /// Start a batch on top of current store contents.
+  static Future<MediaLibraryBatch> start(MediaLibraryStore store) async {
+    final root = await store.load();
+    // work on a local copy to avoid readers seeing partial updates
+    final copy = root.copyWith(
+      albums: List.of(root.albums),
+      songs: List.of(root.songs),
+    );
+    return MediaLibraryBatch._(store, copy);
+  }
+
+  /// Commit all staged changes back to the store (single write).
+  Future<void> commit() async {
+    if (_committed) return;
+    await _store.replace(_root);
+    _committed = true;
+  }
+
+  // ---------------- Album helpers ----------------
+  int nextAlbumId() {
+    if (_root.albums.isEmpty) return 1;
+    final maxId = _root.albums.map((e) => e.id).reduce(math.max);
+    return maxId + 1;
+  }
+
+  int insertAlbum({
+    int? id,
+    required String title,
+    required String author,
+    required int imageId,
+    required String sourcePath,
+    required int lastPlayedTime,
+    required int totalTracks,
+    required int playedTracked,
+    required int lastPlayedIndex,
+  }) {
+    final assigned = id ?? nextAlbumId();
+    final dto = AlbumDto(
+      id: assigned,
+      title: title,
+      author: author,
+      imageId: 0,
+      sourcePath: sourcePath,
+      lastPlayedTime: lastPlayedTime,
+      lastPlayedIndex: lastPlayedIndex,
+      totalTracks: totalTracks,
+      playedTracks: playedTracked,
+    );
+    _root = _root.copyWith(albums: [..._root.albums, dto]);
+    return assigned;
+  }
+
+  AlbumDto? albumByPath(String path) {
+    try {
+      return _root.albums.firstWhere((a) => a.sourcePath == path);
+    } catch (_) {
+      return null;
+    }
+  }
+
+  void deleteAlbumById(int id) {
+    _root = _root.copyWith(
+      albums: _root.albums.where((e) => e.id != id).toList(),
+    );
+  }
+
+  void clearAlbums() {
+    _root = _root.copyWith(albums: const []);
+  }
+
+  // ---------------- Song helpers ----------------
+  int nextSongId() {
+    if (_root.songs.isEmpty) return 1;
+    final maxId = _root.songs.map((e) => e.id).reduce(math.max);
+    return maxId + 1;
+  }
+
+  int insertSong({
+    required String artist,
+    required String title,
+    required int album,
+    required int length,
+    required int imageId,
+    required String path,
+    String? parts,
+    required int playedInSecond,
+  }) {
+    final id = nextSongId();
+    final dto = SongDto(
+      id: id,
+      artist: artist,
+      title: title,
+      album: album,
+      length: length,
+      imageId: 0,
+      path: path,
+      parts: parts ?? '',
+      track: null,
+      playedInSecond: playedInSecond,
+    );
+    _root = _root.copyWith(songs: [..._root.songs, dto]);
+    return id;
+  }
+
+  void deleteSongsByAlbumId(int albumId) {
+    _root = _root.copyWith(
+      songs: _root.songs.where((e) => e.album != albumId).toList(),
+    );
+  }
+
+  void clearSongs() {
+    _root = _root.copyWith(songs: const []);
+  }
+}

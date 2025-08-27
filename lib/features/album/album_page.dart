@@ -4,17 +4,17 @@ import 'package:lemon/features/album/views/loading_view.dart';
 import 'package:lemon/features/album/views/welcom_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
-import 'package:lemon/main.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../core/audio/providers/audio_player_provider.dart';
+import '../audioPage/providers/audio_player_provider.dart';
 import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';
 
 // Helper to access settings provider from parts
-Future<void> chooseAudioRootDir() async {
-  await providerContainer.read(settingsProvider.notifier).updatePath();
+Future<void> chooseAudioRootDir(BuildContext context) async {
+  final container = ProviderScope.containerOf(context, listen: false);
+  await container.read(settingsProvider.notifier).updatePath();
 }
 
 class AlbumPage extends ConsumerWidget {

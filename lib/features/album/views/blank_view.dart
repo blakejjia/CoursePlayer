@@ -33,7 +33,7 @@ class _BlankViewState extends State<BlankView> {
                   const SizedBox(height: 16),
                   ElevatedButton.icon(
                     onPressed: () async {
-                      await chooseAudioRootDir();
+                      await chooseAudioRootDir(context);
                     },
                     icon: const Icon(Icons.folder_open),
                     label: const Text("Choose Root Directory"),

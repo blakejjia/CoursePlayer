@@ -3,12 +3,11 @@ import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/core/backEnd/wash_data.dart';
 import 'package:lemon/main.dart';
-import 'package:flutter/services.dart';
 import 'package:path/path.dart';
-import 'package:crypto/crypto.dart';
+import 'package:lemon/core/backEnd/json/utils/media_library_store.dart';
 
 import '../../features/settings/providers/settings_provider.dart';
-import 'data/repositories/covers_repository.dart';
+// Covers are loaded dynamically; no cover persistence
 // album_repository.dart and song_repository.dart are not directly referenced here
 // because we access them via Riverpod providers defined in main.dart.
 
@@ -23,10 +22,13 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   // init
   providerContainer.read(settingsProvider.notifier).stateRebuilding();
-  await providerContainer.read(songRepositoryProvider).destroySongDb();
-  await providerContainer.read(albumRepositoryProvider).destroyAlbumDb();
-  await providerContainer.read(coversRepositoryProvider).destroyCoversDb();
-  await _loadDefaultCover();
+  // Use a single JSON batch to avoid repeated open/write cycles
+  final store = providerContainer.read(jsonStoreProvider);
+  final batch = await MediaLibraryBatch.start(store);
+  // Clear previous library in-memory, commit once at end
+  batch.clearSongs();
+  batch.clearAlbums();
+  // No covers DB to reset; covers will be loaded dynamically during playback
 
   // locate directory
   final directory = Directory(path);
@@ -43,7 +45,9 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
     };
 
     for (var folder in folders) {
-      await _handleAlbum(folder, currentFolder + 10);
+      // assign a new album id from batch
+      final albumId = batch.nextAlbumId();
+      await _handleAlbum(folder, albumId, batch);
       // yeld info
       currentFolder++;
       yield {
@@ -55,6 +59,8 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
     }
   }
 
+  // Commit all changes once
+  await batch.commit();
   providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Database rebuilt');
 }
@@ -67,23 +73,20 @@ Future<int> partialRebuild(String baseFolderPath) async {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   final directory = Directory(baseFolderPath);
   if (await directory.exists()) {
-    int? albumId = await providerContainer
-        .read(albumRepositoryProvider)
-        .getAlbumIdByPath(baseFolderPath)
-        .then((album) => album?.id);
-    if (albumId != null) {
-      await providerContainer
-          .read(albumRepositoryProvider)
-          .deleteAlbumById(albumId);
-      await providerContainer
-          .read(songRepositoryProvider)
-          .deleteSongsByAlbumId(albumId);
+    final store = providerContainer.read(jsonStoreProvider);
+    final batch = await MediaLibraryBatch.start(store);
+    // find existing album in batch by path
+    final existing = batch.albumByPath(baseFolderPath);
+    final int albumId;
+    if (existing != null) {
+      albumId = existing.id;
+      batch.deleteAlbumById(albumId);
+      batch.deleteSongsByAlbumId(albumId);
     } else {
-      albumId = await providerContainer
-          .read(albumRepositoryProvider)
-          .getNextAlbumId();
+      albumId = batch.nextAlbumId();
     }
-    await _handleAlbum(directory, albumId);
+    await _handleAlbum(directory, albumId, batch);
+    await batch.commit();
     Fluttertoast.showToast(msg: 'Database rebuilt');
     providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
     return 0;
@@ -116,7 +119,8 @@ Future<int> partialRebuild(String baseFolderPath) async {
 ///
 /// path: file path
 
-Future<void> _handleAlbum(Directory folder, int albumId) async {
+Future<void> _handleAlbum(
+    Directory folder, int albumId, MediaLibraryBatch batch) async {
   try {
     List<File> files = [];
     await for (var entity in folder.list(recursive: true, followLinks: false)) {
@@ -124,16 +128,16 @@ Future<void> _handleAlbum(Directory folder, int albumId) async {
         files.add(entity);
       }
     }
-    await _handleSongs(files, folder, albumId);
+    await _handleSongs(files, folder, albumId, batch);
   } catch (e) {
     // TODO: put it in log file
   }
 }
 
-Future<void> _handleSongs(
-    List<File> files, Directory folder, int albumId) async {
+Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
+    MediaLibraryBatch batch) async {
   Set<String> authors = {}; // 使用 Set 来避免重复艺术家
-  int playlistImageId = 0; // 如果没有可用图片，那就是 0
+  int playlistImageId = 0; // no persistent cover
   int totalTracks = 0;
 
   for (File file in files) {
@@ -149,55 +153,38 @@ Future<void> _handleSongs(
     if (tag != null) {
       // add playlist info
       (tag.albumArtist != null) ? authors.add(tag.albumArtist!) : null;
-      // set cover ID
-      int imageId = await _handlePictureSerialize(tag.pictures);
-      (imageId != 0) ? playlistImageId = imageId : null;
+      // no persistent cover; imageId stays 0
+      int imageId = 0;
       // set song "parts"
       List<String> parts = split(relative(file.path, from: folder.path));
       String? part = parts.length > 1 ? parts.first : null;
 
-      // insert song
-      providerContainer.read(songRepositoryProvider).insertSong(
-          artist: washArtist(tag.albumArtist),
-          title: basename(file.path),
-          album: albumId,
-          length: tag.duration ?? 0,
-          imageId: imageId,
-          path: file.path,
-          parts: part,
-          playedInSecond: 0);
+      // insert song to batch (no immediate disk write)
+      batch.insertSong(
+        artist: washArtist(tag.albumArtist),
+        title: basename(file.path),
+        album: albumId,
+        length: tag.duration ?? 0,
+        imageId: imageId,
+        path: file.path,
+        parts: part,
+        playedInSecond: 0,
+      );
       totalTracks++;
     }
   }
-  providerContainer.read(albumRepositoryProvider).insertAlbum(
-      id: albumId,
-      title: basename(folder.path),
-      author: getAlbumArtistBySet(authors),
-      imageId: playlistImageId,
-      sourcePath: folder.path,
-      lastPlayedTime: -1,
-      lastPlayedIndex: -1,
-      totalTracks: totalTracks,
-      playedTracked: 0);
+  // insert album record to batch (no immediate disk write)
+  batch.insertAlbum(
+    id: albumId,
+    title: basename(folder.path),
+    author: getAlbumArtistBySet(authors),
+    imageId: playlistImageId,
+    sourcePath: folder.path,
+    lastPlayedTime: -1,
+    lastPlayedIndex: -1,
+    totalTracks: totalTracks,
+    playedTracked: 0,
+  );
 }
 
-Future<int> _handlePictureSerialize(List<Picture>? pictures) async {
-  if (pictures == null || pictures.isEmpty) {
-    return 0;
-  }
-
-  Uint8List pictureBytes = pictures[0].bytes;
-  String hash = sha256.convert(pictureBytes).toString();
-  CoversRepository coversDao = providerContainer.read(coversRepositoryProvider);
-  int? coverId = await coversDao.getCoverIdByHash(hash);
-  return coverId ?? coversDao.createCover(pictureBytes, hash);
-}
-
-Future<int> _loadDefaultCover() async {
-  final coverData = await rootBundle
-      .load("assets/default_cover.jpeg")
-      .then((data) => data.buffer.asUint8List());
-  return providerContainer
-      .read(coversRepositoryProvider)
-      .createCoverWithId(0, coverData, sha256.convert(coverData).toString());
-}
+// no persistent covers

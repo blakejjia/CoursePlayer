@@ -3,20 +3,22 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lemon/core/audio/audio_service.dart';
 import 'package:lemon/core/my_app.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
-import 'package:lemon/core/backEnd/data/repositories/album_repository.dart';
-import 'package:lemon/core/backEnd/data/repositories/covers_repository.dart';
-import 'package:lemon/core/backEnd/data/repositories/song_repository.dart';
+// Switch repositories to JSON-backed implementations
+import 'package:lemon/core/backEnd/json/utils/media_library_store.dart';
+import 'package:lemon/core/backEnd/json/repositories/album_repository.dart'
+    as json_repo;
+import 'package:lemon/core/backEnd/json/repositories/song_repository.dart'
+    as json_repo;
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 
 // Riverpod providers to replace GetIt
-final dbProvider = Provider<AppDatabase>((ref) => AppDatabase());
-final songRepositoryProvider =
-    Provider<SongRepository>((ref) => SongRepository(ref.read(dbProvider)));
-final coversRepositoryProvider =
-    Provider<CoversRepository>((ref) => CoversRepository(ref.read(dbProvider)));
-final albumRepositoryProvider =
-    Provider<AlbumRepository>((ref) => AlbumRepository(ref.read(dbProvider)));
+// Swap DB for JSON MediaLibrary store
+final jsonStoreProvider =
+    Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
+final songRepositoryProvider = Provider<json_repo.SongRepository>(
+    (ref) => json_repo.SongRepository(ref.read(jsonStoreProvider)));
+final albumRepositoryProvider = Provider<json_repo.AlbumRepository>(
+    (ref) => json_repo.AlbumRepository(ref.read(jsonStoreProvider)));
 final audioHandlerProvider = FutureProvider<MyAudioHandler>((ref) async {
   final handler = await initAudioService();
   return handler;

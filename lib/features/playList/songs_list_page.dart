@@ -1,11 +1,11 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/widgets/change_artist_pop_up.dart';
 import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../core/audio/providers/audio_player_provider.dart';
+import '../audioPage/providers/audio_player_provider.dart';
 import '../audioPage/audio_bottom_sheet.dart';
 import 'logic/functions.dart';
 
@@ -18,8 +18,8 @@ class SongsListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final state = ref.watch(songListProvider);
     if (state.isLoading) {
-      return const Center(
-        child: CircularProgressIndicator(),
+      return Center(
+        child: Text(state.toString()),
       );
     }
     if (!state.isReady || state.album == null) {
@@ -60,9 +60,8 @@ class SongsListPage extends ConsumerWidget {
                     SizedBox(
                       width: MediaQuery.of(context).size.width / 2,
                       height: MediaQuery.of(context).size.width / 2,
-                      child: ready.picture != null
-                          ? Image.memory(ready.picture!)
-                          : Image.asset("assets/default_cover.jpeg"),
+                      child: Image.asset(
+                          "assets/default_cover.jpeg"), // TODO: load cover dynamically
                     ),
                     Padding(
                       padding: const EdgeInsets.fromLTRB(8, 10, 8, 0),

@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lemon/core/backEnd/data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
 // Uses albumRepositoryProvider from main.dart
 import 'package:lemon/core/backEnd/load_db.dart';
 import 'package:lemon/main.dart';
@@ -12,12 +12,32 @@ class LatestPlayed {
   const LatestPlayed(this.album, this.songId);
 
   Map<String, dynamic> toMap() => {
-        'album': album.toJson(),
+        'album': {
+          'id': album.id,
+          'title': album.title,
+          'author': album.author,
+          'imageId': album.imageId,
+          'sourcePath': album.sourcePath,
+          'lastPlayedTime': album.lastPlayedTime,
+          'lastPlayedIndex': album.lastPlayedIndex,
+          'totalTracks': album.totalTracks,
+          'playedTracks': album.playedTracks,
+        },
         'songId': songId,
       };
 
   factory LatestPlayed.fromMap(Map<String, dynamic> map) => LatestPlayed(
-        Album.fromJson(map['album'] as Map<String, dynamic>),
+        Album(
+          id: map['album']['id'] as int,
+          title: map['album']['title'] as String,
+          author: map['album']['author'] as String,
+          imageId: map['album']['imageId'] as int,
+          sourcePath: map['album']['sourcePath'] as String,
+          lastPlayedTime: map['album']['lastPlayedTime'] as int,
+          lastPlayedIndex: map['album']['lastPlayedIndex'] as int,
+          totalTracks: map['album']['totalTracks'] as int,
+          playedTracks: map['album']['playedTracks'] as int,
+        ),
         map['songId'] as int,
       );
 }
@@ -62,8 +82,9 @@ class AlbumState {
 
 class AlbumNotifier extends StateNotifier<AlbumState> {
   static const _kIsGridView = 'album.isGridView';
+  final Ref ref;
 
-  AlbumNotifier() : super(const AlbumState.initial()) {
+  AlbumNotifier(this.ref) : super(const AlbumState.initial()) {
     _bootstrap();
   }
 
@@ -80,9 +101,8 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
 
   Future<void> load() async {
     state = state.copyWith(isLoading: true);
-    final albums = await providerContainer
-        .read(albumRepositoryProvider)
-        .getAlbumsByLastPlayedTime();
+    final albums =
+        await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
     state = state.copyWith(isLoading: false, albums: albums, info: {});
   }
 
@@ -90,16 +110,15 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
     state = state.copyWith(isLoading: true);
     Stream<Map<String, int>> result = rebuildDb(audioPath);
     await for (final loadinfo in result) {
-      final albums = await providerContainer
-          .read(albumRepositoryProvider)
-          .getAlbumsByLastPlayedTime();
+      final albums =
+          await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
       state = state.copyWith(isLoading: false, albums: albums, info: loadinfo);
     }
   }
 
   void updateHistory(LatestPlayed history) {
     state = state.copyWith(latestPlayed: history);
-    providerContainer
+    ref
         .read(albumRepositoryProvider)
         .updateLastPlayedTimeWithId(history.album.id);
   }
@@ -118,5 +137,5 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
   }
 }
 
-final albumProvider =
-    StateNotifierProvider<AlbumNotifier, AlbumState>((ref) => AlbumNotifier());
+final albumProvider = StateNotifierProvider<AlbumNotifier, AlbumState>(
+    (ref) => AlbumNotifier(ref));

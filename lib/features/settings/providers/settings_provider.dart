@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/features/settings/providers/settings_state.dart';
 import 'package:lemon/features/album/providers/album_provider.dart';
-import 'package:lemon/main.dart';
 
 class SettingsNotifier extends StateNotifier<SettingsState> {
+  final Ref ref;
   static const _kAudioPath = 'audioPath';
   static const _kDbRebuiltTime = 'dbRebuiltTime';
   static const _kShowCover = 'showCover';
@@ -14,7 +14,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   static const _kSeedColor = 'seedColor';
   static const _kDefaultPlaybackSpeed = 'defaultPlaybackSpeed';
 
-  SettingsNotifier()
+  SettingsNotifier(this.ref)
       : super(const SettingsState(
           audioPath: "/storage/emulated/0/courser",
           dbRebuiltTime: null,
@@ -60,9 +60,9 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       state = next;
       await _persist(next);
     }
-    providerContainer
+    ref
         .read(albumProvider.notifier)
-        .loaddb(providerContainer.read(settingsProvider).audioPath);
+        .loaddb(ref.read(settingsProvider).audioPath);
   }
 
   void stateRebuilding() {
@@ -74,7 +74,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       return;
     }
     state = state.copyWith(dbRebuiltTime: "indexing songs...");
-    providerContainer.read(albumProvider.notifier).loaddb(state.audioPath);
+    ref.read(albumProvider.notifier).loaddb(state.audioPath);
   }
 
   Future<void> updateRebuiltTime() async {
@@ -125,5 +125,5 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
 
 final settingsProvider =
     StateNotifierProvider<SettingsNotifier, SettingsState>((ref) {
-  return SettingsNotifier();
+  return SettingsNotifier(ref);
 });

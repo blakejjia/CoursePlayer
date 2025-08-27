@@ -1,8 +1,6 @@
-// TODO 1: algorithms here weather applied depends on settings bloc
+// TODO 1: algorithms here whether applied depends on settings bloc
 
-import 'package:drift/drift.dart';
-
-import 'data/models/models.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
 
 /// [washArtist] was applied when loading data from file
 /// this function is used to clean up the artist name
@@ -55,7 +53,7 @@ void sortSongs(List<Song> songs) async {
   });
 
   for (int i = 0; i < songs.length; i++) {
-    songs[i] = songs[i].copyWith(track: Value(i + 1));
+    songs[i] = songs[i].copyWith(track: i + 1);
   }
 }
 
