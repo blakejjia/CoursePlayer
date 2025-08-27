@@ -1,11 +1,9 @@
-import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:lemon/core/backEnd/json/models.dart';
-// Using providerContainer from main.dart for non-widget access
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
+// Uses the nearest ProviderScope container to dispatch actions
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';
-import 'package:lemon/main.dart';
 
 part 'card_view.dart';
 part 'list_view.dart';
@@ -62,8 +60,8 @@ Widget _progressIndicator(BuildContext context, Map info) {
 }
 
 void _navigateToSongsListPage(BuildContext context, Album album) {
-  // initialize riverpod provider
-  final container = providerContainer;
+  // Use the nearest ProviderScope's container to avoid global container mismatch
+  final container = ProviderScope.containerOf(context, listen: false);
   container.read(songListProvider.notifier).locateAlbum(album);
   Navigator.push(
     context,

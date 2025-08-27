@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/core/backEnd/wash_data.dart';
 import 'package:lemon/main.dart';
 import 'package:path/path.dart';
-import 'package:lemon/core/backEnd/json/media_library_store.dart';
+import 'package:lemon/core/backEnd/json/utils/media_library_store.dart';
 
 import '../../features/settings/providers/settings_provider.dart';
 // Covers are loaded dynamically; no cover persistence

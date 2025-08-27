@@ -1,6 +1,6 @@
-import 'package:lemon/core/backEnd/json/media_library_store.dart';
-import 'package:lemon/core/backEnd/json/media_library_schema.dart';
-import 'package:lemon/core/backEnd/json/models.dart' show Album;
+import 'package:lemon/core/backEnd/json/utils/media_library_store.dart';
+import 'package:lemon/core/backEnd/json/models/media_library_schema.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart' show Album;
 
 class AlbumRepository {
   final MediaLibraryStore store;

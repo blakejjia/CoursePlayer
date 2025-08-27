@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:lemon/core/backEnd/json/models.dart';
+import 'package:lemon/core/backEnd/json/models/models.dart';
 
 class SongListState {
   final Album? album;
@@ -31,5 +31,10 @@ class SongListState {
       buffer: buffer ?? this.buffer,
       isLoading: isLoading ?? this.isLoading,
     );
+  }
+
+  @override
+  String toString() {
+    return 'SongListState(album: $album, buffer: $buffer, isLoading: $isLoading)';
   }
 }
