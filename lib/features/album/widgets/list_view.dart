@@ -19,7 +19,8 @@ class AlbumListView extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       onTap: () => _navigateToSongsListPage(context, album),
-      leading: Image.asset("assets/default_cover.jpeg"),
+      leading: Image.asset(
+          "assets/default_cover.jpeg"), // TODO:load cover dynamically
       title: Text(album.title),
       subtitle: Text(album.author),
       trailing: Text(formatAlbumProgress(album)),

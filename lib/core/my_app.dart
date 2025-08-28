@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../features/album/album_page.dart';
+import 'package:lemon/features/album/album_page.dart';
 import '../features/audioPage/audio_bottom_sheet.dart';
 import '../features/settings/presentation/setting_page.dart';
 

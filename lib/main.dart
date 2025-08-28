@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lemon/core/audio/audio_service.dart';
 // Switch repositories to JSON-backed implementations
-import 'package:lemon/core/backEnd/json/utils/media_library_store.dart';
-import 'package:lemon/core/backEnd/json/repositories/album_repository.dart'
+import 'package:lemon/core/data/json/utils/media_library_store.dart';
+import 'package:lemon/core/data/json/repositories/album_repository.dart'
     as json_repo;
-import 'package:lemon/core/backEnd/json/repositories/song_repository.dart'
+import 'package:lemon/core/data/json/repositories/song_repository.dart'
     as json_repo;
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';

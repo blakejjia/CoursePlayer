@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/backEnd/json/models/models.dart';
+import '../../../core/data/json/models/models.dart';
 import '../logic/functions.dart';
 
 Widget songTileNormal(BuildContext context, Song song) {

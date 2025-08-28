@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/load_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:lemon/core/backEnd/json/models/models.dart';
-// Uses albumRepositoryProvider from main.dart
-import 'package:lemon/core/backEnd/load_db.dart';
 import 'package:lemon/main.dart';
 
 class LatestPlayed {

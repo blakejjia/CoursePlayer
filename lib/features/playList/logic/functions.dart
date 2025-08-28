@@ -1,6 +1,6 @@
 import 'package:lemon/features/playList/providers/song_list_state.dart';
 
-import '../../../core/backEnd/json/models/models.dart';
+import '../../../core/data/json/models/models.dart';
 
 /// format title to fit the screen
 /// - remove file extension

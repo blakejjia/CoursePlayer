@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:lemon/features/album/views/albums_view/albums_view.dart';
+import 'package:lemon/features/album/widgets/albums_view.dart';
 import 'package:lemon/features/album/views/loading_view.dart';
 import 'package:lemon/features/album/views/welcom_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';

@@ -2,11 +2,11 @@ import 'dart:async';
 export 'audio_player_state.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:rxdart/rxdart.dart';
 
-import 'package:lemon/core/backEnd/json/models/models.dart';
+import 'package:lemon/core/data/json/models/models.dart';
 // Repositories are accessed via Riverpod providers in main.dart
-import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';

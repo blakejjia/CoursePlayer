@@ -1,9 +1,9 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/features/settings/providers/settings_state.dart';
-import 'package:lemon/features/album/providers/album_provider.dart';
 
 class SettingsNotifier extends StateNotifier<SettingsState> {
   final Ref ref;
