@@ -2,19 +2,19 @@ import 'dart:async';
 
 import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:async/async.dart';
 
 Future<MyAudioHandler> initAudioService() async {
   return await AudioService.init(
     builder: () => MyAudioHandler(),
-    config: const AudioServiceConfig(
+    config: AudioServiceConfig(
       rewindInterval: Duration(seconds: 10),
       fastForwardInterval: Duration(seconds: 10),
       androidNotificationChannelId: 'com.blake.course_player.audio',
       androidNotificationChannelName: 'course player',
       androidNotificationOngoing: true,
-      androidStopForegroundOnPause: true,
-      // TODO: androidNotificationIcon:
+      androidStopForegroundOnPause: false, // Keep service alive when paused
+      androidNotificationIcon: 'assets/launch_icon/launchIcon.png',
     ),
   );
 }
@@ -69,15 +69,15 @@ class MyAudioHandler extends BaseAudioHandler {
     _player.currentIndexStream.listen((int? index) {
       bufferedIndex = index ?? bufferedIndex;
     });
-    Rx.combineLatest2<int?, List<MediaItem>, MediaItem?>(
-      _player.currentIndexStream,
-      queue,
-      (index, queueList) {
-        if (queueList.isEmpty) return null;
-        return queueList[bufferedIndex];
-      },
-    ).listen((currentMediaItem) {
-      mediaItem.add(currentMediaItem);
+    StreamZip<dynamic>([_player.currentIndexStream, queue.stream])
+        .listen((values) {
+      final index = values[0] as int? ?? bufferedIndex;
+      final queueList = values[1] as List<MediaItem>;
+      if (queueList.isEmpty) {
+        mediaItem.add(null);
+      } else {
+        mediaItem.add(queueList[index]);
+      }
     });
   }
 

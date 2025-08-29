@@ -3,7 +3,7 @@ export 'audio_player_state.dart';
 import 'package:audio_service/audio_service.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/album/providers/album_provider.dart';
-import 'package:rxdart/rxdart.dart';
+import 'package:async/async.dart';
 
 import 'package:lemon/core/data/json/models/models.dart';
 // Repositories are accessed via Riverpod providers in main.dart
@@ -27,13 +27,12 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
     _audioHandler = await ref.read(audioHandlerProvider.future);
 
     // Bridge audio service streams into state updates
-    _playerInfoSub = CombineLatestStream.combine2(
-      _audioHandler.playbackState,
+    _playerInfoSub = StreamZip<dynamic>([
       _audioHandler.mediaItem,
-      (playbackState, mediaItem) => (mediaItem, playbackState),
-    ).listen((tuple) {
-      final mediaItem = tuple.$1;
-      final playbackState = tuple.$2;
+      _audioHandler.playbackState,
+    ]).listen((values) {
+      final mediaItem = values[0];
+      final playbackState = values[1];
       _onUpdateState(mediaItem, playbackState);
     });
 
