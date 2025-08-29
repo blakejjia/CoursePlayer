@@ -4,99 +4,122 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:async/async.dart';
 
+/// Initialize our audio controller (no background isolate needed).
 Future<MyAudioHandler> initAudioService() async {
-  return await AudioService.init(
-    builder: () => MyAudioHandler(),
-    config: AudioServiceConfig(
-      rewindInterval: Duration(seconds: 10),
-      fastForwardInterval: Duration(seconds: 10),
-      androidNotificationChannelId: 'com.blake.course_player.audio',
-      androidNotificationChannelName: 'course player',
-      androidNotificationOngoing: true,
-      androidStopForegroundOnPause: false, // Keep service alive when paused
-      androidNotificationIcon: 'assets/launch_icon/launchIcon.png',
-    ),
-  );
+  return MyAudioHandler();
 }
 
-class MyAudioHandler extends BaseAudioHandler {
-  final _player = AudioPlayer();
+/// A lightweight facade over just_audio that exposes audio_service-like
+/// streams so the rest of the app can remain unchanged, while
+/// just_audio_background handles Android Auto/CarPlay integration.
+class MyAudioHandler {
+  final AudioPlayer _player = AudioPlayer();
+
+  // State streams compatible with existing UI
+  final _mediaItemController = StreamController<MediaItem?>.broadcast();
+  final _playbackStateController = StreamController<PlaybackState>.broadcast();
+
+  // Keep a local queue to derive current media item
+  List<MediaItem> _queue = const [];
+
+  Stream<MediaItem?> get mediaItem => _mediaItemController.stream;
+  Stream<PlaybackState> get playbackState => _playbackStateController.stream;
 
   MyAudioHandler() {
-    _notifyAudioHandlerAboutPlaybackEvents();
-    _listenForMediaItemChanges();
+    _wirePlaybackState();
+    _wireCurrentMediaItem();
   }
 
-  void _notifyAudioHandlerAboutPlaybackEvents() {
-    _player.positionStream.listen((_) async {
-      playbackState.add(playbackState.value.copyWith(
+  void _wirePlaybackState() {
+    // Update playback state on relevant changes
+    StreamZip([
+      _player.playerStateStream,
+      _player.positionStream,
+      _player.bufferedPositionStream,
+      _player.speedStream,
+      _player.currentIndexStream,
+      _player.loopModeStream,
+      _player.shuffleModeEnabledStream,
+    ]).listen((values) {
+      final playerState = values[0] as PlayerState;
+      final position = values[1] as Duration;
+      final buffered = values[2] as Duration;
+      final speed = values[3] as double;
+      final currentIndex = values[4] as int?;
+      final loopMode = values[5] as LoopMode;
+      final shuffleOn = values[6] as bool;
+
+      final processing = () {
+        switch (playerState.processingState) {
+          case ProcessingState.idle:
+            return AudioProcessingState.idle;
+          case ProcessingState.loading:
+            return AudioProcessingState.loading;
+          case ProcessingState.buffering:
+            return AudioProcessingState.buffering;
+          case ProcessingState.ready:
+            return AudioProcessingState.ready;
+          case ProcessingState.completed:
+            return AudioProcessingState.completed;
+        }
+      }();
+
+      final repeatMode = () {
+        switch (loopMode) {
+          case LoopMode.off:
+            return AudioServiceRepeatMode.none;
+          case LoopMode.one:
+            return AudioServiceRepeatMode.one;
+          case LoopMode.all:
+            return AudioServiceRepeatMode.all;
+        }
+      }();
+
+      final shuffleMode = shuffleOn
+          ? AudioServiceShuffleMode.all
+          : AudioServiceShuffleMode.none;
+
+      final state = PlaybackState(
         controls: [
           MediaControl.skipToPrevious,
-          if (_player.playing) MediaControl.pause else MediaControl.play,
+          playerState.playing ? MediaControl.pause : MediaControl.play,
           MediaControl.stop,
           MediaControl.skipToNext,
         ],
-        systemActions: const {
-          MediaAction.seek,
-        },
+        systemActions: const {MediaAction.seek},
         androidCompactActionIndices: const [0, 1, 3],
-        processingState: const {
-          ProcessingState.idle: AudioProcessingState.idle,
-          ProcessingState.loading: AudioProcessingState.loading,
-          ProcessingState.buffering: AudioProcessingState.buffering,
-          ProcessingState.ready: AudioProcessingState.ready,
-          ProcessingState.completed: AudioProcessingState.completed,
-        }[_player.processingState]!,
-        repeatMode: const {
-          LoopMode.off: AudioServiceRepeatMode.none,
-          LoopMode.one: AudioServiceRepeatMode.one,
-          LoopMode.all: AudioServiceRepeatMode.all,
-        }[_player.loopMode]!,
-        shuffleMode: (_player.shuffleModeEnabled)
-            ? AudioServiceShuffleMode.all
-            : AudioServiceShuffleMode.none,
-        playing: _player.playing,
-        updatePosition: _player.position,
-        bufferedPosition: _player.bufferedPosition,
-        speed: _player.speed,
-        queueIndex: _player.playbackEvent.currentIndex,
-      ));
+        processingState: processing,
+        repeatMode: repeatMode,
+        shuffleMode: shuffleMode,
+        playing: playerState.playing,
+        updatePosition: position,
+        bufferedPosition: buffered,
+        speed: speed,
+        queueIndex: currentIndex,
+      );
+      _playbackStateController.add(state);
     });
   }
 
-  void _listenForMediaItemChanges() {
-    int bufferedIndex = 0;
-    _player.currentIndexStream.listen((int? index) {
-      bufferedIndex = index ?? bufferedIndex;
-    });
-    StreamZip<dynamic>([_player.currentIndexStream, queue.stream])
-        .listen((values) {
-      final index = values[0] as int? ?? bufferedIndex;
-      final queueList = values[1] as List<MediaItem>;
-      if (queueList.isEmpty) {
-        mediaItem.add(null);
+  void _wireCurrentMediaItem() {
+    int lastIndex = 0;
+    _player.currentIndexStream.listen((idx) {
+      lastIndex = idx ?? lastIndex;
+      if (_queue.isEmpty) {
+        _mediaItemController.add(null);
       } else {
-        mediaItem.add(queueList[index]);
+        final i = (idx ?? lastIndex).clamp(0, _queue.length - 1);
+        _mediaItemController.add(_queue[i]);
       }
     });
   }
 
-  @override
   Future<void> play() => _player.play();
-
-  @override
   Future<void> pause() => _player.pause();
-
-  @override
   Future<void> seek(Duration position) => _player.seek(position);
-
-  @override
   Future<void> skipToNext() => _player.seekToNext();
-
-  @override
   Future<void> skipToPrevious() => _player.seekToPrevious();
 
-  @override
   Future<void> rewind() async {
     final currentPosition = _player.position;
     final rewindPosition = currentPosition - const Duration(seconds: 10);
@@ -104,52 +127,62 @@ class MyAudioHandler extends BaseAudioHandler {
         .seek(rewindPosition >= Duration.zero ? rewindPosition : Duration.zero);
   }
 
-  @override
   Future<void> setRepeatMode(AudioServiceRepeatMode repeatMode) async {
     switch (repeatMode) {
       case AudioServiceRepeatMode.none:
-        _player.setLoopMode(LoopMode.off);
+        await _player.setLoopMode(LoopMode.off);
         break;
       case AudioServiceRepeatMode.one:
-        _player.setLoopMode(LoopMode.one);
+        await _player.setLoopMode(LoopMode.one);
         break;
       case AudioServiceRepeatMode.group:
       case AudioServiceRepeatMode.all:
-        _player.setLoopMode(LoopMode.all);
+        await _player.setLoopMode(LoopMode.all);
         break;
     }
   }
 
-  @override
   Future<void> setShuffleMode(AudioServiceShuffleMode shuffleMode) async {
     if (shuffleMode == AudioServiceShuffleMode.none) {
-      _player.setShuffleModeEnabled(false);
+      await _player.setShuffleModeEnabled(false);
     } else {
       await _player.shuffle();
-      _player.setShuffleModeEnabled(true);
+      await _player.setShuffleModeEnabled(true);
     }
   }
 
-  Future<void> locateAudio(List<MediaItem> mediaItems, List<String> paths,
-      int? index, int? position) async {
-    queue.add(mediaItems);
-    final playlist = ConcatenatingAudioSource(
-      children: paths.map((path) => AudioSource.file(path)).toList(),
-    );
+  Future<void> locateAudio(
+    List<MediaItem> mediaItems,
+    List<String> paths,
+    int? index,
+    int? position,
+  ) async {
+    // Keep our current queue for UI and mediaItem stream
+    _queue = mediaItems;
+
+    // Build a playlist with tags so just_audio_background can show metadata
+    final children = <AudioSource>[];
+    final count = mediaItems.length;
+    for (var i = 0; i < count && i < paths.length; i++) {
+      children.add(
+        AudioSource.uri(
+          Uri.file(paths[i]),
+          tag: mediaItems[i],
+        ),
+      );
+    }
+    final playlist = ConcatenatingAudioSource(children: children);
 
     await _player.setAudioSource(playlist);
     await _player.seek(Duration(seconds: position ?? 0), index: index ?? 0);
     await _player.play();
   }
 
-  @override
   Future<void> setSpeed(double speed) async {
-    _player.setSpeed(speed);
+    await _player.setSpeed(speed);
   }
 
-  @override
   Future<void> stop() async {
     await _player.stop();
-    return super.stop();
   }
 }

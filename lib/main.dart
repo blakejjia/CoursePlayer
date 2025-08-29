@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:lemon/core/audio/audio_service.dart';
+import 'package:just_audio_background/just_audio_background.dart';
 // Switch repositories to JSON-backed implementations
 import 'package:lemon/core/data/json/utils/media_library_store.dart';
 import 'package:lemon/core/data/json/repositories/album_repository.dart'
@@ -30,6 +31,11 @@ final providerContainer = ProviderContainer();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await JustAudioBackground.init(
+    androidNotificationChannelId: 'com.blake.course_player.audio',
+    androidNotificationChannelName: 'course player',
+    androidNotificationOngoing: true,
+  );
   runApp(const ProviderScope(child: MainApp()));
 }
 

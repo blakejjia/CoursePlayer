@@ -6,7 +6,6 @@ import 'package:lemon/features/album/providers/album_provider.dart';
 import 'package:async/async.dart';
 
 import 'package:lemon/core/data/json/models/models.dart';
-// Repositories are accessed via Riverpod providers in main.dart
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
