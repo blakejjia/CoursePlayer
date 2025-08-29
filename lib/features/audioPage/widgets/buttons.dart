@@ -2,52 +2,98 @@ part of '../audio_page.dart';
 
 // Share button removed during migration for simplicity; re-add if needed.
 
-Widget _playPauseButton(
-    BuildContext context, AudioPlayerIdeal state, WidgetRef ref) {
-  final isPlaying = state.playbackState.playing;
-  return AnimatedContainer(
-    duration: const Duration(milliseconds: 300),
-    curve: Curves.linear,
-    decoration: ShapeDecoration(
-      color: Theme.of(context).colorScheme.primaryContainer,
-      shape: isPlaying
-          ? RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            )
-          : const CircleBorder(),
-    ),
-    child: GestureDetector(
-      behavior: HitTestBehavior.opaque,
-      onTap: () {
-        final notifier = ref.read(audioPlayerProvider.notifier);
-        isPlaying ? notifier.pause() : notifier.play();
-      },
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Icon(
-          isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
-          size: 50.0,
-          color: Theme.of(context).colorScheme.onPrimaryContainer,
+class PlayerButtons extends ConsumerWidget {
+  const PlayerButtons({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(audioPlayerProvider);
+    if (state is! AudioPlayerIdeal) {
+      return const SizedBox.shrink();
+    }
+    return Row(
+      spacing: 12.0,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        _PreviousButton(),
+        _PlayPauseButton(),
+        _NextButton(),
+      ],
+    );
+  }
+}
+
+class _PlayPauseButton extends ConsumerWidget {
+  const _PlayPauseButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(audioPlayerProvider);
+    if (state is! AudioPlayerIdeal) {
+      return const SizedBox.shrink();
+    }
+    final isPlaying = state.playbackState.playing;
+    return AnimatedContainer(
+      duration: const Duration(milliseconds: 200),
+      curve: Curves.linear,
+      decoration: ShapeDecoration(
+        color: Theme.of(context).colorScheme.primary,
+        shape: isPlaying
+            ? RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              )
+            : const CircleBorder(),
+      ),
+      child: GestureDetector(
+        behavior: HitTestBehavior.opaque,
+        onTap: () {
+          final notifier = ref.read(audioPlayerProvider.notifier);
+          isPlaying ? notifier.pause() : notifier.play();
+          HapticFeedback.lightImpact();
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Icon(
+            isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+            size: 40.0,
+            color: Theme.of(context).colorScheme.onPrimary,
+          ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }
 
 // Unused optional controls (share, rewind, speed) were removed during migration.
 
-Widget _previousButton(BuildContext context, WidgetRef ref) {
-  return IconButton(
-    icon: Icon(Icons.skip_previous_rounded,
-        size: 40, color: Theme.of(context).colorScheme.onSurface),
-    onPressed: () => ref.read(audioPlayerProvider.notifier).previous(),
-  );
+class _PreviousButton extends ConsumerWidget {
+  const _PreviousButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: Icon(Icons.skip_previous_rounded,
+          size: 32, color: Theme.of(context).colorScheme.onSurface),
+      onPressed: () {
+        ref.read(audioPlayerProvider.notifier).previous();
+        HapticFeedback.lightImpact();
+      },
+    );
+  }
 }
 
-Widget _nextButton(BuildContext context, WidgetRef ref) {
-  return IconButton(
-    icon: Icon(Icons.skip_next_rounded,
-        size: 40, color: Theme.of(context).colorScheme.onSurface),
-    onPressed: () => ref.read(audioPlayerProvider.notifier).next(),
-  );
+class _NextButton extends ConsumerWidget {
+  const _NextButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      icon: Icon(Icons.skip_next_rounded,
+          size: 32, color: Theme.of(context).colorScheme.onSurface),
+      onPressed: () {
+        ref.read(audioPlayerProvider.notifier).next();
+        HapticFeedback.lightImpact();
+      },
+    );
+  }
 }

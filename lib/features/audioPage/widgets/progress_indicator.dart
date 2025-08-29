@@ -1,71 +1,67 @@
 part of '../audio_page.dart';
 
-class PlayerProgressBar extends StatefulWidget {
-  final AudioPlayerIdeal state;
-  const PlayerProgressBar({super.key, required this.state});
+class PlayerProgressBar extends ConsumerStatefulWidget {
+  const PlayerProgressBar({super.key});
 
   @override
-  State<PlayerProgressBar> createState() => _PlayerProgressBarState();
+  ConsumerState<PlayerProgressBar> createState() => _PlayerProgressBarState();
 }
 
-class _PlayerProgressBarState extends State<PlayerProgressBar> {
-  double? _dragValueMs; // transient slider value while dragging (in ms)
+class _PlayerProgressBarState extends ConsumerState<PlayerProgressBar> {
+  int _dragMs = -1;
 
   @override
   Widget build(BuildContext context) {
-    final total = widget.state.mediaItem.duration ?? Duration.zero;
-    final totalMs = total.inMilliseconds <= 0 ? 1 : total.inMilliseconds;
+    final state = ref.watch(audioPlayerProvider);
+    if (state is! AudioPlayerIdeal) {
+      return const SizedBox.shrink();
+    }
+    final totalMs = state.mediaItem.duration?.inMilliseconds ?? 0;
+    final bufferedMs = state.playbackState.bufferedPosition.inMilliseconds
+        .clamp(0, totalMs)
+        .toDouble();
+    final currentMs =
+        state.playbackState.position.inMilliseconds.clamp(0, totalMs);
 
-    final positionMs =
-        widget.state.playbackState.position.inMilliseconds.clamp(0, totalMs);
-    final bufferedMs = widget
-        .state.playbackState.bufferedPosition.inMilliseconds
-        .clamp(0, totalMs);
-
-    final sliderValue = (_dragValueMs ?? positionMs).toDouble();
-    final bufferedRatio = totalMs == 0 ? 0.0 : bufferedMs / totalMs;
-
-    final theme = Theme.of(context);
-
-    return Stack(
-      alignment: Alignment.centerLeft,
+    return Column(
       children: [
-        // Buffered bar in the background
-        ClipRRect(
-          borderRadius: BorderRadius.circular(4),
-          child: LinearProgressIndicator(
-            value: bufferedRatio.clamp(0.0, 1.0),
-            minHeight: 4,
-            backgroundColor: theme.colorScheme.surfaceContainerHighest,
-            valueColor: AlwaysStoppedAnimation<Color>(
-              theme.colorScheme.onSurface.withValues(alpha: 0.25),
+        // The slider ======================
+        Slider(
+          year2023: false,
+          value: _dragMs != -1 ? _dragMs.toDouble() : currentMs.toDouble(),
+          secondaryTrackValue: bufferedMs,
+          min: 0,
+          max: totalMs.toDouble(),
+          onChanged: (v) {
+            setState(() {
+              _dragMs = v.round();
+            });
+          },
+          onChangeEnd: (v) {
+            ref
+                .read(audioPlayerProvider.notifier)
+                .seekTo(Duration(milliseconds: v.round()));
+            setState(() {
+              _dragMs = -1;
+            });
+          },
+        ),
+
+        // The time indicators ======================
+        Row(
+          children: [
+            Text(
+              formatDuration(
+                  Duration(milliseconds: _dragMs != -1 ? _dragMs : currentMs)),
+              style: Theme.of(context).textTheme.bodySmall,
             ),
-          ),
-        ),
-        // Foreground slider for current position and scrubbing
-        SliderTheme(
-          data: SliderTheme.of(context).copyWith(
-            trackHeight: 4,
-            thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
-            overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
-          ),
-          child: Slider(
-            value: sliderValue,
-            min: 0,
-            max: totalMs.toDouble(),
-            onChanged: (v) {
-              setState(() => _dragValueMs = v);
-            },
-            onChangeEnd: (v) {
-              // Commit seek only when user releases the thumb
-              final ref = ProviderScope.containerOf(context);
-              ref
-                  .read(audioPlayerProvider.notifier)
-                  .seekTo(Duration(milliseconds: v.round()));
-              setState(() => _dragValueMs = null);
-            },
-          ),
-        ),
+            Expanded(child: Container()),
+            Text(
+              formatDuration(Duration(milliseconds: totalMs)),
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        )
       ],
     );
   }
