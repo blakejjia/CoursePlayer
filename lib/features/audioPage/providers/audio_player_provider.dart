@@ -9,7 +9,7 @@ import 'package:lemon/core/data/json/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
-import '../../../core/audio/audio_service.dart';
+import '../../../core/audio/audio_controller.dart';
 
 import 'audio_player_state.dart';
 
