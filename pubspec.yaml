@@ -8,27 +8,37 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+
+  # officially maintained
   go_router: ^14.2.7
-  permission_handler: ^11.3.1
   crypto: ^3.0.6
-  equatable: ^2.0.5
+  shared_preferences: ^2.5.3
   path_provider: ^2.1.5
-  just_audio: ^0.9.42
-  just_audio_background: ^0.0.1-beta.17
   meta: ^1.15.0
   async: ^2.11.0
-  file_picker: ^8.1.3
   path: ^1.9.0
-  share_plus: ^10.1.2
-  flutter_launcher_icons: ^0.14.3
-  audiotags: ^1.4.3
-  fluttertoast: ^8.2.12
-  smooth_page_indicator: ^1.2.1
+
+  # audio service
+  just_audio: ^0.9.42
+  just_audio_background: ^0.0.1-beta.17
+  audio_service: ^0.18.18
+  rxdart: ^0.28.0
+
+  # other audio related
+  audiotags: ^1.1.3
+  file_picker: ^8.1.3
+
+  # riverpod
   flutter_riverpod: ^2.6.1
   hooks_riverpod: ^2.6.1
   flutter_hooks: ^0.21.3+1
   riverpod_annotation: ^2.6.1
-  shared_preferences: ^2.5.3
+
+  # all other 3-rd party packages
+  permission_handler: ^11.3.1
+  equatable: ^2.0.5
+  share_plus: ^10.1.2
+  fluttertoast: ^8.2.12
 
 dev_dependencies:
   flutter_test:
@@ -38,6 +48,7 @@ dev_dependencies:
   custom_lint: ^0.7.3
   riverpod_lint: ^2.6.4
   riverpod_generator: ^2.6.4
+  flutter_launcher_icons: ^0.14.3
 
 # Ensure analyzer plugin compatibility with Dart 3.5/analyzer 7
 dependency_overrides:

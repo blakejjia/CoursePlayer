@@ -50,7 +50,7 @@ packages:
     source: hosted
     version: "2.13.0"
   audio_service:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: audio_service
       sha256: cb122c7c2639d2a992421ef96b67948ad88c5221da3365ccef1031393a76e044
@@ -359,7 +359,7 @@ packages:
     source: hosted
     version: "0.21.3+1"
   flutter_launcher_icons:
-    dependency: "direct main"
+    dependency: "direct dev"
     description:
       name: flutter_launcher_icons
       sha256: "10f13781741a2e3972126fae08393d3c4e01fa4cd7473326b94b72cf594195e7"
@@ -841,7 +841,7 @@ packages:
     source: hosted
     version: "2.6.4"
   rxdart:
-    dependency: transitive
+    dependency: "direct main"
     description:
       name: rxdart
       sha256: "5c3004a4a8dbb94bd4bf5412a4def4acdaa12e12f269737a5751369e12d1a962"
@@ -941,14 +941,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  smooth_page_indicator:
-    dependency: "direct main"
-    description:
-      name: smooth_page_indicator
-      sha256: b21ebb8bc39cf72d11c7cfd809162a48c3800668ced1c9da3aade13a32cf6c1c
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.1"
   source_gen:
     dependency: transitive
     description:

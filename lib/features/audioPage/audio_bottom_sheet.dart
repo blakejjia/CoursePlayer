@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'audio_page.dart';
-import 'providers/audio_player_provider.dart';
+import '../../core/audio/providers/audio_player_provider.dart';
 
 class AudioBottomSheet extends ConsumerWidget {
   const AudioBottomSheet({super.key});

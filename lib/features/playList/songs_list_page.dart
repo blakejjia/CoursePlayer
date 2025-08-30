@@ -5,7 +5,7 @@ import 'package:lemon/core/data/json/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../audioPage/providers/audio_player_provider.dart';
+import '../../core/audio/providers/audio_player_provider.dart';
 import '../audioPage/audio_bottom_sheet.dart';
 import 'logic/functions.dart';
 

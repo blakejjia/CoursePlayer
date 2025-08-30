@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'package:lemon/core/audio/audio_controller.dart';
-import 'package:just_audio_background/just_audio_background.dart';
 // Switch repositories to JSON-backed implementations
 import 'package:lemon/core/data/json/utils/media_library_store.dart';
 import 'package:lemon/core/data/json/repositories/album_repository.dart'
@@ -20,10 +18,6 @@ final songRepositoryProvider = Provider<json_repo.SongRepository>(
     (ref) => json_repo.SongRepository(ref.read(jsonStoreProvider)));
 final albumRepositoryProvider = Provider<json_repo.AlbumRepository>(
     (ref) => json_repo.AlbumRepository(ref.read(jsonStoreProvider)));
-final audioHandlerProvider = FutureProvider<MyAudioHandler>((ref) async {
-  final handler = await initAudioService();
-  return handler;
-});
 
 // A global container only for legacy non-widget code paths that need access.
 // Prefer passing WidgetRef where possible.
@@ -31,11 +25,6 @@ final providerContainer = ProviderContainer();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await JustAudioBackground.init(
-    androidNotificationChannelId: 'com.blake.course_player.audio',
-    androidNotificationChannelName: 'course player',
-    androidNotificationOngoing: true,
-  );
   runApp(const ProviderScope(child: MainApp()));
 }
 
@@ -50,6 +39,7 @@ class MainApp extends ConsumerWidget {
       theme: ThemeData(
         colorSchemeSeed: settings.seedColor,
         useMaterial3: true,
+        sliderTheme: const SliderThemeData(year2023: false),
       ),
       debugShowCheckedModeBanner: false,
       routerConfig: router,

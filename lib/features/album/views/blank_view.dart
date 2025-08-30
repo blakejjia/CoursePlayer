@@ -46,7 +46,7 @@ class _BlankViewState extends State<BlankView> {
                   ),
                 ],
               )
-            : WelcomeView(onPermissionChanged));
+            : NoPermissionView(onPermissionChanged));
   }
 
   onPermissionChanged(bool value) {

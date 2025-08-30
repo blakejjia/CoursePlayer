@@ -1,44 +1,57 @@
 import 'dart:async';
 export 'audio_player_state.dart';
 import 'package:audio_service/audio_service.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/album/providers/album_provider.dart';
-import 'package:async/async.dart';
+// import 'package:async/async.dart';
 
 import 'package:lemon/core/data/json/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
-import '../../../core/audio/audio_controller.dart';
+import '../audio_controller.dart';
+import 'audio_handler_provider.dart';
 
 import 'audio_player_state.dart';
 
 class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   final Ref ref;
   late final MyAudioHandler _audioHandler;
-  StreamSubscription? _playerInfoSub;
+  StreamSubscription<MediaItem?>? _mediaItemSub;
+  StreamSubscription<PlaybackState>? _playbackSub;
+  MediaItem? _lastMediaItem;
+  PlaybackState _lastPlayback = PlaybackState();
+  bool _initialized = false;
 
   AudioPlayerNotifier(this.ref) : super(AudioPlayerInitial()) {
     _init();
   }
 
   Future<void> _init() async {
-    _audioHandler = await ref.read(audioHandlerProvider.future);
+    try {
+      final audioHandlerAsync = ref.read(audioHandlerFutureProvider.future);
+      _audioHandler = await audioHandlerAsync;
+      _initialized = true;
 
-    // Bridge audio service streams into state updates
-    _playerInfoSub = StreamZip<dynamic>([
-      _audioHandler.mediaItem,
-      _audioHandler.playbackState,
-    ]).listen((values) {
-      final mediaItem = values[0];
-      final playbackState = values[1];
-      _onUpdateState(mediaItem, playbackState);
-    });
+      // Bridge audio service streams into state updates (combine manually)
+      _mediaItemSub = _audioHandler.mediaItem.listen((mi) {
+        _lastMediaItem = mi;
+        _onUpdateState(mi, _lastPlayback);
+      });
+      _playbackSub = _audioHandler.playbackState.listen((ps) {
+        _lastPlayback = ps;
+        _onUpdateState(_lastMediaItem, ps);
+      });
 
-    // initialize default playback speed
-    final settings = ref.read(settingsProvider);
-    final defaultPlaybackRate = settings.defaultPlaybackSpeed;
-    setSpeed(defaultPlaybackRate);
+      // initialize default playback speed
+      final settings = ref.read(settingsProvider);
+      final defaultPlaybackRate = settings.defaultPlaybackSpeed;
+      setSpeed(defaultPlaybackRate);
+    } catch (e) {
+      // Handle initialization error
+      debugPrint('Error initializing audio handler: $e');
+    }
   }
 
   void _onUpdateState(MediaItem? mediaItem, PlaybackState playbackState) {
@@ -63,6 +76,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   }
 
   Future<void> setSpeed(double currentSpeed) async {
+    if (!_initialized) return;
     final speedOptions = <double>[1.0, 1.5, 1.7, 1.8, 2.0];
     final currentIndex = speedOptions.indexOf(currentSpeed);
     final proposed = speedOptions[(currentIndex + 1) % speedOptions.length];
@@ -70,27 +84,33 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   }
 
   Future<void> finished() async {
+    if (!_initialized) return;
     await _audioHandler.skipToNext();
   }
 
   Future<void> seekTo(Duration position) async {
+    if (!_initialized) return;
     await _audioHandler.seek(position);
   }
 
   Future<void> next() async {
+    if (!_initialized) return;
     await _audioHandler.skipToNext();
   }
 
   Future<void> previous() async {
+    if (!_initialized) return;
     await _audioHandler.skipToPrevious();
   }
 
   Future<void> rewind() async {
+    if (!_initialized) return;
     await _audioHandler.rewind();
   }
 
   Future<void> locateAudio(Album album, int songId,
       {List<Song>? buffer}) async {
+    if (!_initialized) return;
     List<Song>? songs = buffer ??
         await ref.read(songRepositoryProvider).getSongsByAlbumId(album.id);
     final index = songs!.indexWhere((s) => s.id == songId);
@@ -122,6 +142,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
   }
 
   Future<void> toggleShuffle() async {
+    if (!_initialized) return;
     final current = state;
     if (current is! AudioPlayerIdeal) return;
     var mode = current.playbackState.shuffleMode;
@@ -131,9 +152,13 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
     await _audioHandler.setShuffleMode(mode);
   }
 
-  Future<void> play() async => _audioHandler.play();
+  Future<void> play() async {
+    if (!_initialized) return;
+    await _audioHandler.play();
+  }
 
   Future<void> pause() async {
+    if (!_initialized) return;
     await _audioHandler.pause();
     if (state is AudioPlayerIdeal) {
       final s = state as AudioPlayerIdeal;
@@ -149,7 +174,8 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState> {
 
   @override
   void dispose() {
-    _playerInfoSub?.cancel();
+    _mediaItemSub?.cancel();
+    _playbackSub?.cancel();
     super.dispose();
   }
 }

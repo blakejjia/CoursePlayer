@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:lemon/features/album/widgets/albums_view.dart';
 import 'package:lemon/features/album/views/loading_view.dart';
-import 'package:lemon/features/album/views/welcom_view.dart';
+import 'package:lemon/features/album/views/no_permission_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../audioPage/providers/audio_player_provider.dart';
+import '../../core/audio/providers/audio_player_provider.dart';
 import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';

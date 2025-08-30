@@ -27,7 +27,6 @@ class _PlayerProgressBarState extends ConsumerState<PlayerProgressBar> {
       children: [
         // The slider ======================
         Slider(
-          year2023: false,
           value: _dragMs != -1 ? _dragMs.toDouble() : currentMs.toDouble(),
           secondaryTrackValue: bufferedMs,
           min: 0,
