@@ -2,11 +2,11 @@ import 'dart:io';
 import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/core/data/wash_data.dart';
-import 'package:lemon/main.dart';
 import 'package:path/path.dart';
 import 'package:lemon/core/data/json/utils/media_library_store.dart';
 
 import '../../features/settings/providers/settings_provider.dart';
+import '../../main.dart' show jsonStoreProvider;
 // Covers are loaded dynamically; no cover persistence
 // album_repository.dart and song_repository.dart are not directly referenced here
 // because we access them via Riverpod providers defined in main.dart.
@@ -18,12 +18,12 @@ import '../../features/settings/providers/settings_provider.dart';
 /// - totalFolder: total number of folders
 /// - currentFile: current file index
 /// - totalFile: total number of files
-Stream<Map<String, int>> rebuildDb(String path) async* {
+Stream<Map<String, int>> rebuildDb(String path, dynamic ref) async* {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   // init
-  providerContainer.read(settingsProvider.notifier).stateRebuilding();
+  ref.read(settingsProvider.notifier).stateRebuilding();
   // Use a single JSON batch to avoid repeated open/write cycles
-  final store = providerContainer.read(jsonStoreProvider);
+  final store = ref.read(jsonStoreProvider);
   final batch = await MediaLibraryBatch.start(store);
   // Clear previous library in-memory, commit once at end
   batch.clearSongs();
@@ -61,7 +61,7 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
 
   // Commit all changes once
   await batch.commit();
-  providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
+  ref.read(settingsProvider.notifier).updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Database rebuilt');
 }
 
@@ -69,11 +69,11 @@ Stream<Map<String, int>> rebuildDb(String path) async* {
 /// Given path is the base folder of only one album.
 /// If the album is already in the database (same sourcePath), it will be updated.
 /// If not, add it to database
-Future<int> partialRebuild(String baseFolderPath) async {
+Future<int> partialRebuild(String baseFolderPath, dynamic ref) async {
   Fluttertoast.showToast(msg: 'Rebuilding database...');
   final directory = Directory(baseFolderPath);
   if (await directory.exists()) {
-    final store = providerContainer.read(jsonStoreProvider);
+    final store = ref.read(jsonStoreProvider);
     final batch = await MediaLibraryBatch.start(store);
     // find existing album in batch by path
     final existing = batch.albumByPath(baseFolderPath);
@@ -88,7 +88,7 @@ Future<int> partialRebuild(String baseFolderPath) async {
     await _handleAlbum(directory, albumId, batch);
     await batch.commit();
     Fluttertoast.showToast(msg: 'Database rebuilt');
-    providerContainer.read(settingsProvider.notifier).updateRebuiltTime();
+    ref.read(settingsProvider.notifier).updateRebuiltTime();
     return 0;
   }
   Fluttertoast.showToast(msg: 'Error: Directory not found');

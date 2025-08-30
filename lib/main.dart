@@ -15,13 +15,9 @@ import 'package:lemon/core/router/app_router.dart';
 final jsonStoreProvider =
     Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
 final songRepositoryProvider = Provider<json_repo.SongRepository>(
-    (ref) => json_repo.SongRepository(ref.read(jsonStoreProvider)));
+    (ref) => json_repo.SongRepository(ref.read(jsonStoreProvider), ref: ref));
 final albumRepositoryProvider = Provider<json_repo.AlbumRepository>(
-    (ref) => json_repo.AlbumRepository(ref.read(jsonStoreProvider)));
-
-// A global container only for legacy non-widget code paths that need access.
-// Prefer passing WidgetRef where possible.
-final providerContainer = ProviderContainer();
+    (ref) => json_repo.AlbumRepository(ref.read(jsonStoreProvider), ref: ref));
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

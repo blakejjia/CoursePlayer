@@ -7,7 +7,7 @@ import '../../../core/data/load_db.dart';
 
 /// This function writes the artist tag to the song.
 /// Other tags are copied as is.
-Future<void> writeArtistTag(String baseFolderPath, String artist,
+Future<void> writeArtistTag(String baseFolderPath, String artist, dynamic ref,
     {String? subfolderName}) async {
   Fluttertoast.showToast(msg: 'Writing tag to files...');
   final directory = Directory(subfolderName != null
@@ -27,7 +27,7 @@ Future<void> writeArtistTag(String baseFolderPath, String artist,
       debugPrint('Error writing tag to file: $e');
     }
   }
-  await partialRebuild(baseFolderPath);
+  await partialRebuild(baseFolderPath, ref);
 }
 
 extension on Tag {

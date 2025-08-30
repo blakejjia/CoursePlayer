@@ -2,14 +2,15 @@ import 'package:lemon/core/data/json/utils/media_library_store.dart';
 import 'package:lemon/core/data/json/models/media_library_schema.dart';
 import 'package:lemon/core/data/json/models/models.dart'
     show Song; // plain model
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../wash_data.dart';
-import 'package:lemon/main.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 
 class SongRepository {
   final MediaLibraryStore store;
-  SongRepository(this.store);
+  final Ref? ref;
+  SongRepository(this.store, {this.ref});
 
   // 创建新歌曲
   Future<int> insertSong({
@@ -68,10 +69,14 @@ class SongRepository {
   /// Core sorting + cleaning function
   List<Song> _handleSongs(List<Song> songs) {
     sortSongs(songs);
-    final settings = providerContainer.read(settingsProvider);
-    if (settings.cleanFileName) {
-      return cleanSongTitles(songs);
+    // If ref is available, use it, otherwise use default settings
+    if (ref != null) {
+      final settings = ref!.read(settingsProvider);
+      if (settings.cleanFileName) {
+        return cleanSongTitles(songs);
+      }
     }
+    // Default behavior when no ref is available - don't clean filenames
     return songs;
   }
 

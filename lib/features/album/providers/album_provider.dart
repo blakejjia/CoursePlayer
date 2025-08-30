@@ -107,7 +107,7 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
 
   Future<void> loaddb(String audioPath) async {
     state = state.copyWith(isLoading: true);
-    Stream<Map<String, int>> result = rebuildDb(audioPath);
+    Stream<Map<String, int>> result = rebuildDb(audioPath, ref);
     await for (final loadinfo in result) {
       final albums =
           await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();

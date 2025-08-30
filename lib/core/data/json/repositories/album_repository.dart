@@ -1,10 +1,12 @@
 import 'package:lemon/core/data/json/utils/media_library_store.dart';
 import 'package:lemon/core/data/json/models/media_library_schema.dart';
 import 'package:lemon/core/data/json/models/models.dart' show Album;
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AlbumRepository {
   final MediaLibraryStore store;
-  AlbumRepository(this.store);
+  final Ref? ref;
+  AlbumRepository(this.store, {this.ref});
 
   /// update last played time with id
   Future<int> updateLastPlayedTimeWithId(int id) async {

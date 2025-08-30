@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/data/json/models/models.dart';
 import '../logic/write_tag.dart';
 
-class ChangeArtistPopUp extends StatefulWidget {
+class ChangeArtistPopUp extends ConsumerStatefulWidget {
   final List<Song>? buffer;
   final List<String> parts;
   final String baseFolder;
@@ -11,10 +12,10 @@ class ChangeArtistPopUp extends StatefulWidget {
       : parts = ['all', ...?buffer?.map((song) => song.parts).toSet()];
 
   @override
-  State<ChangeArtistPopUp> createState() => _ChangeArtistPopUpState();
+  ConsumerState<ChangeArtistPopUp> createState() => _ChangeArtistPopUpState();
 }
 
-class _ChangeArtistPopUpState extends State<ChangeArtistPopUp> {
+class _ChangeArtistPopUpState extends ConsumerState<ChangeArtistPopUp> {
   late String selection;
   final TextEditingController _controller = TextEditingController();
 
@@ -71,7 +72,7 @@ class _ChangeArtistPopUpState extends State<ChangeArtistPopUp> {
           onPressed: () {
             String? subfolder =
                 (selection == "" || selection == "all") ? null : selection;
-            writeArtistTag(widget.baseFolder, _controller.text,
+            writeArtistTag(widget.baseFolder, _controller.text, ref,
                 subfolderName: subfolder);
             Navigator.of(context).pop();
           },
