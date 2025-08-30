@@ -4,14 +4,13 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:async/async.dart';
 
-/// Initialize our audio controller (no background isolate needed).
+/// Lightweight audio controller built on just_audio.
+/// Exposes audio_service-like types (MediaItem, PlaybackState) so the rest
+/// of the app can stay unchanged. just_audio_background handles system UI.
 Future<MyAudioHandler> initAudioService() async {
   return MyAudioHandler();
 }
 
-/// A lightweight facade over just_audio that exposes audio_service-like
-/// streams so the rest of the app can remain unchanged, while
-/// just_audio_background handles Android Auto/CarPlay integration.
 class MyAudioHandler {
   final AudioPlayer _player = AudioPlayer();
 
