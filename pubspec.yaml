@@ -1,6 +1,6 @@
 name: lemon
 description: "Lemon🍋‍ - offline music player"
-version: 0.1.1+2
+version: 1.0.0+5
 
 environment:
   sdk: ^3.5.3
