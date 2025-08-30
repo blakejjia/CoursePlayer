@@ -9,9 +9,8 @@ import 'package:lemon/core/data/json/repositories/song_repository.dart'
     as json_repo;
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';
+import 'package:lemon/core/services/app_lifecycle_service.dart';
 
-// Riverpod providers to replace GetIt
-// Swap DB for JSON MediaLibrary store
 final jsonStoreProvider =
     Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
 final songRepositoryProvider = Provider<json_repo.SongRepository>(
@@ -31,6 +30,10 @@ class MainApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(goRouterProvider);
+
+    // Initialize app lifecycle service to handle progress saving
+    ref.watch(appLifecycleServiceProvider);
+
     return MaterialApp.router(
       theme: ThemeData(
         colorSchemeSeed: settings.seedColor,

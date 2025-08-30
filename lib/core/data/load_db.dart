@@ -141,8 +141,6 @@ Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
   int totalTracks = 0;
 
   for (File file in files) {
-    // in case of non-mp3 files
-    // TODO: create log file for failures - see reason.
     Tag? tag;
     try {
       tag = await AudioTags.read(file.path);

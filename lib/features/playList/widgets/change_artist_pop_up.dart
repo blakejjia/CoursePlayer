@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../core/data/json/models/models.dart';
-import '../logic/write_tag.dart';
+import '../utils/write_tag.dart';
 
 class ChangeArtistPopUp extends ConsumerStatefulWidget {
   final List<Song>? buffer;

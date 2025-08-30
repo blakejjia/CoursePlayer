@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/providers/audio_player_provider.dart';
 import '../audioPage/audio_bottom_sheet.dart';
-import 'logic/functions.dart';
+import 'utils/texts.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.
 /// Uses Riverpod providers for album/song list and audio player.
