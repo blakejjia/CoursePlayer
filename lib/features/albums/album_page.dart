@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:lemon/features/album/widgets/albums_view.dart';
-import 'package:lemon/features/album/views/loading_view.dart';
-import 'package:lemon/features/album/views/no_permission_view.dart';
+import 'package:lemon/features/albums/widgets/albums_view.dart';
+import 'package:lemon/features/albums/views/loading_view.dart';
+import 'package:lemon/features/albums/views/no_permission_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:permission_handler/permission_handler.dart';

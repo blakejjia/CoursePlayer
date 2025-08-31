@@ -3,7 +3,6 @@ class Song {
   final String artist;
   final String title;
   final int length;
-  final int imageId; // always 0 in JSON backend
   final int album;
   final String parts;
   final int? track;
@@ -15,7 +14,6 @@ class Song {
     required this.artist,
     required this.title,
     required this.length,
-    required this.imageId,
     required this.album,
     required this.parts,
     required this.track,
@@ -28,7 +26,6 @@ class Song {
     String? artist,
     String? title,
     int? length,
-    int? imageId,
     int? album,
     String? parts,
     int? track,
@@ -40,7 +37,6 @@ class Song {
       artist: artist ?? this.artist,
       title: title ?? this.title,
       length: length ?? this.length,
-      imageId: imageId ?? this.imageId,
       album: album ?? this.album,
       parts: parts ?? this.parts,
       track: track ?? this.track,
@@ -54,7 +50,6 @@ class Album {
   final int id;
   final String title;
   final String author;
-  final int imageId; // always 0 in JSON backend
   final String sourcePath;
   final int lastPlayedTime;
   final int lastPlayedIndex;
@@ -65,7 +60,6 @@ class Album {
     required this.id,
     required this.title,
     required this.author,
-    required this.imageId,
     required this.sourcePath,
     required this.lastPlayedTime,
     required this.lastPlayedIndex,
@@ -77,7 +71,6 @@ class Album {
     int? id,
     String? title,
     String? author,
-    int? imageId,
     String? sourcePath,
     int? lastPlayedTime,
     int? lastPlayedIndex,
@@ -88,7 +81,6 @@ class Album {
       id: id ?? this.id,
       title: title ?? this.title,
       author: author ?? this.author,
-      imageId: imageId ?? this.imageId,
       sourcePath: sourcePath ?? this.sourcePath,
       lastPlayedTime: lastPlayedTime ?? this.lastPlayedTime,
       lastPlayedIndex: lastPlayedIndex ?? this.lastPlayedIndex,
@@ -96,13 +88,4 @@ class Album {
       playedTracks: playedTracks ?? this.playedTracks,
     );
   }
-}
-
-// Minimal Cover to satisfy legacy types; not used for persistence in JSON backend
-class Cover {
-  final int id;
-  final List<int> cover; // bytes
-  final String hash;
-
-  const Cover({required this.id, required this.cover, required this.hash});
 }

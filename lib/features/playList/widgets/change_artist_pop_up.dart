@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/data/json/models/models.dart';
+import '../../../core/data/models/models.dart';
 import '../utils/write_tag.dart';
 
 class ChangeArtistPopUp extends ConsumerStatefulWidget {

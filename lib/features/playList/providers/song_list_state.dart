@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 class SongListState {
   final Album? album;

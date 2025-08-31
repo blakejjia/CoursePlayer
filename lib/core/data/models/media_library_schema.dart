@@ -63,7 +63,6 @@ class AlbumDto {
   final int id;
   final String title;
   final String author;
-  final int imageId; // references CoverDto.id
   final String sourcePath;
   final int lastPlayedTime;
   final int lastPlayedIndex;
@@ -74,7 +73,6 @@ class AlbumDto {
     required this.id,
     required this.title,
     required this.author,
-    required this.imageId,
     required this.sourcePath,
     required this.lastPlayedTime,
     required this.lastPlayedIndex,
@@ -86,7 +84,6 @@ class AlbumDto {
     int? id,
     String? title,
     String? author,
-    int? imageId,
     String? sourcePath,
     int? lastPlayedTime,
     int? lastPlayedIndex,
@@ -97,7 +94,6 @@ class AlbumDto {
         id: id ?? this.id,
         title: title ?? this.title,
         author: author ?? this.author,
-        imageId: imageId ?? this.imageId,
         sourcePath: sourcePath ?? this.sourcePath,
         lastPlayedTime: lastPlayedTime ?? this.lastPlayedTime,
         lastPlayedIndex: lastPlayedIndex ?? this.lastPlayedIndex,
@@ -109,7 +105,6 @@ class AlbumDto {
         'id': id,
         'title': title,
         'author': author,
-        'imageId': imageId,
         'sourcePath': sourcePath,
         'lastPlayedTime': lastPlayedTime,
         'lastPlayedIndex': lastPlayedIndex,
@@ -121,7 +116,6 @@ class AlbumDto {
         id: json['id'] as int,
         title: json['title'] as String,
         author: json['author'] as String,
-        imageId: json['imageId'] as int,
         sourcePath: json['sourcePath'] as String,
         lastPlayedTime: json['lastPlayedTime'] as int,
         lastPlayedIndex: json['lastPlayedIndex'] as int,
@@ -135,7 +129,6 @@ class SongDto {
   final String artist;
   final String title;
   final int length;
-  final int imageId; // references CoverDto.id
   final int album; // references AlbumDto.id
   final String parts;
   final int? track;
@@ -147,7 +140,6 @@ class SongDto {
     required this.artist,
     required this.title,
     required this.length,
-    required this.imageId,
     required this.album,
     required this.parts,
     required this.track,
@@ -160,7 +152,6 @@ class SongDto {
     String? artist,
     String? title,
     int? length,
-    int? imageId,
     int? album,
     String? parts,
     int? track,
@@ -172,7 +163,6 @@ class SongDto {
         artist: artist ?? this.artist,
         title: title ?? this.title,
         length: length ?? this.length,
-        imageId: imageId ?? this.imageId,
         album: album ?? this.album,
         parts: parts ?? this.parts,
         track: track ?? this.track,
@@ -185,7 +175,6 @@ class SongDto {
         'artist': artist,
         'title': title,
         'length': length,
-        'imageId': imageId,
         'album': album,
         'parts': parts,
         'track': track,
@@ -198,7 +187,6 @@ class SongDto {
         artist: json['artist'] as String,
         title: json['title'] as String,
         length: json['length'] as int,
-        imageId: json['imageId'] as int,
         album: json['album'] as int,
         parts: json['parts'] as String? ?? '',
         track: json['track'] as int?,
@@ -207,4 +195,4 @@ class SongDto {
       );
 }
 
-// Covers are not stored persistently. imageId=0 indicates no cached cover.
+// Covers are not stored persistently.

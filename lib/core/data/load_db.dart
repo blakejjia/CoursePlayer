@@ -3,7 +3,7 @@ import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/core/data/wash_data.dart';
 import 'package:path/path.dart';
-import 'package:lemon/core/data/json/utils/media_library_store.dart';
+import 'package:lemon/core/data/utils/media_library_store.dart';
 
 import '../../features/settings/providers/settings_provider.dart';
 import '../../main.dart' show jsonStoreProvider;
@@ -100,7 +100,6 @@ Future<int> partialRebuild(String baseFolderPath, dynamic ref) async {
 /// For [Playlist] table:
 /// title: folder name
 /// artist: see [washArtist]
-/// imageId: see [_handlePictureSerialize]
 /// sourcePath: folder path
 ///
 /// lastPlayed: -1 TODO: if lastPlayed = -1, show as not played
@@ -112,7 +111,6 @@ Future<int> partialRebuild(String baseFolderPath, dynamic ref) async {
 /// artist: see [washArtist]
 /// title: file name
 /// length: duration of the song
-/// imageId: see [_handlePictureSerialize]
 ///
 /// album: folder name
 /// parts: closest folder name
@@ -137,7 +135,6 @@ Future<void> _handleAlbum(
 Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
     MediaLibraryBatch batch) async {
   Set<String> authors = {}; // 使用 Set 来避免重复艺术家
-  int playlistImageId = 0; // no persistent cover
   int totalTracks = 0;
 
   for (File file in files) {
@@ -151,8 +148,7 @@ Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
     if (tag != null) {
       // add playlist info
       (tag.albumArtist != null) ? authors.add(tag.albumArtist!) : null;
-      // no persistent cover; imageId stays 0
-      int imageId = 0;
+      // no persistent cover
       // set song "parts"
       List<String> parts = split(relative(file.path, from: folder.path));
       String? part = parts.length > 1 ? parts.first : null;
@@ -163,7 +159,6 @@ Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
         title: basename(file.path),
         album: albumId,
         length: tag.duration ?? 0,
-        imageId: imageId,
         path: file.path,
         parts: part,
         playedInSecond: 0,
@@ -176,7 +171,6 @@ Future<void> _handleSongs(List<File> files, Directory folder, int albumId,
     id: albumId,
     title: basename(folder.path),
     author: getAlbumArtistBySet(authors),
-    imageId: playlistImageId,
     sourcePath: folder.path,
     lastPlayedTime: -1,
     lastPlayedIndex: -1,

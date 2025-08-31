@@ -1,6 +1,6 @@
 // TODO 1: algorithms here whether applied depends on settings bloc
 
-import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 /// [washArtist] was applied when loading data from file
 /// this function is used to clean up the artist name

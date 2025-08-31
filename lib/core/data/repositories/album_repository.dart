@@ -1,6 +1,6 @@
-import 'package:lemon/core/data/json/utils/media_library_store.dart';
-import 'package:lemon/core/data/json/models/media_library_schema.dart';
-import 'package:lemon/core/data/json/models/models.dart' show Album;
+import 'package:lemon/core/data/utils/media_library_store.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/models/models.dart' show Album;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AlbumRepository {
@@ -56,7 +56,6 @@ class AlbumRepository {
     int? id,
     required String title,
     required String author,
-    required int imageId,
     required String sourcePath,
     required int lastPlayedTime,
     required int totalTracks,
@@ -73,7 +72,6 @@ class AlbumRepository {
       id: nextId,
       title: title,
       author: author,
-      imageId: 0,
       sourcePath: sourcePath,
       lastPlayedTime: lastPlayedTime,
       lastPlayedIndex: lastPlayedIndex,
@@ -149,7 +147,6 @@ class AlbumRepository {
         id: dto.id,
         title: dto.title,
         author: dto.author,
-        imageId: 0,
         sourcePath: dto.sourcePath,
         lastPlayedTime: dto.lastPlayedTime,
         lastPlayedIndex: dto.lastPlayedIndex,

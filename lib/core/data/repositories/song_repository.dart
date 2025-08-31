@@ -1,10 +1,9 @@
-import 'package:lemon/core/data/json/utils/media_library_store.dart';
-import 'package:lemon/core/data/json/models/media_library_schema.dart';
-import 'package:lemon/core/data/json/models/models.dart'
-    show Song; // plain model
+import 'package:lemon/core/data/utils/media_library_store.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/models/models.dart' show Song; // plain model
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../wash_data.dart';
+import '../wash_data.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 
 class SongRepository {
@@ -18,7 +17,6 @@ class SongRepository {
     required String title,
     required int album,
     required int length,
-    required int imageId,
     required String path,
     String? parts,
     required int playedInSecond,
@@ -33,7 +31,6 @@ class SongRepository {
       title: title,
       album: album,
       length: length,
-      imageId: 0, // imageId not used in JSON backend
       path: path,
       parts: parts ?? '',
       track: null,
@@ -134,7 +131,6 @@ class SongRepository {
         artist: dto.artist,
         title: dto.title,
         length: dto.length,
-        imageId: 0,
         album: dto.album,
         parts: dto.parts,
         track: dto.track,

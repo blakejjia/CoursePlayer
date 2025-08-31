@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/audio/providers/porgress/progress_update_provider.dart';
-import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 /// A widget that displays real-time progress for a song
 /// This automatically updates when progress changes without requiring full reloads

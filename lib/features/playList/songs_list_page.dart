@@ -1,7 +1,7 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/widgets/change_artist_pop_up.dart';
 import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
-import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 

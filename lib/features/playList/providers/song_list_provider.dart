@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/json/models/models.dart';
+import 'package:lemon/core/data/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_state.dart';
 import 'package:lemon/main.dart';
 
