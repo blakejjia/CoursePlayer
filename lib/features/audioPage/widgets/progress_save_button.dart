@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/audio/providers/audio_player_provider.dart';
+import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 
 /// A button widget that allows users to manually save playback progress
 class ProgressSaveButton extends ConsumerWidget {

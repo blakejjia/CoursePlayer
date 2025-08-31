@@ -110,7 +110,7 @@ await audioNotifier.saveProgress();
 
 The system includes comprehensive debug logging:
 
-```
+```text
 Progress saved: 42s for song 123
 App lifecycle state changed: AppLifecycleState.paused
 App going to background - saving progress

@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/audio/providers/audio_player_provider.dart';
+import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 
 /// Service that handles app lifecycle changes and ensures progress is saved
 /// when the app goes to background or is being terminated

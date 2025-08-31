@@ -11,8 +11,9 @@ import 'package:lemon/core/data/json/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
-import '../audio_controller.dart';
+import '../../audio_controller.dart';
 import 'audio_handler_provider.dart';
+import '../porgress/progress_update_provider.dart';
 
 import 'audio_player_state.dart';
 
@@ -26,7 +27,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
   PlaybackState _lastPlayback = PlaybackState();
   bool _initialized = false;
   Timer? _progressSaveTimer;
+  Timer? _uiRefreshTimer;
   static const Duration _progressSaveInterval = Duration(seconds: 10);
+  static const Duration _uiRefreshInterval = Duration(seconds: 30);
   DateTime _lastProgressSave = DateTime.now();
 
   AudioPlayerNotifier(this.ref) : super(AudioPlayerInitial()) {
@@ -57,6 +60,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
 
       // Start periodic progress saving
       _startProgressSaveTimer();
+
+      // Start periodic UI refresh (less frequent)
+      _startUIRefreshTimer();
     } catch (e) {
       // Handle initialization error
       debugPrint('Error initializing audio handler: $e');
@@ -99,27 +105,59 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     _progressSaveTimer = null;
   }
 
+  /// Start a timer that periodically refreshes UI to show updated progress
+  void _startUIRefreshTimer() {
+    _uiRefreshTimer?.cancel();
+    _uiRefreshTimer = Timer.periodic(_uiRefreshInterval, (_) {
+      // Only refresh if audio is playing
+      final current = state;
+      if (current is AudioPlayerIdeal && _lastPlayback.playing) {
+        ref.read(songListProvider.notifier).refreshSongs();
+        debugPrint('UI refreshed to show updated progress');
+      }
+    });
+  }
+
+  /// Stop the UI refresh timer
+  void _stopUIRefreshTimer() {
+    _uiRefreshTimer?.cancel();
+    _uiRefreshTimer = null;
+  }
+
   /// Save current playback progress to JSON
-  Future<void> _saveCurrentProgress() async {
+  Future<void> _saveCurrentProgress({bool refreshUI = false}) async {
     if (!_initialized) return;
 
     final current = state;
     if (current is AudioPlayerIdeal && _lastMediaItem != null) {
       try {
+        final songId = int.parse(_lastMediaItem!.id);
+        final progress = _lastPlayback.position.inSeconds;
+
         // Save song progress
         await ref.read(songRepositoryProvider).updateSongProgress(
-              int.parse(_lastMediaItem!.id),
-              _lastPlayback.position.inSeconds,
+              songId,
+              progress,
             );
 
         // Save album's last played song
         await ref.read(albumRepositoryProvider).updateLastPlayedSongWithId(
               int.parse(_lastMediaItem!.album!),
-              int.parse(_lastMediaItem!.id),
+              songId,
             );
 
-        debugPrint(
-            'Progress saved: ${_lastPlayback.position.inSeconds}s for song ${_lastMediaItem!.id}');
+        // Update in-memory progress for UI
+        ref
+            .read(currentSongProgressProvider.notifier)
+            .updateProgress(songId, progress);
+
+        // Refresh UI if requested (for user-initiated saves)
+        if (refreshUI) {
+          ref.read(songListProvider.notifier).refreshSongs();
+          ref.read(albumProvider.notifier).load();
+        }
+
+        debugPrint('Progress saved: ${progress}s for song $songId');
       } catch (e) {
         debugPrint('Error saving progress: $e');
       }
@@ -137,11 +175,13 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
         // App is going to background or being killed
         _saveCurrentProgress();
         _stopProgressSaveTimer();
+        _stopUIRefreshTimer();
         break;
       case AppLifecycleState.resumed:
         // App is coming back to foreground
         if (_initialized) {
           _startProgressSaveTimer();
+          _startUIRefreshTimer();
         }
         break;
       case AppLifecycleState.inactive:
@@ -172,8 +212,8 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     if (!_initialized) return;
     await _audioHandler.seek(position);
 
-    // Save progress after seeking since user changed position
-    await _saveCurrentProgress();
+    // Save progress after seeking since user changed position and refresh UI
+    await _saveCurrentProgress(refreshUI: true);
   }
 
   Future<void> next() async {
@@ -196,9 +236,13 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     if (!_initialized) return;
     List<Song>? songs = buffer ??
         await ref.read(songRepositoryProvider).getSongsByAlbumId(album.id);
-    final index = songs!.indexWhere((s) => s.id == songId);
-    songs = songs.sublist(index);
-    final position = songs[0].playedInSecond;
+    if (songs == null || songs.isEmpty) return;
+
+    final index = songs.indexWhere((s) => s.id == songId);
+    if (index == -1) return; // Song not found
+
+    final selectedSong = songs[index];
+    final position = selectedSong.playedInSecond;
 
     // set an ideal baseline state so UI can render quickly
     state =
@@ -206,20 +250,27 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
 
     await _audioHandler.locateAudio(
       songs
-          .whereType<Song>()
           .map((song) => MediaItem(
                 id: song.id.toString(),
                 title: song.title,
-                album: "${song.album}",
-                displayDescription: song.path,
+                album: album.title, // Use album title instead of ID
+                displayTitle: song.title,
+                displaySubtitle: song.artist,
+                displayDescription: album.title,
                 artist: song.artist,
-                genre: null,
+                genre: song.parts.isNotEmpty ? song.parts : null,
                 duration: Duration(seconds: song.length),
+                artUri: Uri.parse(
+                    'asset:///assets/default_cover.jpeg'), // Add artwork for Android Auto
+                extras: {
+                  'albumId': song.album,
+                  'songPath': song.path,
+                  'albumArtist': album.author,
+                },
               ))
-          .cast<MediaItem>()
           .toList(),
-      songs.map((song) => song.path).toList().cast<String>(),
-      0,
+      songs.map((song) => song.path).toList(),
+      index, // Pass the actual index of the selected song
       position,
     );
   }
@@ -244,17 +295,13 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     if (!_initialized) return;
     await _audioHandler.pause();
 
-    // Always save progress when user manually pauses
-    await _saveCurrentProgress();
-
-    // refresh providers
-    ref.read(songListProvider.notifier).refreshSongs();
-    ref.read(albumProvider.notifier).load();
+    // Always save progress when user manually pauses and refresh UI
+    await _saveCurrentProgress(refreshUI: true);
   }
 
   /// Manually save current progress - useful for explicit save calls
   Future<void> saveProgress() async {
-    await _saveCurrentProgress();
+    await _saveCurrentProgress(refreshUI: true);
   }
 
   @override
@@ -266,6 +313,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     _mediaItemSub?.cancel();
     _playbackSub?.cancel();
     _stopProgressSaveTimer();
+    _stopUIRefreshTimer();
 
     // Remove app lifecycle observer
     WidgetsBinding.instance.removeObserver(this);

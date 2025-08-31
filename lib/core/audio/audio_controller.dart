@@ -4,16 +4,19 @@ import 'package:audio_service/audio_service.dart';
 import 'package:just_audio/just_audio.dart';
 import 'package:rxdart/rxdart.dart';
 
-/// Audio handler that properly integrates with audio_service and just_audio_background
-/// This ensures both system UI (notifications, CarPlay) and in-app controls work together
+/// Audio handler that properly integrates with audio_service and just_audio
+/// This ensures both system UI (notifications, Android Auto) and in-app controls work together
 Future<MyAudioHandler> initAudioService() async {
   return await AudioService.init(
     builder: () => MyAudioHandler(),
     config: const AudioServiceConfig(
-      androidNotificationChannelId: 'com.blake.course_player.audio',
-      androidNotificationChannelName: 'Course Player Audio',
+      androidNotificationChannelId: 'com.blake.courser.audio',
+      androidNotificationChannelName: 'Courser Audio Playback',
+      androidNotificationChannelDescription:
+          'Audio playback controls for Courser',
       androidNotificationOngoing: true,
       androidShowNotificationBadge: true,
+      androidNotificationClickStartsActivity: true,
     ),
   );
 }
@@ -213,7 +216,7 @@ class MyAudioHandler extends BaseAudioHandler {
     // Keep our current queue for UI and mediaItem stream
     _queue = mediaItems;
 
-    // Build a playlist with tags so just_audio_background can show metadata
+    // Build a playlist with tags so audio_service can show metadata
     final children = <AudioSource>[];
     final count = mediaItems.length;
     for (var i = 0; i < count && i < paths.length; i++) {
@@ -238,6 +241,26 @@ class MyAudioHandler extends BaseAudioHandler {
   @override
   Future<void> setSpeed(double speed) async {
     await _player.setSpeed(speed);
+  }
+
+  // Android Auto browsing support
+  @override
+  Future<List<MediaItem>> getChildren(String parentMediaId,
+      [Map<String, dynamic>? options]) async {
+    // Return current queue for Android Auto browsing
+    // This allows Android Auto to show the current playlist
+    return _queue;
+  }
+
+  @override
+  Future<void> playFromMediaId(String mediaId,
+      [Map<String, dynamic>? extras]) async {
+    // Find the media item with matching ID and play it
+    final index = _queue.indexWhere((item) => item.id == mediaId);
+    if (index != -1) {
+      await _player.seek(Duration.zero, index: index);
+      await _player.play();
+    }
   }
 
   /// Dispose resources to prevent duplicate players/streams lingering.

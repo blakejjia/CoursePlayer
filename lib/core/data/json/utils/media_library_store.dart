@@ -103,6 +103,15 @@ class MediaLibraryStore {
     await save();
   }
 
+  /// Force reload from disk (useful for file watchers)
+  Future<MediaLibraryFileRoot> forceReload() async {
+    _loaded = false;
+    _cache = MediaLibraryFileRoot.empty();
+    final newData = await load();
+    _changes.add(newData);
+    return newData;
+  }
+
   // Covers are loaded on demand from audio files; nothing persisted here.
 }
 

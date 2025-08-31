@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/audioPage/utils/time_formatter.dart';
 
-import '../../core/audio/providers/audio_player_provider.dart';
+import '../../core/audio/providers/audio/audio_player_provider.dart';
 
 part 'widgets/buttons.dart';
 part 'widgets/progress_indicator.dart';

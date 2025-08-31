@@ -6,7 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
-import '../../core/audio/providers/audio_player_provider.dart';
+import '../../core/audio/providers/audio/audio_player_provider.dart';
 import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';

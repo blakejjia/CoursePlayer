@@ -10,6 +10,7 @@ import 'package:lemon/core/data/json/repositories/song_repository.dart'
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';
 import 'package:lemon/core/services/app_lifecycle_service.dart';
+import 'package:lemon/core/services/media_library_file_watcher.dart';
 
 final jsonStoreProvider =
     Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
@@ -33,6 +34,9 @@ class MainApp extends ConsumerWidget {
 
     // Initialize app lifecycle service to handle progress saving
     ref.watch(appLifecycleServiceProvider);
+
+    // Initialize file watcher to automatically reload data when JSON changes
+    ref.watch(mediaLibraryFileWatcherProvider);
 
     return MaterialApp.router(
       theme: ThemeData(
