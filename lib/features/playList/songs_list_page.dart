@@ -1,13 +1,13 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
-import 'package:lemon/features/playList/widgets/change_artist_pop_up.dart';
-import 'package:lemon/features/playList/widgets/song_list_widgets.dart';
+import 'package:lemon/features/playList/widgets/popup_actions.dart';
+import 'package:lemon/features/playList/widgets/tiles.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/audio/providers/audio/audio_player_provider.dart';
 import '../audioPage/audio_bottom_sheet.dart';
-import 'utils/texts.dart';
+import 'widgets/utils/texts.dart';
 
 /// [SongsListPage] is a view that shows all songs in an album.
 /// Uses Riverpod providers for album/song list and audio player.
@@ -32,20 +32,7 @@ class SongsListPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(ready.album!.title),
         actions: [
-          PopupMenuButton<String>(
-            onSelected: (_) {
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-                      ChangeArtistPopUp(ready.album!.sourcePath, ready.buffer));
-            },
-            itemBuilder: (BuildContext context) {
-              return [
-                PopupMenuItem<String>(
-                    value: 'ListView', child: Text("change artist name")),
-              ];
-            },
-          ),
+          PopupMenu(),
         ],
       ),
       bottomNavigationBar: const AudioBottomSheet(),

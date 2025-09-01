@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../core/data/models/models.dart';
-import '../utils/texts.dart';
-import 'song_progress_widgets.dart';
+import 'utils/texts.dart';
 
 Widget songTileNormal(BuildContext context, Song song) {
   return ListTile(
