@@ -117,11 +117,10 @@ class PlaylistApiException implements Exception {
 /// Note: You'll need to configure the actual base URL and API key
 /// These should come from environment variables or configuration
 final playlistApiServiceProvider = Provider<PlaylistApiService>((ref) {
-  // TODO: Replace with actual configuration values
   // These should come from environment configuration or settings
   const baseUrl =
-      'https://your-worker-url.workers.dev/api'; // Replace with actual worker URL
-  const apiKey = 'your-api-key'; // Replace with actual API key
+      'https://courser.jia-blake-ca.workers.dev'; // Replace with actual worker URL
+  const apiKey = 'I-love-courser-Always'; // Replace with actual API key
 
   return PlaylistApiService(
     baseUrl: baseUrl,

@@ -18,10 +18,10 @@ class FindRegexService {
     FindFilenameRegRequest request,
   ) async {
     try {
-      debugPrint('🔍 Calling find-filename-reg API with: ${request.dirFiles}');
+      debugPrint('🔍 Calling find-filename-reg API with: ${request.toJson()}');
 
       final response = await _apiService.post(
-        '/courser/find-filename-reg',
+        '/api/courser/find-filename-reg',
         body: request.toJson(),
       );
 

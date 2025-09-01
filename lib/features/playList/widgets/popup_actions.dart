@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/playList/services/find_regex/presentation/popup.dart';
+import 'package:lemon/features/playList/services/find_sequence/presentation/popup.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 
 class PopupMenu extends ConsumerWidget {
@@ -25,6 +26,17 @@ class PopupMenu extends ConsumerWidget {
               );
             }
             break;
+          case 'find_sequence':
+            if (ready.isReady) {
+              showDialog(
+                context: context,
+                builder: (context) => FindSequenceDialog(
+                  album: ready.album!,
+                  songs: ready.buffer!,
+                ),
+              );
+            }
+            break;
         }
       },
       itemBuilder: (BuildContext context) {
@@ -35,6 +47,15 @@ class PopupMenu extends ConsumerWidget {
               leading: Icon(Icons.auto_fix_high),
               title: Text('Find Regex Pattern'),
               subtitle: Text('Auto-detect pattern to clean titles'),
+              contentPadding: EdgeInsets.zero,
+            ),
+          ),
+          const PopupMenuItem<String>(
+            value: 'find_sequence',
+            child: ListTile(
+              leading: Icon(Icons.sort),
+              title: Text('Find Study Sequence'),
+              subtitle: Text('Infer logical playback/study order'),
               contentPadding: EdgeInsets.zero,
             ),
           ),
