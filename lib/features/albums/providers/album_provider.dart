@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 import 'package:lemon/core/data/load_db.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/main.dart';
@@ -30,8 +30,8 @@ class LatestPlayed {
           title: map['album']['title'] as String,
           author: map['album']['author'] as String,
           sourcePath: map['album']['sourcePath'] as String,
-          lastPlayedTime: map['album']['lastPlayedTime'] as int,
-          lastPlayedIndex: map['album']['lastPlayedIndex'] as int,
+          lastPlayedTime: map['album']['lastPlayedTime'] as int?,
+          lastPlayedIndex: map['album']['lastPlayedIndex'] as int?,
           totalTracks: map['album']['totalTracks'] as int,
           playedTracks: map['album']['playedTracks'] as int,
         ),

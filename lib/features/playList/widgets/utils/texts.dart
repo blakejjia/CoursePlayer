@@ -1,6 +1,6 @@
 import 'package:lemon/features/playList/providers/song_list_state.dart';
 
-import '../../../../core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 
 /// format title to fit the screen
 /// - remove file extension
@@ -22,9 +22,9 @@ String formatTitle(Song song) {
 /// - duration
 String formatSubtitle(Song song) {
   // format played time in percentage
-  String playedPercentage = song.playedInSecond == 0
+  String playedPercentage = (song.playedInSecond ?? 0) == 0
       ? ''
-      : '${((song.playedInSecond / song.length * 100).clamp(0, 100)).toStringAsFixed(0)}%';
+      : '${(((song.playedInSecond ?? 0) / song.length * 100).clamp(0, 100)).toStringAsFixed(0)}%';
   // format duration
   String duration = () {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -46,7 +46,7 @@ String formatSubtitle(Song song) {
 }
 
 String contiButton(SongListState state) {
-  int songId = state.album!.lastPlayedIndex;
+  int songId = state.album!.lastPlayedIndex ?? -1;
   if (songId == -1) {
     return "start playing";
   }

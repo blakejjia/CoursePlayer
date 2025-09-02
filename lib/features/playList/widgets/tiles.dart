@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 import 'utils/texts.dart';
 
 Widget songTileNormal(BuildContext context, Song song) {

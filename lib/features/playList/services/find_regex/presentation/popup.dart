@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 import 'package:lemon/features/playList/services/find_regex/find_regex.dart';
 import 'package:lemon/features/playList/services/find_regex/models.dart';
 

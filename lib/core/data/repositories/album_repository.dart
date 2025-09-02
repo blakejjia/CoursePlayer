@@ -1,6 +1,5 @@
 import 'package:lemon/core/data/utils/media_library_store.dart';
 import 'package:lemon/core/data/models/media_library_schema.dart';
-import 'package:lemon/core/data/models/models.dart' show Album;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class AlbumRepository {
@@ -35,18 +34,22 @@ class AlbumRepository {
   /// updateAlbumProgress
   Future<int> updateAlbumProgress(Album album) async {
     final root = await store.load();
-    final songs = root.songs.where((s) => s.album == album.id);
+    final albumIdx = root.albums.indexWhere((e) => e.id == album.id);
+    if (albumIdx < 0) return 0;
+
+    final currentAlbum = root.albums[albumIdx];
+    final songs = currentAlbum.songs ?? [];
     int playedTracks = 0;
     for (final s in songs) {
-      if (s.length > 0 && s.playedInSecond / s.length > 0.9) {
+      final playedRatio = (s.playedInSecond ?? 0) / s.length;
+      if (s.length > 0 && playedRatio > 0.9) {
         playedTracks++;
       }
     }
-    final idx = root.albums.indexWhere((e) => e.id == album.id);
-    if (idx < 0) return 0;
-    final updated = root.albums[idx].copyWith(playedTracks: playedTracks);
+
+    final updated = currentAlbum.copyWith(playedTracks: playedTracks);
     final list = [...root.albums];
-    list[idx] = updated;
+    list[albumIdx] = updated;
     await store.replace(root.copyWith(albums: list));
     return 1;
   }
@@ -68,7 +71,7 @@ class AlbumRepository {
             ? 1
             : (root.albums.map((e) => e.id).reduce((a, b) => a > b ? a : b) +
                 1));
-    final dto = AlbumDto(
+    final dto = Album(
       id: nextId,
       title: title,
       author: author,
@@ -86,37 +89,37 @@ class AlbumRepository {
   ///  ------------------ get -----------------------
   Future<List<Album>> getAlbumsByLastPlayedTime() async {
     final root = await store.load();
-    final list = root.albums.map(_toAlbum).toList()
-      ..sort((a, b) => b.lastPlayedTime.compareTo(a.lastPlayedTime));
+    final list = root.albums
+      ..sort(
+          (a, b) => (b.lastPlayedTime ?? 0).compareTo(a.lastPlayedTime ?? 0));
     return list;
   }
 
   Future<Album?> getAlbumById(int id) async {
     final root = await store.load();
-    final dto =
-        root.albums.where((e) => e.id == id).cast<AlbumDto?>().firstWhere(
-              (e) => e != null,
-              orElse: () => null,
-            );
-    return dto == null ? null : _toAlbum(dto);
+    final dto = root.albums.where((e) => e.id == id).cast<Album?>().firstWhere(
+          (e) => e != null,
+          orElse: () => null,
+        );
+    return dto;
   }
 
   Future<Album?> getAlbumIdByPath(String path) async {
     final root = await store.load();
     final dto = root.albums
         .where((e) => e.sourcePath == path)
-        .cast<AlbumDto?>()
+        .cast<Album?>()
         .firstWhere((e) => e != null, orElse: () => null);
-    return dto == null ? null : _toAlbum(dto);
+    return dto;
   }
 
   Future<Album?> getAlbumByName(String name) async {
     final root = await store.load();
     final dto = root.albums
         .where((e) => e.title == name)
-        .cast<AlbumDto?>()
+        .cast<Album?>()
         .firstWhere((e) => e != null, orElse: () => null);
-    return dto == null ? null : _toAlbum(dto);
+    return dto;
   }
 
   Future<int> getNextAlbumId() async {
@@ -141,16 +144,4 @@ class AlbumRepository {
     await store.replace(root.copyWith(albums: const []));
     return 1;
   }
-
-  // Mapping
-  Album _toAlbum(AlbumDto dto) => Album(
-        id: dto.id,
-        title: dto.title,
-        author: dto.author,
-        sourcePath: dto.sourcePath,
-        lastPlayedTime: dto.lastPlayedTime,
-        lastPlayedIndex: dto.lastPlayedIndex,
-        totalTracks: dto.totalTracks,
-        playedTracks: dto.playedTracks,
-      );
 }

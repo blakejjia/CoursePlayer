@@ -1,7 +1,7 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/widgets/popup_actions.dart';
 import 'package:lemon/features/playList/widgets/tiles.dart';
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
@@ -67,7 +67,7 @@ class SongsListPage extends ConsumerWidget {
                     ElevatedButton(
                         onPressed: () {
                           ref.read(audioPlayerProvider.notifier).locateAudio(
-                              ready.album!, ready.album!.lastPlayedIndex);
+                              ready.album!, ready.album!.lastPlayedIndex ?? -1);
                         },
                         child: Text(contiButton(ready)))
                   ],

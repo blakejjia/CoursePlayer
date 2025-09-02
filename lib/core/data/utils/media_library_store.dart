@@ -161,7 +161,7 @@ class MediaLibraryBatch {
     required int lastPlayedIndex,
   }) {
     final assigned = id ?? nextAlbumId();
-    final dto = AlbumDto(
+    final dto = Album(
       id: assigned,
       title: title,
       author: author,
@@ -175,7 +175,33 @@ class MediaLibraryBatch {
     return assigned;
   }
 
-  AlbumDto? albumByPath(String path) {
+  /// Inserts an album with embedded songs - the new preferred method
+  int insertAlbumWithSongs({
+    int? id,
+    required String title,
+    required String author,
+    required String sourcePath,
+    required List<Song> songs,
+    required int lastPlayedTime,
+    required int lastPlayedIndex,
+  }) {
+    final assigned = id ?? nextAlbumId();
+    final dto = Album(
+      id: assigned,
+      title: title,
+      author: author,
+      sourcePath: sourcePath,
+      lastPlayedTime: lastPlayedTime,
+      lastPlayedIndex: lastPlayedIndex,
+      totalTracks: songs.length,
+      playedTracks: 0,
+      songs: songs,
+    );
+    _root = _root.copyWith(albums: [..._root.albums, dto]);
+    return assigned;
+  }
+
+  Album? albumByPath(String path) {
     try {
       return _root.albums.firstWhere((a) => a.sourcePath == path);
     } catch (_) {
@@ -203,32 +229,25 @@ class MediaLibraryBatch {
   int insertSong({
     required String artist,
     required String title,
-    required int album,
+    required int albumId,
     required int length,
     required String path,
     String? parts,
     required int playedInSecond,
   }) {
     final id = nextSongId();
-    final dto = SongDto(
+    final dto = Song(
       id: id,
       artist: artist,
       title: title,
-      album: album,
       length: length,
       path: path,
-      parts: parts ?? '',
+      disc: parts ?? '',
       track: null,
       playedInSecond: playedInSecond,
     );
     _root = _root.copyWith(songs: [..._root.songs, dto]);
     return id;
-  }
-
-  void deleteSongsByAlbumId(int albumId) {
-    _root = _root.copyWith(
-      songs: _root.songs.where((e) => e.album != albumId).toList(),
-    );
   }
 
   void clearSongs() {

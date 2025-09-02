@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 // Uses the nearest ProviderScope container to dispatch actions
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:go_router/go_router.dart';
@@ -69,6 +69,8 @@ void _navigateToSongsListPage(BuildContext context, Album album) {
 }
 
 String formatAlbumProgress(Album album) {
-  int progress = (album.playedTracks * 100 / album.totalTracks).round();
+  final played = album.playedTracks ?? 0;
+  final total = album.totalTracks == 0 ? 1 : album.totalTracks;
+  int progress = (played * 100 / total).round();
   return "$progress%";
 }

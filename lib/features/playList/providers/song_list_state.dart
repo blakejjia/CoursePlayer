@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 
 class SongListState {
   final Album? album;

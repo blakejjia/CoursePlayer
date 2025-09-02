@@ -7,7 +7,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/albums/providers/album_provider.dart';
 // import 'package:async/async.dart';
 
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
@@ -258,12 +258,12 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
                 displaySubtitle: song.artist,
                 displayDescription: album.title,
                 artist: song.artist,
-                genre: song.parts.isNotEmpty ? song.parts : null,
+                genre: song.disc.isNotEmpty ? song.disc : null,
                 duration: Duration(seconds: song.length),
                 artUri: Uri.parse(
                     'asset:///assets/default_cover.jpeg'), // Add artwork for Android Auto
                 extras: {
-                  'albumId': song.album,
+                  'albumId': album.id,
                   'songPath': song.path,
                   'albumArtist': album.author,
                 },

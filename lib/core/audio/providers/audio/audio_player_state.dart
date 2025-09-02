@@ -1,5 +1,5 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/models/media_library_schema.dart';
 
 /// Base type for audio player state
 class AudioPlayerState {}

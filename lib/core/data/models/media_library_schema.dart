@@ -4,8 +4,8 @@ import 'dart:convert';
 class MediaLibraryFileRoot {
   final int schemaVersion; // JSON schema version, independent from Drift
   final String generatedAt; // ISO8601
-  final List<AlbumDto> albums;
-  final List<SongDto> songs;
+  final List<Album> albums;
+  final List<Song> songs;
 
   const MediaLibraryFileRoot({
     required this.schemaVersion,
@@ -17,8 +17,8 @@ class MediaLibraryFileRoot {
   MediaLibraryFileRoot copyWith({
     int? schemaVersion,
     String? generatedAt,
-    List<AlbumDto>? albums,
-    List<SongDto>? songs,
+    List<Album>? albums,
+    List<Song>? songs,
   }) =>
       MediaLibraryFileRoot(
         schemaVersion: schemaVersion ?? this.schemaVersion,
@@ -40,11 +40,13 @@ class MediaLibraryFileRoot {
         generatedAt:
             json['generatedAt'] as String? ?? DateTime.now().toIso8601String(),
         albums: ((json['albums'] as List?) ?? const [])
-            .map((e) => AlbumDto.fromJson(e as Map<String, dynamic>))
-            .toList(),
+            .map((e) => Album.fromJson(e as Map<String, dynamic>))
+            .toList()
+            .cast<Album>(),
         songs: ((json['songs'] as List?) ?? const [])
-            .map((e) => SongDto.fromJson(e as Map<String, dynamic>))
-            .toList(),
+            .map((e) => Song.fromJson(e as Map<String, dynamic>))
+            .toList()
+            .cast<Song>(),
       );
 
   static MediaLibraryFileRoot empty() => MediaLibraryFileRoot(
@@ -59,17 +61,24 @@ class MediaLibraryFileRoot {
       fromJson(jsonDecode(source) as Map<String, dynamic>);
 }
 
-class AlbumDto {
+class Album {
+  // basic information
   final int id;
   final String title;
   final String author;
   final String sourcePath;
-  final int lastPlayedTime;
-  final int lastPlayedIndex;
   final int totalTracks;
-  final int playedTracks;
+  final List<Song>? songs;
 
-  const AlbumDto({
+// user history
+  final int? lastPlayedTime;
+  final int? lastPlayedIndex;
+  final int? playedTracks;
+
+  // business logic field
+  final String? regexPattern;
+
+  const Album({
     required this.id,
     required this.title,
     required this.author,
@@ -78,9 +87,11 @@ class AlbumDto {
     required this.lastPlayedIndex,
     required this.totalTracks,
     required this.playedTracks,
+    this.songs,
+    this.regexPattern,
   });
 
-  AlbumDto copyWith({
+  Album copyWith({
     int? id,
     String? title,
     String? author,
@@ -89,8 +100,10 @@ class AlbumDto {
     int? lastPlayedIndex,
     int? totalTracks,
     int? playedTracks,
+    List<Song>? songs,
+    String? regexPattern,
   }) =>
-      AlbumDto(
+      Album(
         id: id ?? this.id,
         title: title ?? this.title,
         author: author ?? this.author,
@@ -99,6 +112,8 @@ class AlbumDto {
         lastPlayedIndex: lastPlayedIndex ?? this.lastPlayedIndex,
         totalTracks: totalTracks ?? this.totalTracks,
         playedTracks: playedTracks ?? this.playedTracks,
+        songs: songs ?? this.songs,
+        regexPattern: regexPattern ?? this.regexPattern,
       );
 
   Map<String, dynamic> toJson() => {
@@ -110,9 +125,11 @@ class AlbumDto {
         'lastPlayedIndex': lastPlayedIndex,
         'totalTracks': totalTracks,
         'playedTracks': playedTracks,
+        'songs': songs?.map((e) => e.toJson()).toList(),
+        'regexPattern': regexPattern,
       };
 
-  static AlbumDto fromJson(Map<String, dynamic> json) => AlbumDto(
+  static Album fromJson(Map<String, dynamic> json) => Album(
         id: json['id'] as int,
         title: json['title'] as String,
         author: json['author'] as String,
@@ -121,53 +138,71 @@ class AlbumDto {
         lastPlayedIndex: json['lastPlayedIndex'] as int,
         totalTracks: json['totalTracks'] as int,
         playedTracks: json['playedTracks'] as int,
+        songs: ((json['songs'] as List?) ?? const [])
+            .map((e) => Song.fromJson(e as Map<String, dynamic>))
+            .toList()
+            .cast<Song>(),
+        regexPattern: json['regexPattern'] as String?,
       );
 }
 
-class SongDto {
+class Song {
+  // basic fields
   final int id;
   final String artist;
   final String title;
   final int length;
-  final int album; // references AlbumDto.id
-  final String parts;
-  final int? track;
+  final String disc; // disc name
   final String path;
-  final int playedInSecond;
 
-  const SongDto({
+  // user fields
+  final int? track;
+  final String? alias; // alias name
+
+  // play history
+  final int? playedInSecond;
+  final DateTime? lastPlayed;
+  final DateTime? addedAt;
+
+  const Song({
     required this.id,
     required this.artist,
     required this.title,
     required this.length,
-    required this.album,
-    required this.parts,
-    required this.track,
+    required this.disc,
     required this.path,
-    required this.playedInSecond,
+    this.track,
+    this.alias,
+    this.playedInSecond,
+    this.lastPlayed,
+    this.addedAt,
   });
 
-  SongDto copyWith({
+  Song copyWith({
     int? id,
     String? artist,
     String? title,
     int? length,
-    int? album,
-    String? parts,
-    int? track,
+    String? disc,
     String? path,
+    int? track,
+    String? alias,
     int? playedInSecond,
+    DateTime? lastPlayed,
+    DateTime? addedAt,
   }) =>
-      SongDto(
+      Song(
         id: id ?? this.id,
         artist: artist ?? this.artist,
         title: title ?? this.title,
         length: length ?? this.length,
-        album: album ?? this.album,
-        parts: parts ?? this.parts,
-        track: track ?? this.track,
+        disc: disc ?? this.disc,
         path: path ?? this.path,
+        track: track ?? this.track,
+        alias: alias ?? this.alias,
         playedInSecond: playedInSecond ?? this.playedInSecond,
+        lastPlayed: lastPlayed ?? this.lastPlayed,
+        addedAt: addedAt ?? this.addedAt,
       );
 
   Map<String, dynamic> toJson() => {
@@ -175,23 +210,31 @@ class SongDto {
         'artist': artist,
         'title': title,
         'length': length,
-        'album': album,
-        'parts': parts,
-        'track': track,
+        'disc': disc,
         'path': path,
+        'track': track,
+        'alias': alias,
         'playedInSecond': playedInSecond,
+        'lastPlayed': lastPlayed?.toIso8601String(),
+        'addedAt': addedAt?.toIso8601String(),
       };
 
-  static SongDto fromJson(Map<String, dynamic> json) => SongDto(
+  static Song fromJson(Map<String, dynamic> json) => Song(
         id: json['id'] as int,
         artist: json['artist'] as String,
         title: json['title'] as String,
         length: json['length'] as int,
-        album: json['album'] as int,
-        parts: json['parts'] as String? ?? '',
-        track: json['track'] as int?,
+        disc: json['disc'] as String? ?? json['parts'] as String? ?? '',
         path: json['path'] as String,
-        playedInSecond: json['playedInSecond'] as int,
+        track: json['track'] as int?,
+        alias: json['alias'] as String?,
+        playedInSecond: json['playedInSecond'] as int?,
+        lastPlayed: json['lastPlayed'] != null
+            ? DateTime.parse(json['lastPlayed'] as String)
+            : null,
+        addedAt: json['addedAt'] != null
+            ? DateTime.parse(json['addedAt'] as String)
+            : null,
       );
 }
 
