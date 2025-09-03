@@ -1,6 +1,6 @@
 // TODO 1: algorithms here whether applied depends on settings bloc
 
-import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 /// [washArtist] was applied when loading data from file
 /// this function is used to clean up the artist name
@@ -9,18 +9,6 @@ String washArtist(String? artist) {
     return "";
   }
   return artist;
-}
-
-/// [getAlbumArtistBySet] was applied when loading data from file
-/// this function is used to format the author of the playlist
-String getAlbumArtistBySet(Set<String> artists) {
-  if (artists.isEmpty) {
-    return 'Unknown Artist';
-  } else if (artists.length < 3) {
-    return artists.map((artist) => washArtist(artist)).toSet().join(' ');
-  } else {
-    return "Various Artists";
-  }
 }
 
 /// [sortSongs] was applied when loading data from file

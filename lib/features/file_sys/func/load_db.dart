@@ -1,13 +1,13 @@
 import 'dart:io';
 import 'package:audiotags/audiotags.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:lemon/core/data/wash_data.dart';
+import 'package:lemon/features/file_sys/func/wash_data.dart';
 import 'package:path/path.dart';
-import 'package:lemon/core/data/utils/media_library_store.dart';
-import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/storage.dart';
+import 'package:lemon/core/data/models/models.dart';
 
-import '../../features/settings/providers/settings_provider.dart';
-import '../../main.dart' show jsonStoreProvider;
+import '../../settings/providers/settings_provider.dart';
+import '../../../main.dart' show jsonStoreProvider;
 // Covers are loaded dynamically; no cover persistence
 // album_repository.dart and song_repository.dart are not directly referenced here
 // because we access them via Riverpod providers defined in main.dart.
@@ -84,6 +84,83 @@ Stream<Map<String, int>> rebuildDb(String path, dynamic ref) async* {
   await batch.commit();
   ref.read(settingsProvider.notifier).updateRebuiltTime();
   Fluttertoast.showToast(msg: 'Media library rebuilt successfully');
+}
+
+/// Callback-based rebuild API. Calls [onProgress] periodically with the
+/// same progress map that the stream version emitted. The [isCancelled]
+/// callback is polled to allow cooperative cancellation from callers
+/// (for example a provider notifier).
+Future<void> rebuildDbWithCallback(
+  String path,
+  dynamic ref,
+  void Function(Map<String, int>) onProgress,
+  bool Function() isCancelled,
+) async {
+  Fluttertoast.showToast(msg: 'Rebuilding media library...');
+
+  // Initialize and clear previous data
+  ref.read(settingsProvider.notifier).stateRebuilding();
+  final store = ref.read(jsonStoreProvider);
+  final batch = await MediaLibraryBatch.start(store);
+
+  // Clear existing data for fresh rebuild
+  batch.clearSongs();
+  batch.clearAlbums();
+
+  final rootDirectory = Directory(path);
+  if (!await rootDirectory.exists()) {
+    Fluttertoast.showToast(msg: 'Error: Root directory not found');
+    return;
+  }
+
+  final courseFolders = await _discoverCourseFolders(rootDirectory);
+  final totalFolders = courseFolders.length;
+
+  // Initial progress callback
+  onProgress({
+    'currentFolder': 0,
+    'totalFolder': totalFolders,
+    'currentFile': 0,
+    'totalFile': 0,
+  });
+
+  int currentFolderIndex = 0;
+
+  for (final courseFolder in courseFolders) {
+    if (isCancelled()) break;
+
+    try {
+      final result =
+          await _processCourseFolderWithProgress(courseFolder, batch);
+
+      currentFolderIndex++;
+      onProgress({
+        'currentFolder': currentFolderIndex,
+        'totalFolder': totalFolders,
+        'currentFile': result.filesProcessed,
+        'totalFile': result.totalFiles,
+      });
+    } catch (e) {
+      print('Error processing folder ${courseFolder.path}: $e');
+      currentFolderIndex++;
+      onProgress({
+        'currentFolder': currentFolderIndex,
+        'totalFolder': totalFolders,
+        'currentFile': 0,
+        'totalFile': 0,
+      });
+    }
+  }
+
+  if (!isCancelled()) {
+    await batch.commit();
+    ref.read(settingsProvider.notifier).updateRebuiltTime();
+    Fluttertoast.showToast(msg: 'Media library rebuilt successfully');
+  } else {
+    // Optionally roll back or leave partial changes; here we do not commit
+    // to avoid leaving a partially-updated DB when cancelled.
+    Fluttertoast.showToast(msg: 'Rebuild cancelled');
+  }
 }
 
 /// Discovers all course folders, including nested structures

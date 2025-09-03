@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as p;
 
-import '../data/models/media_library_schema.dart';
+import '../data/models/models.dart';
 import '../../main.dart';
 
 /// A service that watches the MediaLibrary.json file for changes

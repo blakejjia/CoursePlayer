@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/models/models.dart';
 // Uses the nearest ProviderScope container to dispatch actions
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:go_router/go_router.dart';

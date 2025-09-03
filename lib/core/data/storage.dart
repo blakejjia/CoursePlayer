@@ -5,7 +5,7 @@ import 'dart:math' as math;
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
-import '../models/media_library_schema.dart';
+import 'models/models.dart';
 
 /// Handles reading/writing MediaLibrary.json with atomic writes.
 class MediaLibraryStore {

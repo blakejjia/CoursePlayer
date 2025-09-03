@@ -5,7 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/my_app.dart';
 import 'package:lemon/features/playList/songs_list_page.dart';
 import 'package:lemon/features/settings/presentation/InnerPages/info_page.dart';
-import 'package:lemon/core/data/models/media_library_schema.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 /// Route names for type-safe navigation.
 abstract class AppRoutes {

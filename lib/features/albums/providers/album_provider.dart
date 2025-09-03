@@ -1,6 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/core/data/models/media_library_schema.dart';
-import 'package:lemon/core/data/load_db.dart';
+import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/features/file_sys/providers/filesys_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/main.dart';
 
@@ -105,12 +105,11 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
 
   Future<void> loaddb(String audioPath) async {
     state = state.copyWith(isLoading: true);
-    Stream<Map<String, int>> result = rebuildDb(audioPath, ref);
-    await for (final loadinfo in result) {
-      final albums =
-          await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
-      state = state.copyWith(isLoading: false, albums: albums, info: loadinfo);
-    }
+    await ref.read(mediaLibraryProvider.notifier).rebuildAll(audioPath);
+
+    final albums =
+        await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
+    state = state.copyWith(isLoading: false, albums: albums, info: {});
   }
 
   void updateHistory(LatestPlayed history) {
