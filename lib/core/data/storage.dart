@@ -23,17 +23,10 @@ class MediaLibraryStore {
 
   Stream<MediaLibraryFileRoot> get changes => _changes.stream;
 
-  Future<Directory> _appDir() async {
-    final dir = await getApplicationDocumentsDirectory();
-    return dir;
-  }
-
   Future<File> _jsonFile() async {
-    final dir = await _appDir();
+    final dir = await getApplicationSupportDirectory();
     return File(p.join(dir.path, jsonFileName));
   }
-
-  // No covers directory helpers needed.
 
   /// Load JSON from disk into memory. Creates an empty one if missing or invalid.
   Future<MediaLibraryFileRoot> load() async {
@@ -74,26 +67,14 @@ class MediaLibraryStore {
     _writeLock = Completer<void>();
     try {
       final file = await _jsonFile();
-      final dir = file.parent;
-      if (!await dir.exists()) {
-        await dir.create(recursive: true);
-      }
-      final tmp = File('${file.path}.tmp');
       final bytes = utf8.encode(_cache.encode());
-      await tmp.writeAsBytes(bytes, flush: true);
-      // atomic replace if supported; else rename best-effort
-      if (await file.exists()) {
-        await file.delete();
-      }
-      await tmp.rename(file.path);
+      await file.writeAsBytes(bytes, flush: true);
       _changes.add(_cache);
     } finally {
       _writeLock!.complete();
       _writeLock = null;
     }
   }
-
-  MediaLibraryFileRoot get snapshot => _cache;
 
   /// Replace entire library and persist.
   Future<void> replace(MediaLibraryFileRoot next) async {
@@ -120,6 +101,7 @@ class MediaLibraryBatch {
   final MediaLibraryStore _store;
   MediaLibraryFileRoot _root;
   bool _committed = false;
+  List<Album> get albums => _root.albums;
 
   MediaLibraryBatch._(this._store, this._root);
 
@@ -204,8 +186,6 @@ class MediaLibraryBatch {
       return null;
     }
   }
-
-  List<Album> get albums => _root.albums;
 
   void deleteAlbumById(int id) {
     _root = _root.copyWith(

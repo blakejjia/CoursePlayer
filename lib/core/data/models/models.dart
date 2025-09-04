@@ -134,10 +134,13 @@ class Album {
         title: json['title'] as String,
         author: json['author'] as String,
         sourcePath: json['sourcePath'] as String,
-        lastPlayedTime: json['lastPlayedTime'] as int,
-        lastPlayedIndex: json['lastPlayedIndex'] as int,
-        totalTracks: json['totalTracks'] as int,
-        playedTracks: json['playedTracks'] as int,
+        // these fields were nullable in the model but previously cast as non-null
+        // causing decode to throw when keys were missing/null. Use nullable casts
+        // and sensible defaults where appropriate.
+        lastPlayedTime: json['lastPlayedTime'] as int?,
+        lastPlayedIndex: json['lastPlayedIndex'] as int?,
+        totalTracks: json['totalTracks'] as int? ?? 0,
+        playedTracks: json['playedTracks'] as int? ?? 0,
         songs: ((json['songs'] as List?) ?? const [])
             .map((e) => Song.fromJson(e as Map<String, dynamic>))
             .toList()

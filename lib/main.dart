@@ -31,10 +31,7 @@ class MainApp extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(goRouterProvider);
 
-    // Initialize app lifecycle service to handle progress saving
     ref.watch(appLifecycleServiceProvider);
-
-    // Initialize file watcher to automatically reload data when JSON changes
     ref.watch(mediaLibraryFileWatcherProvider);
 
     return MaterialApp.router(

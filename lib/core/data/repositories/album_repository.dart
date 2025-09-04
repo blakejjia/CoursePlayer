@@ -89,9 +89,9 @@ class AlbumRepository {
   ///  ------------------ get -----------------------
   Future<List<Album>> getAlbumsByLastPlayedTime() async {
     final root = await store.load();
-    final list = root.albums
-      ..sort(
-          (a, b) => (b.lastPlayedTime ?? 0).compareTo(a.lastPlayedTime ?? 0));
+    final list = [...root.albums];
+    list.sort(
+        (a, b) => (b.lastPlayedTime ?? 0).compareTo(a.lastPlayedTime ?? 0));
     return list;
   }
 

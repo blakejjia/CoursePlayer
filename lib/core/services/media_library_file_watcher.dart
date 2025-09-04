@@ -46,21 +46,12 @@ class MediaLibraryFileWatcher {
     }
   }
 
-  /// Stop watching the file
-  void stopWatching() {
-    _watchSubscription?.cancel();
-    _watchSubscription = null;
-    _debounceTimer?.cancel();
-    _debounceTimer = null;
-    _isWatching = false;
-    debugPrint('Stopped watching MediaLibrary.json');
-  }
-
   /// Handle file system events
   void _onFileEvent(FileSystemEvent event) {
     // Check if the event is for our MediaLibrary.json file
     if (event.path.endsWith('MediaLibrary.json')) {
-      debugPrint('MediaLibrary.json ${event.type} detected');
+      final typeName = _fileSystemEventName(event.type);
+      debugPrint('MediaLibrary.json $typeName detected');
 
       // Debounce rapid file changes (like during saving)
       _debounceTimer?.cancel();
@@ -79,7 +70,13 @@ class MediaLibraryFileWatcher {
           await _reloadData();
           break;
         case FileSystemEvent.delete:
-          debugPrint('MediaLibrary.json was deleted');
+          await Future.delayed(const Duration(milliseconds: 200));
+          if (await (_jsonFile?.exists() ?? Future.value(false))) {
+            // file exists again -> treat as modification
+            await _reloadData();
+          } else {
+            debugPrint('MediaLibrary.json was deleted');
+          }
           break;
         case FileSystemEvent.move:
           debugPrint('MediaLibrary.json was moved');
@@ -113,9 +110,31 @@ class MediaLibraryFileWatcher {
   /// Check if currently watching
   bool get isWatching => _isWatching;
 
+  String _fileSystemEventName(int type) {
+    // Map numeric FileSystemEvent.type into a human-readable name.
+    switch (type) {
+      case FileSystemEvent.create:
+        return 'create';
+      case FileSystemEvent.modify:
+        return 'modify';
+      case FileSystemEvent.delete:
+        return 'delete';
+      case FileSystemEvent.move:
+        return 'move';
+      default:
+        return 'unknown($type)';
+    }
+  }
+
   /// Dispose and clean up resources
   void dispose() {
-    stopWatching();
+    // stop watching
+    _watchSubscription?.cancel();
+    _watchSubscription = null;
+    _debounceTimer?.cancel();
+    _debounceTimer = null;
+    _isWatching = false;
+    debugPrint('Stopped watching MediaLibrary.json');
   }
 }
 
