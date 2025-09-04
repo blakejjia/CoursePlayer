@@ -35,8 +35,7 @@ class SettingPage extends ConsumerWidget {
           ListTile(
             leading: Icon(Icons.cached_outlined),
             title: Text("rebuild index"),
-            subtitle:
-                Text(state.dbRebuiltTime?.split('.')[0] ?? "not yet built"),
+            subtitle: Text(_formatDate(state.dbRebuiltTime)),
             onTap: () => ref.read(settingsProvider.notifier).rebuildDb(),
           ),
         ]),
@@ -111,4 +110,11 @@ class SettingPage extends ConsumerWidget {
       ],
     );
   }
+}
+
+// ================= utils ======================
+String _formatDate(DateTime? dt) {
+  if (dt == null) return "not yet built";
+  if (dt == DateTime.fromMicrosecondsSinceEpoch(0)) return "indexing songs...";
+  return "last index: ${dt.toString().split('.')[0]}";
 }

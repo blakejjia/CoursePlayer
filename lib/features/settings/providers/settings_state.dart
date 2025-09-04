@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class SettingsState {
   final String audioPath;
-  final String? dbRebuiltTime;
+  // DateTime.fromMicrosecondsSinceEpoch(0) means rebuilding...
+  final DateTime? dbRebuiltTime;
   final bool showCover;
   final bool cleanFileName;
   final Color seedColor;
@@ -20,7 +21,7 @@ class SettingsState {
   Map<String, dynamic> toMap() {
     return {
       'audioPath': audioPath,
-      'dbRebuiltTime': dbRebuiltTime,
+      'dbRebuiltTime': dbRebuiltTime?.toIso8601String(),
       'showCover': showCover,
       'cleanFileName': cleanFileName,
       'seedColor': seedColor.toARGB32(),
@@ -31,7 +32,9 @@ class SettingsState {
   factory SettingsState.fromMap(Map<String, dynamic> map) {
     return SettingsState(
       audioPath: map['audioPath'] as String,
-      dbRebuiltTime: map['dbRebuiltTime'] as String?,
+      dbRebuiltTime: map['dbRebuiltTime'] != null
+          ? DateTime.parse(map['dbRebuiltTime'] as String)
+          : null,
       cleanFileName: map['cleanFileName'] as bool,
       showCover: map['showCover'] as bool,
       seedColor: Color(map['seedColor'] as int),
@@ -41,7 +44,7 @@ class SettingsState {
 
   SettingsState copyWith({
     String? audioPath,
-    String? dbRebuiltTime,
+    DateTime? dbRebuiltTime,
     bool? cleanFileName,
     bool? showCover,
     Color? seedColor,

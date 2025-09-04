@@ -30,7 +30,9 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     final loaded = SettingsState(
       audioPath: prefs.getString(_kAudioPath) ?? fallback.audioPath,
-      dbRebuiltTime: prefs.getString(_kDbRebuiltTime),
+      dbRebuiltTime: prefs.getString(_kDbRebuiltTime) != null
+          ? DateTime.parse(prefs.getString(_kDbRebuiltTime)!)
+          : null,
       showCover: prefs.getBool(_kShowCover) ?? fallback.showCover,
       cleanFileName: prefs.getBool(_kCleanFileName) ?? fallback.cleanFileName,
       seedColor:
@@ -45,7 +47,8 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(_kAudioPath, s.audioPath);
     if (s.dbRebuiltTime != null) {
-      await prefs.setString(_kDbRebuiltTime, s.dbRebuiltTime!);
+      await prefs.setString(
+          _kDbRebuiltTime, s.dbRebuiltTime!.toIso8601String());
     }
     await prefs.setBool(_kShowCover, s.showCover);
     await prefs.setBool(_kCleanFileName, s.cleanFileName);
@@ -60,28 +63,29 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       state = next;
       await _persist(next);
     }
-    ref
-        .read(albumProvider.notifier)
-        .loaddb(ref.read(settingsProvider).audioPath);
+    // Avoid reading `settingsProvider` from inside its own notifier
+    // (causes a self-dependency). Use the current state instead.
+    ref.read(albumProvider.notifier).loaddb(state.audioPath);
   }
 
   void stateRebuilding() {
-    state = state.copyWith(dbRebuiltTime: "indexing songs...");
+    state =
+        state.copyWith(dbRebuiltTime: DateTime.fromMicrosecondsSinceEpoch(0));
   }
 
   void rebuildDb() {
-    if (state.dbRebuiltTime == "indexing songs...") {
+    if (state.dbRebuiltTime == DateTime.fromMicrosecondsSinceEpoch(0)) {
       return;
     }
-    state = state.copyWith(dbRebuiltTime: "indexing songs...");
+    state =
+        state.copyWith(dbRebuiltTime: DateTime.fromMicrosecondsSinceEpoch(0));
+    // Use `state.audioPath` instead of reading the provider to avoid
+    // a provider depending on itself.
     ref.read(albumProvider.notifier).loaddb(state.audioPath);
   }
 
   Future<void> updateRebuiltTime() async {
-    state = state.copyWith(dbRebuiltTime: "index finished");
-    await Future.delayed(const Duration(seconds: 1));
-    final next =
-        state.copyWith(dbRebuiltTime: "latest index: ${DateTime.now()}");
+    final next = state.copyWith(dbRebuiltTime: DateTime.now());
     state = next;
     await _persist(next);
   }

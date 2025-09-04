@@ -83,10 +83,10 @@ class Album {
     required this.title,
     required this.author,
     required this.sourcePath,
-    required this.lastPlayedTime,
-    required this.lastPlayedIndex,
+    this.lastPlayedTime,
+    this.lastPlayedIndex,
     required this.totalTracks,
-    required this.playedTracks,
+    this.playedTracks,
     this.songs,
     this.regexPattern,
   });
@@ -152,11 +152,11 @@ class Song {
   final String artist;
   final String title;
   final int length;
-  final String disc; // disc name
   final String path;
 
   // user fields
   final int? track;
+  final String? disc; // disc name
   final String? alias; // alias name
 
   // play history
@@ -169,7 +169,7 @@ class Song {
     required this.artist,
     required this.title,
     required this.length,
-    required this.disc,
+    this.disc,
     required this.path,
     this.track,
     this.alias,

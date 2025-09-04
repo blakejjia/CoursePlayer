@@ -105,7 +105,8 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
 
   Future<void> loaddb(String audioPath) async {
     state = state.copyWith(isLoading: true);
-    await ref.read(mediaLibraryProvider.notifier).rebuildAll(audioPath);
+    // Use the provider's combined rebuild which chooses partial vs full.
+    await ref.read(mediaLibraryProvider.notifier).rebuild(audioPath);
 
     final albums =
         await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();

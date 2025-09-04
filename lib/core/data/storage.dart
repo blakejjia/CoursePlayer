@@ -182,8 +182,6 @@ class MediaLibraryBatch {
     required String author,
     required String sourcePath,
     required List<Song> songs,
-    required int lastPlayedTime,
-    required int lastPlayedIndex,
   }) {
     final assigned = id ?? nextAlbumId();
     final dto = Album(
@@ -191,8 +189,6 @@ class MediaLibraryBatch {
       title: title,
       author: author,
       sourcePath: sourcePath,
-      lastPlayedTime: lastPlayedTime,
-      lastPlayedIndex: lastPlayedIndex,
       totalTracks: songs.length,
       playedTracks: 0,
       songs: songs,
@@ -208,6 +204,8 @@ class MediaLibraryBatch {
       return null;
     }
   }
+
+  List<Album> get albums => _root.albums;
 
   void deleteAlbumById(int id) {
     _root = _root.copyWith(

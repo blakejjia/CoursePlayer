@@ -1,15 +1,4 @@
-// TODO 1: algorithms here whether applied depends on settings bloc
-
 import 'package:lemon/core/data/models/models.dart';
-
-/// [washArtist] was applied when loading data from file
-/// this function is used to clean up the artist name
-String washArtist(String? artist) {
-  if (artist == null || artist.length > 30) {
-    return "";
-  }
-  return artist;
-}
 
 /// [sortSongs] was applied when loading data from file
 /// this function is used to sort the songs by title
@@ -28,8 +17,10 @@ void sortSongs(List<Song> songs) async {
       return 1;
     }
 
-    int partsComparison = a.disc.compareTo(b.disc);
-    if (partsComparison != 0) return partsComparison;
+    if (a.disc != null && b.disc != null) {
+      int partsComparison = a.disc!.compareTo(b.disc!);
+      if (partsComparison != 0) return partsComparison;
+    }
 
     int? aNumber = extractNumber(a.title);
     int? bNumber = extractNumber(b.title);

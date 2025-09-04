@@ -258,7 +258,6 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
                 displaySubtitle: song.artist,
                 displayDescription: album.title,
                 artist: song.artist,
-                genre: song.disc.isNotEmpty ? song.disc : null,
                 duration: Duration(seconds: song.length),
                 artUri: Uri.parse(
                     'asset:///assets/default_cover.jpeg'), // Add artwork for Android Auto
