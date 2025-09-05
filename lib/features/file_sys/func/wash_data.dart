@@ -42,41 +42,40 @@ int? extractNumber(String title) {
   return match != null ? int.parse(match.group(0)!) : null;
 }
 
-/// [cleanSongTitles] was applied when loading data from file
+/// [cleanSong] was applied when loading data from file
 /// this function is used to clean up the song title
 /// optional depends on user settings
-List<Song> cleanSongTitles(List<Song> songs) {
+List<Song> cleanSong(List<Song> songs) {
+  // init
   List<Song> cleanedSongs = List.from(songs);
 
-  String commonSubstring = findCommonSubstring(songs);
-
-  // Step 2: 清理每个歌曲的title
+  // 1. Clean title ===============
+  String commonSubstring = _findCommonSubstring(songs);
   return cleanedSongs.map((song) {
     String cleanedTitle = song.title;
 
-    // 去掉检测到的通用字符串
     if (commonSubstring.isNotEmpty) {
-      // 去掉开头的通用字符串
       if (cleanedTitle.startsWith(commonSubstring)) {
         cleanedTitle = cleanedTitle.substring(commonSubstring.length).trim();
       }
-      // 去掉结尾的通用字符串
       if (cleanedTitle.endsWith(commonSubstring)) {
         cleanedTitle = cleanedTitle
             .substring(0, cleanedTitle.length - commonSubstring.length)
             .trim();
       }
     }
-
-    // 去掉所有 "&" 字符
     cleanedTitle = cleanedTitle.replaceAll('&', '');
 
+    // 2. clean artist
+    String cleanedArtist = _washArtist(song.artist);
+
     // 返回一个新的 Song 实例，保持其他属性不变
-    return song.copyWith(title: cleanedTitle);
+    return song.copyWith(title: cleanedTitle, artist: cleanedArtist);
   }).toList();
 }
 
-String findCommonSubstring(List<Song> songs) {
+// helper functions =======================
+String _findCommonSubstring(List<Song> songs) {
   Map<String, int> substringCount = {};
 
   for (var song in songs) {
@@ -91,11 +90,18 @@ String findCommonSubstring(List<Song> songs) {
   }
 
   // 找出出现频率超过70%的字符串
-  int threshold = (songs.length * 0.7).ceil();
+  int threshold = (songs.length * 0.4).ceil();
   for (var entry in substringCount.entries) {
     if (entry.value >= threshold) {
       return entry.key;
     }
   }
   return '';
+}
+
+String _washArtist(String artist) {
+  if (artist.length > 10) return "";
+  String cleaned = artist.replaceAll(RegExp(r'[&/\\]'), ' ');
+  cleaned = cleaned.trim();
+  return cleaned;
 }

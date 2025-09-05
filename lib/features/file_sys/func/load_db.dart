@@ -10,6 +10,7 @@ import 'package:path/path.dart';
 import 'package:uuid/uuid.dart';
 import '../../settings/providers/settings_provider.dart';
 import '../../../main.dart' show albumRepositoryProvider;
+import 'wash_data.dart';
 
 Future<void> loadDb(
   String path,
@@ -85,7 +86,6 @@ Future<int> loadFolder(
 
   // ================= Create songs and insert album ==========================
   final songs = <Song>[];
-  final authors = <String>{};
   final total = audioFiles.length;
   var processed = 0;
 
@@ -96,7 +96,6 @@ Future<int> loadFolder(
       // read tags
       final tag = await AudioTags.read(file.path);
       final artist = _washArtist(tag?.albumArtist ?? '');
-      authors.add(artist);
 
       final song = Song(
         id: Uuid().v4(),
@@ -120,6 +119,19 @@ Future<int> loadFolder(
   }
 
   // create album
+  // apply optional cleaning and sorting helpers before inserting
+  try {
+    final cleaned = cleanSong(songs);
+    // sortSongs mutates the list and assigns track numbers
+    sortSongs(cleaned);
+    songs
+      ..clear()
+      ..addAll(cleaned);
+  } catch (e) {
+    debugPrint('Error cleaning/sorting songs: $e');
+  }
+  final authors =
+      songs.map((s) => s.artist).where((artist) => artist.isNotEmpty).toSet();
   repository.insertAlbum(
     title: basename(courseFolder.path),
     author: _determineAlbumArtist(authors),
