@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../audio_controller.dart';
+import 'audio_controller.dart';
 
 // Provider for the future of the audio handler
 final audioHandlerFutureProvider = FutureProvider<MyAudioHandler>((ref) async {

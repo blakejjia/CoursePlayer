@@ -25,6 +25,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
   StreamSubscription<PlaybackState>? _playbackSub;
   MediaItem? _lastMediaItem;
   PlaybackState _lastPlayback = PlaybackState();
+  Album? _currentAlbum;
   bool _initialized = false;
   Timer? _progressSaveTimer;
   Timer? _uiRefreshTimer;
@@ -83,8 +84,25 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
           _saveCurrentProgress();
           _lastProgressSave = now;
         }
-        // update latest played
-        ref.read(albumsProvider.notifier).updateHistory(current.album.id);
+        // update latest played if album context cached locally
+        final album = _currentAlbum;
+        if (album != null) {
+          ref.read(albumsProvider.notifier).updateHistory(album.id);
+        }
+      }
+    } else {
+      // If we were in the initial state and now have a mediaItem, create an ideal state.
+      if (mediaItem != null) {
+        // Create ideal state without album (album context is cached in _currentAlbum)
+        state = AudioPlayerIdeal(mediaItem, playbackState);
+        // If playing, possibly trigger a progress save / history update
+        if (playbackState.playing) {
+          _saveCurrentProgress();
+          final album = _currentAlbum;
+          if (album != null) {
+            ref.read(albumsProvider.notifier).updateHistory(album.id);
+          }
+        }
       }
     }
   }
@@ -128,13 +146,19 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
 
     final current = state;
     if (current is AudioPlayerIdeal && _lastMediaItem != null) {
+      final album = _currentAlbum;
+      if (album == null) {
+        // Album context not available; cannot save progress tied to an album.
+        debugPrint('Skipping progress save: album context is null');
+        return;
+      }
       try {
         final songId = int.parse(_lastMediaItem!.id);
         final progress = _lastPlayback.position.inSeconds;
 
         // Save song progress
         await ref.read(albumRepositoryProvider).updateSongProgress(
-              current.album.id,
+              album.id,
               songId.toString(),
               progress,
             );
@@ -226,6 +250,8 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
 
   Future<void> locateAudio({required Album album, String? songId}) async {
     debugPrint('Locating audio: album=${album.title}, songId=$songId');
+    // Cache current album to avoid reading other providers during stream callbacks
+    _currentAlbum = album;
     // init needed variables
     final buffer = album.songs;
     if (!_initialized || buffer.isEmpty) return;

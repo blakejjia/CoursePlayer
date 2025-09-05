@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:lemon/core/data/models/models.dart';
 
 class SongListState {
@@ -15,9 +13,6 @@ class SongListState {
 
   SongListState copyWith({
     Album? album,
-    List<Song>? buffer,
-    Uint8List? picture,
-    bool? isLoading,
     String? currentPlayingSongId,
   }) {
     return SongListState(

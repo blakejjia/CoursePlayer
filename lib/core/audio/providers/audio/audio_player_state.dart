@@ -1,5 +1,4 @@
 import 'package:audio_service/audio_service.dart';
-import 'package:lemon/core/data/models/models.dart';
 
 /// Base type for audio player state
 class AudioPlayerState {}
@@ -13,19 +12,14 @@ class AudioPlayerIdeal extends AudioPlayerState {
   /// Current playback state
   final PlaybackState playbackState;
 
-  /// Current album (playlist) context
-  final Album album;
-
-  AudioPlayerIdeal(this.mediaItem, this.playbackState, this.album);
+  AudioPlayerIdeal(this.mediaItem, this.playbackState);
 
   AudioPlayerIdeal copyWith({
     MediaItem? mediaItem,
     PlaybackState? playbackState,
-    Album? album,
   }) =>
       AudioPlayerIdeal(
         mediaItem ?? this.mediaItem,
         playbackState ?? this.playbackState,
-        album ?? this.album,
       );
 }

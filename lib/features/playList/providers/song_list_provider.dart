@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 import 'package:lemon/core/data/models/models.dart';
@@ -6,11 +7,11 @@ import 'package:lemon/main.dart';
 
 class SongListNotifier extends StateNotifier<SongListState> {
   final Ref ref;
-  late final void Function() _removeAudioListener;
+  late final ProviderSubscription<AudioPlayerState> _listener;
 
   SongListNotifier(this.ref) : super(const SongListState(album: null)) {
     // Listen to audio player provider and update current playing song id
-    final remove = ref.listen<AudioPlayerState>(
+    _listener = ref.listen<AudioPlayerState>(
       audioPlayerProvider,
       (previous, next) {
         // Only handle ideal state which contains mediaItem
@@ -18,6 +19,7 @@ class SongListNotifier extends StateNotifier<SongListState> {
           final id = next.mediaItem.id;
           // update state only if changed
           if (state.currentPlayingSongId != id) {
+            debugPrint('Now playing song id: $id');
             state = state.copyWith(currentPlayingSongId: id);
           }
         } else {
@@ -28,7 +30,6 @@ class SongListNotifier extends StateNotifier<SongListState> {
         }
       },
     );
-    _removeAudioListener = () => remove.close();
   }
 
   Future<void> locateAlbum(Album album) async {
@@ -54,7 +55,7 @@ class SongListNotifier extends StateNotifier<SongListState> {
 
   @override
   void dispose() {
-    _removeAudioListener();
+    _listener.close();
     super.dispose();
   }
 }
