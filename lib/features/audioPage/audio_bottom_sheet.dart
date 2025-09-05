@@ -28,11 +28,11 @@ class AudioBottomSheet extends ConsumerWidget {
       ),
       child: Container(
         color: Theme.of(context).colorScheme.surface,
-        height: 71,
+        height: 80,
         child: Column(
           children: [
             SizedBox(
-              height: 3,
+              height: 4,
               child: LinearProgressIndicator(value: progress),
             ),
             ListTile(

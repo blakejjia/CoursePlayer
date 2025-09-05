@@ -4,6 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/audioPage/utils/time_formatter.dart';
 
 import '../../core/audio/providers/audio/audio_player_provider.dart';
+import '../../core/audio/providers/audio/audio_handler_provider.dart';
+import 'widgets/speed_selection_bs.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
 
 part 'widgets/buttons.dart';
 part 'widgets/progress_indicator.dart';
@@ -40,7 +43,7 @@ class _PlayInfos extends ConsumerWidget {
     final state = ref.watch(audioPlayerProvider);
     if (state is AudioPlayerIdeal) {
       return Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
         child: Text(
           state.mediaItem.title,
           style: Theme.of(context).textTheme.titleMedium,

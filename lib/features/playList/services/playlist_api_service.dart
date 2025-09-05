@@ -21,7 +21,8 @@ class PlaylistApiService {
     final url = Uri.parse('$baseUrl$endpoint');
 
     debugPrint('🌐 Making API request to: $url');
-    debugPrint('📤 Request body: ${jsonEncode(body)}');
+    final prettyBody = const JsonEncoder.withIndent('  ').convert(body);
+    debugPrint('📤 Request body:\n$prettyBody', wrapWidth: 1024);
 
     try {
       final response = await http.post(

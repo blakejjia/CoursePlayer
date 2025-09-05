@@ -15,9 +15,11 @@ class PlayerButtons extends ConsumerWidget {
       spacing: 12.0,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
+        _DocumentButton(),
         _PreviousButton(),
         _PlayPauseButton(),
         _NextButton(),
+        _SpeedButton(),
       ],
     );
   }
@@ -64,8 +66,6 @@ class _PlayPauseButton extends ConsumerWidget {
   }
 }
 
-// Unused optional controls (share, rewind, speed) were removed during migration.
-
 class _PreviousButton extends ConsumerWidget {
   const _PreviousButton();
 
@@ -73,7 +73,7 @@ class _PreviousButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
       icon: Icon(Icons.skip_previous_rounded,
-          size: 32, color: Theme.of(context).colorScheme.onSurface),
+          size: 40, color: Theme.of(context).colorScheme.onSurface),
       onPressed: () {
         ref.read(audioPlayerProvider.notifier).previous();
         HapticFeedback.lightImpact();
@@ -89,10 +89,57 @@ class _NextButton extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return IconButton(
       icon: Icon(Icons.skip_next_rounded,
-          size: 32, color: Theme.of(context).colorScheme.onSurface),
+          size: 40, color: Theme.of(context).colorScheme.onSurface),
       onPressed: () {
         ref.read(audioPlayerProvider.notifier).next();
         HapticFeedback.lightImpact();
+      },
+    );
+  }
+}
+
+class _SpeedButton extends ConsumerWidget {
+  const _SpeedButton();
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(audioPlayerProvider);
+    if (state is! AudioPlayerIdeal) {
+      return const SizedBox.shrink();
+    }
+
+    return IconButton(
+      icon: Icon(Icons.speed_outlined, size: 32),
+      onPressed: () {
+        showModalBottomSheet(
+          context: context,
+          showDragHandle: true,
+          useSafeArea: true,
+          builder: (context) => SpeedSelectionBS(
+            initialSpeed: state.playbackState.speed,
+            onSpeedSelected: (newSpeed) async {
+              await ref.read(audioPlayerProvider.notifier).setSpeed(newSpeed);
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _DocumentButton extends ConsumerWidget {
+  const _DocumentButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final state = ref.watch(audioPlayerProvider);
+    if (state is! AudioPlayerIdeal) {
+      return const SizedBox.shrink();
+    }
+    return IconButton(
+      icon: Icon(Icons.description_outlined,
+          size: 32, color: Theme.of(context).colorScheme.onSurface),
+      onPressed: () {
+        // Handle document button press
       },
     );
   }

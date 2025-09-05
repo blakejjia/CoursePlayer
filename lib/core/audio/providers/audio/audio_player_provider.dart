@@ -153,17 +153,17 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
         return;
       }
       try {
-        final songId = int.parse(_lastMediaItem!.id);
+        final songId = _lastMediaItem!.id; // keep as String (may be UUID)
         final progress = _lastPlayback.position.inSeconds;
 
-        // Save song progress
+        // Save song progress to repository (repo expects songId as String)
         await ref.read(albumRepositoryProvider).updateSongProgress(
               album.id,
-              songId.toString(),
+              songId,
               progress,
             );
 
-        // Update in-memory progress for UI
+        // Update in-memory progress for UI (provider now uses String keys)
         ref
             .read(currentSongProgressProvider.notifier)
             .updateProgress(songId, progress);

@@ -1,6 +1,5 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/widgets/popup_actions.dart';
-import 'package:lemon/features/playList/widgets/tiles.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -58,13 +57,13 @@ class SongsListPage extends ConsumerWidget {
                       style: Theme.of(context).textTheme.bodyMedium,
                     ),
                   ),
-                  ElevatedButton(
+                  OutlinedButton(
                     onPressed: () {
                       ref.read(songListProvider.notifier).playSong(
                             album.lastPlayedSong!,
                           );
                     },
-                    child: Text(contiButton(state)),
+                    child: Text(continuePrompt(state)),
                   ),
                 ],
               );
@@ -87,17 +86,22 @@ class _SongTile extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return InkWell(
-      onTap: () {
-        ref.read(songListProvider.notifier).playSong(song);
-      },
-      child: Builder(builder: (context) {
-        final audioState = ref.watch(songListProvider).currentPlayingSongId;
-        if (audioState == song.id) {
-          return selectIndicator(context, song);
-        }
-        return songTileNormal(context, song);
-      }),
-    );
+    return InkWell(onTap: () {
+      ref.read(songListProvider.notifier).playSong(song);
+    }, child: Builder(builder: (context) {
+      final audioState = ref.watch(songListProvider).currentPlayingSongId;
+      return Container(
+        color: audioState == song.id
+            ? Theme.of(context).colorScheme.primaryFixed
+            : Colors.transparent,
+        child: ListTile(
+            leading: song.track != null
+                ? Text("${song.track}",
+                    style: Theme.of(context).textTheme.titleMedium)
+                : null,
+            title: Text(formatTitle(song)),
+            subtitle: Text(formatSubtitle(song))),
+      );
+    }));
   }
 }

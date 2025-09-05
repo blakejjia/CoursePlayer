@@ -6,10 +6,6 @@ import 'package:lemon/core/data/models/models.dart';
 /// - remove file extension
 String formatTitle(Song song) {
   String title = song.title;
-  int lastDotIndex = title.lastIndexOf('.');
-  if (lastDotIndex != -1) {
-    title = title.substring(0, lastDotIndex);
-  }
   if (title.length > 20) {
     return '${title.substring(0, 20)}...';
   }
@@ -40,12 +36,13 @@ String formatSubtitle(Song song) {
     }
   }();
   // format artist
-  String artist = song.artist;
+  String artist = song.artist.length > 10 ? '' : song.artist;
+
   // return formatted subtitle
   return '${playedPercentage.isNotEmpty ? '$playedPercentage | ' : ''}${artist.isNotEmpty ? '$artist | ' : ''}$duration';
 }
 
-String contiButton(SongListState state) {
+String continuePrompt(SongListState state) {
   Song? song = state.album?.lastPlayedSong;
   if (song == null) {
     return "start playing";

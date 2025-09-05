@@ -20,7 +20,7 @@ class FindRegexDialog extends ConsumerStatefulWidget {
 class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
   @override
   Widget build(BuildContext context) {
-    final findRegexState = ref.watch(findRegexProvider);
+    final findRegexState = ref.watch(findRegexServiceProvider);
 
     return AlertDialog(
       title: const Text('Find Regex Pattern'),
@@ -30,12 +30,6 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Analyze ${widget.album.songs.length} songs in "${widget.album.title}" to find a regex pattern that can split filenames into sequence numbers and clean titles.',
-              style: Theme.of(context).textTheme.bodyMedium,
-            ),
-            const SizedBox(height: 16),
-
             // Show sample file names
             Text(
               'Sample files:',
@@ -78,9 +72,10 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
           onPressed: () => Navigator.of(context).pop(),
           child: const Text('Cancel'),
         ),
-        ElevatedButton(
-          onPressed:
-              findRegexState.isLoading ? null : () => _findRegexPattern(),
+        OutlinedButton(
+          onPressed: findRegexState.isLoading
+              ? null
+              : () => _findRegexPattern(widget.album),
           child: findRegexState.isLoading
               ? const SizedBox(
                   width: 16,
@@ -90,7 +85,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
               : const Text('Find Pattern'),
         ),
         if (findRegexState.value != null)
-          ElevatedButton(
+          OutlinedButton(
             onPressed: () => _applyRegexPattern(findRegexState.value!),
             child: const Text('Apply Pattern'),
           ),
@@ -148,27 +143,6 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          'Found Pattern:',
-          style: Theme.of(context).textTheme.titleSmall,
-        ),
-        const SizedBox(height: 8),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Theme.of(context).colorScheme.primaryContainer,
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Text(
-            response.regExp,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  fontFamily: 'monospace',
-                  color: Theme.of(context).colorScheme.onPrimaryContainer,
-                ),
-          ),
-        ),
-        const SizedBox(height: 12),
-
         // Show test results
         Text(
           'Pattern Test Results:',
@@ -176,7 +150,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
         ),
         const SizedBox(height: 8),
         ...widget.album.songs.take(3).map((song) {
-          final testResult = response.testPattern(song.title);
+          final testResult = response.applyPattern(song.title);
           return Padding(
             padding: const EdgeInsets.only(bottom: 4),
             child: Row(
@@ -190,7 +164,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
                 Expanded(
                   child: Text(
                     testResult != null
-                        ? '${song.title} → "${testResult['sequence']}" + "${testResult['title']}"'
+                        ? '${song.title} → "${testResult['trackRef']}" + "${testResult['alias']}"'
                         : '${song.title} → No match',
                     style: Theme.of(context).textTheme.bodySmall,
                   ),
@@ -203,17 +177,14 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
     );
   }
 
-  void _findRegexPattern() {
-    final fileNames = widget.album.songs.map((song) => song.title).toList();
-    ref.read(findRegexProvider.notifier).findRegexFromFiles(fileNames);
+  void _findRegexPattern(Album album) {
+    ref.read(findRegexServiceProvider).findAlbumRegex(album);
   }
 
   void _applyRegexPattern(FindFilenameRegResponse response) {
-    // TODO: Implement applying the regex pattern to clean up song titles
-    // This would involve updating the song database with cleaned titles
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
-        content: Text('Pattern applied! Regex: ${response.regExp}'),
+        content: Text('Pattern applied! Regex: ${response.toString()}'),
         backgroundColor: Colors.green,
       ),
     );

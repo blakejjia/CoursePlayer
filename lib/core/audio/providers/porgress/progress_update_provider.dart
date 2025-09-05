@@ -17,19 +17,19 @@ final progressUpdateProvider =
 
 /// A provider that tracks the current song's progress
 /// This provides the latest progress without requiring a full song list reload
-class CurrentSongProgressNotifier extends StateNotifier<Map<int, int>> {
+class CurrentSongProgressNotifier extends StateNotifier<Map<String, int>> {
   CurrentSongProgressNotifier() : super({});
 
-  void updateProgress(int songId, int progressInSeconds) {
+  void updateProgress(String songId, int progressInSeconds) {
     state = {...state, songId: progressInSeconds};
   }
 
-  int getProgress(int songId) {
+  int getProgress(String songId) {
     return state[songId] ?? 0;
   }
 }
 
 final currentSongProgressProvider =
-    StateNotifierProvider<CurrentSongProgressNotifier, Map<int, int>>((ref) {
+    StateNotifierProvider<CurrentSongProgressNotifier, Map<String, int>>((ref) {
   return CurrentSongProgressNotifier();
 });

@@ -25,39 +25,87 @@ class _PlayerProgressBarState extends ConsumerState<PlayerProgressBar> {
 
     return Column(
       children: [
-        // The slider ======================
-        Slider(
-          value: _dragMs != -1 ? _dragMs.toDouble() : currentMs.toDouble(),
-          secondaryTrackValue: bufferedMs,
-          min: 0,
-          max: totalMs.toDouble(),
-          onChanged: (v) {
-            setState(() {
-              _dragMs = v.round();
-            });
-          },
-          onChangeEnd: (v) {
-            ref
-                .read(audioPlayerProvider.notifier)
-                .seekTo(Duration(milliseconds: v.round()));
-            setState(() {
-              _dragMs = -1;
-            });
-          },
+        Stack(
+          children: [
+            // ========== The slider ======================
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Slider(
+                value:
+                    _dragMs != -1 ? _dragMs.toDouble() : currentMs.toDouble(),
+                secondaryTrackValue: bufferedMs,
+                min: 0,
+                max: totalMs.toDouble(),
+                onChanged: (v) {
+                  setState(() {
+                    _dragMs = v.round();
+                  });
+                },
+                onChangeEnd: (v) {
+                  ref
+                      .read(audioPlayerProvider.notifier)
+                      .seekTo(Duration(milliseconds: v.round()));
+                  setState(() {
+                    _dragMs = -1;
+                  });
+                },
+              ),
+            ),
+            // ===== buttons ========
+            Row(
+              children: [
+                // -10s button (fixed size, no unconstrained expansion)
+                IconButton(
+                  icon: const Icon(Icons.replay_10_outlined),
+                  onPressed: () {
+                    final newPosition = state.playbackState.position -
+                        const Duration(seconds: 10);
+                    ref.read(audioPlayerProvider.notifier).seekTo(newPosition);
+                  },
+                  iconSize: 32,
+                ),
+                Expanded(
+                  child: Container(),
+                ),
+                // +10s button (constrained to avoid IconButton's default min size)
+                IconButton(
+                  icon: const Icon(Icons.forward_10_outlined),
+                  onPressed: () {
+                    final newPosition = state.playbackState.position +
+                        const Duration(seconds: 10);
+                    ref.read(audioPlayerProvider.notifier).seekTo(newPosition);
+                  },
+                  iconSize: 32,
+                ),
+              ],
+            ),
+          ],
         ),
 
         // The time indicators ======================
         Row(
           children: [
-            Text(
-              formatDuration(
-                  Duration(milliseconds: _dragMs != -1 ? _dragMs : currentMs)),
-              style: Theme.of(context).textTheme.bodySmall,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                formatDuration(Duration(
+                    milliseconds: _dragMs != -1 ? _dragMs : currentMs)),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
             Expanded(child: Container()),
-            Text(
-              formatDuration(Duration(milliseconds: totalMs)),
-              style: Theme.of(context).textTheme.bodySmall,
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
+              child: Text(
+                formatDuration(Duration(milliseconds: totalMs)),
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         )
