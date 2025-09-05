@@ -69,8 +69,8 @@ class Album {
   final String sourcePath;
   final List<Song> songs;
 
-  // business logic field
-  final String? regexPattern;
+  // user settings
+  final double? playSpeed;
 
   const Album({
     required this.id,
@@ -78,7 +78,7 @@ class Album {
     required this.author,
     required this.sourcePath,
     required this.songs,
-    this.regexPattern,
+    this.playSpeed,
   });
 
   // basic info - totalTrackNum
@@ -117,7 +117,7 @@ class Album {
     String? author,
     String? sourcePath,
     List<Song>? songs,
-    String? regexPattern,
+    double? playSpeed,
   }) =>
       Album(
         id: id ?? this.id,
@@ -125,7 +125,7 @@ class Album {
         author: author ?? this.author,
         sourcePath: sourcePath ?? this.sourcePath,
         songs: songs ?? this.songs,
-        regexPattern: regexPattern ?? this.regexPattern,
+        playSpeed: playSpeed ?? this.playSpeed,
       );
 
   Map<String, dynamic> toJson() => {
@@ -133,13 +133,9 @@ class Album {
         'title': title,
         'author': author,
         'sourcePath': sourcePath,
-        'lastPlayedTime': lastPlayedTime,
-        'totalTracks': totalTrackNum,
-        'playedTracks': playedTrackNum,
         'songs': songs.map((e) => e.toJson()).toList(),
-        'regexPattern': regexPattern,
+        'playSpeed': playSpeed,
       };
-
   static Album fromJson(Map<String, dynamic> json) => Album(
         id: json['id'] as String,
         title: json['title'] as String,
@@ -149,7 +145,7 @@ class Album {
             .map((e) => Song.fromJson(e as Map<String, dynamic>))
             .toList()
             .cast<Song>(),
-        regexPattern: json['regexPattern'] as String?,
+        playSpeed: (json['playSpeed'] as num?)?.toDouble(),
       );
 }
 
@@ -225,7 +221,6 @@ class Song {
         'lastPlayed': lastPlayed?.toIso8601String(),
         'addedAt': addedAt?.toIso8601String(),
       };
-
   static Song fromJson(Map<String, dynamic> json) => Song(
         id: json['id'] as String,
         artist: json['artist'] as String,

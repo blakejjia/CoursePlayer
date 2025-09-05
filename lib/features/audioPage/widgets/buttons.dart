@@ -116,8 +116,14 @@ class _SpeedButton extends ConsumerWidget {
           useSafeArea: true,
           builder: (context) => SpeedSelectionBS(
             initialSpeed: state.playbackState.speed,
-            onSpeedSelected: (newSpeed) async {
+            onSpeedSelected: (newSpeed, applyToAlbum) async {
               await ref.read(audioPlayerProvider.notifier).setSpeed(newSpeed);
+              if (applyToAlbum) {
+                await ref.read(albumRepositoryProvider).updateAlbumPlaySpeed(
+                      state.mediaItem.album!,
+                      newSpeed,
+                    );
+              }
             },
           ),
         );

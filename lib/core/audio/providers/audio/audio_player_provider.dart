@@ -212,12 +212,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     }
   }
 
-  Future<void> setSpeed(double currentSpeed) async {
+  Future<void> setSpeed(double newSpeed) async {
     if (!_initialized) return;
-    final speedOptions = <double>[1.0, 1.5, 1.7, 1.8, 2.0];
-    final currentIndex = speedOptions.indexOf(currentSpeed);
-    final proposed = speedOptions[(currentIndex + 1) % speedOptions.length];
-    await _audioHandler.setSpeed(proposed);
+    await _audioHandler.setSpeed(newSpeed);
   }
 
   Future<void> finished() async {
@@ -287,6 +284,11 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
       index: index, // Pass the actual index of the selected song
       position: position,
     );
+
+    // Apply playback speed
+    final settings = ref.read(settingsProvider);
+    final speedToSet = album.playSpeed ?? settings.defaultPlaybackSpeed;
+    await _audioHandler.setSpeed(speedToSet);
   }
 
   Future<void> toggleShuffle() async {

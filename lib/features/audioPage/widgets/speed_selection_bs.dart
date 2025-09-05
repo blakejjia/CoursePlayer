@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:lemon/core/data/models/models.dart';
 
 class SpeedSelectionBS extends StatefulWidget {
   final double initialSpeed;
-  final ValueChanged<double> onSpeedSelected;
+  final void Function(double, bool) onSpeedSelected;
+  final Album? album;
 
   const SpeedSelectionBS({
     super.key,
     required this.initialSpeed,
     required this.onSpeedSelected,
+    this.album,
   });
 
   @override
@@ -97,7 +100,7 @@ class _SpeedSelectionBSState extends State<SpeedSelectionBS> {
             icon: const Icon(Icons.check),
             label: const Text('Apply this speed'),
             onPressed: () {
-              widget.onSpeedSelected(_speed);
+              widget.onSpeedSelected(_speed, _applyToAlbum);
               Navigator.of(context).pop();
             },
           ),
