@@ -1,125 +1,99 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:lemon/features/file_sys/providers/filesys_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:lemon/main.dart';
 
-class LatestPlayed {
-  final Album album;
-  final int songId;
-
-  const LatestPlayed(this.album, this.songId);
-
-  Map<String, dynamic> toMap() => {
-        'album': {
-          'id': album.id,
-          'title': album.title,
-          'author': album.author,
-          'sourcePath': album.sourcePath,
-          'lastPlayedTime': album.lastPlayedTime,
-          'lastPlayedIndex': album.lastPlayedIndex,
-          'totalTracks': album.totalTracks,
-          'playedTracks': album.playedTracks,
-        },
-        'songId': songId,
-      };
-
-  factory LatestPlayed.fromMap(Map<String, dynamic> map) => LatestPlayed(
-        Album(
-          id: map['album']['id'] as int,
-          title: map['album']['title'] as String,
-          author: map['album']['author'] as String,
-          sourcePath: map['album']['sourcePath'] as String,
-          lastPlayedTime: map['album']['lastPlayedTime'] as int?,
-          lastPlayedIndex: map['album']['lastPlayedIndex'] as int?,
-          totalTracks: map['album']['totalTracks'] as int,
-          playedTracks: map['album']['playedTracks'] as int,
-        ),
-        map['songId'] as int,
-      );
-}
-
-class AlbumState {
+class AlbumsState {
   final bool isLoading;
   final bool isGridView;
   final List<Album> albums;
-  final Map<dynamic, dynamic> info;
-  final LatestPlayed? latestPlayed;
+  final String? lastPlayedAlbumId;
+  final Map<String, dynamic>? info;
 
-  const AlbumState({
+  const AlbumsState({
     required this.isLoading,
     required this.isGridView,
     required this.albums,
-    required this.info,
-    this.latestPlayed,
+    this.lastPlayedAlbumId,
+    this.info,
   });
 
-  const AlbumState.initial()
+  const AlbumsState.initial()
       : isLoading = true,
         isGridView = true,
         albums = const [],
-        info = const {},
-        latestPlayed = null;
+        lastPlayedAlbumId = null,
+        info = null;
 
-  AlbumState copyWith({
+  AlbumsState copyWith({
     bool? isLoading,
     bool? isGridView,
     List<Album>? albums,
-    Map<dynamic, dynamic>? info,
-    LatestPlayed? latestPlayed,
+    String? lastPlayedAlbumId,
+    Map<String, dynamic>? info,
   }) =>
-      AlbumState(
+      AlbumsState(
         isLoading: isLoading ?? this.isLoading,
         isGridView: isGridView ?? this.isGridView,
         albums: albums ?? this.albums,
+        lastPlayedAlbumId: lastPlayedAlbumId ?? this.lastPlayedAlbumId,
         info: info ?? this.info,
-        latestPlayed: latestPlayed ?? this.latestPlayed,
       );
 }
 
-class AlbumNotifier extends StateNotifier<AlbumState> {
+class AlbumsNotifier extends StateNotifier<AlbumsState> {
   static const _kIsGridView = 'album.isGridView';
   final Ref ref;
 
-  AlbumNotifier(this.ref) : super(const AlbumState.initial()) {
+  AlbumsNotifier(this.ref) : super(const AlbumsState.initial()) {
     _bootstrap();
   }
 
+  // init
   Future<void> _bootstrap() async {
     await _restoreIsGridView();
     await load();
   }
 
+  // ================== business logic ===================
+  // view
   void toggleView() {
     final next = !state.isGridView;
     state = state.copyWith(isGridView: next);
     _persistIsGridView(next);
   }
 
+  // data
   Future<void> load() async {
     state = state.copyWith(isLoading: true);
     final albums =
         await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
-    state = state.copyWith(isLoading: false, albums: albums, info: {});
+    state = state.copyWith(isLoading: false, albums: albums);
   }
 
   Future<void> loaddb(String audioPath) async {
     state = state.copyWith(isLoading: true);
-    // Use the provider's combined rebuild which chooses partial vs full.
     await ref.read(mediaLibraryProvider.notifier).rebuild(audioPath);
-
-    final albums =
-        await ref.read(albumRepositoryProvider).getAlbumsByLastPlayedTime();
-    state = state.copyWith(isLoading: false, albums: albums, info: {});
+    load();
   }
 
-  void updateHistory(LatestPlayed history) {
-    state = state.copyWith(latestPlayed: history);
-    ref
-        .read(albumRepositoryProvider)
-        .updateLastPlayedTimeWithId(history.album.id);
+  // audio
+  void updateHistory(String albumId) {
+    state = state.copyWith(lastPlayedAlbumId: albumId);
   }
 
+  void playAlbumById(String albumId, {String? songId}) {
+    final album = state.albums.firstWhere((album) => album.id == albumId);
+    songId ??= album.lastPlayedSong?.id;
+    ref.read(audioPlayerProvider.notifier).locateAudio(
+          album: album,
+          songId: songId,
+        );
+  }
+
+  // ================= persist =================
   Future<void> _restoreIsGridView() async {
     final prefs = await SharedPreferences.getInstance();
     final stored = prefs.getBool(_kIsGridView);
@@ -134,5 +108,5 @@ class AlbumNotifier extends StateNotifier<AlbumState> {
   }
 }
 
-final albumProvider = StateNotifierProvider<AlbumNotifier, AlbumState>(
-    (ref) => AlbumNotifier(ref));
+final albumsProvider = StateNotifierProvider<AlbumsNotifier, AlbumsState>(
+    (ref) => AlbumsNotifier(ref));

@@ -46,10 +46,9 @@ String formatSubtitle(Song song) {
 }
 
 String contiButton(SongListState state) {
-  int songId = state.album!.lastPlayedIndex ?? -1;
-  if (songId == -1) {
+  Song? song = state.album?.lastPlayedSong;
+  if (song == null) {
     return "start playing";
   }
-  Song? song = state.buffer?.firstWhere((song) => song.id == songId);
-  return "continue: ${formatTitle(song!)}";
+  return "continue: ${formatTitle(song)}";
 }

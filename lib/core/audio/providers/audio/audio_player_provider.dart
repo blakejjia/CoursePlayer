@@ -11,7 +11,7 @@ import 'package:lemon/core/data/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
-import '../../audio_controller.dart';
+import 'audio_controller.dart';
 import 'audio_handler_provider.dart';
 import '../porgress/progress_update_provider.dart';
 
@@ -84,9 +84,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
           _lastProgressSave = now;
         }
         // update latest played
-        ref.read(albumProvider.notifier).updateHistory(
-              LatestPlayed(current.album, int.parse(mediaItem.id)),
-            );
+        ref.read(albumsProvider.notifier).updateHistory(current.album.id);
       }
     }
   }
@@ -135,15 +133,10 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
         final progress = _lastPlayback.position.inSeconds;
 
         // Save song progress
-        await ref.read(songRepositoryProvider).updateSongProgress(
-              songId,
+        await ref.read(albumRepositoryProvider).updateSongProgress(
+              current.album.id,
+              songId.toString(),
               progress,
-            );
-
-        // Save album's last played song
-        await ref.read(albumRepositoryProvider).updateLastPlayedSongWithId(
-              int.parse(_lastMediaItem!.album!),
-              songId,
             );
 
         // Update in-memory progress for UI
@@ -154,7 +147,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
         // Refresh UI if requested (for user-initiated saves)
         if (refreshUI) {
           ref.read(songListProvider.notifier).refreshSongs();
-          ref.read(albumProvider.notifier).load();
+          ref.read(albumsProvider.notifier).load();
         }
 
         debugPrint('Progress saved: ${progress}s for song $songId');
@@ -231,27 +224,23 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
     await _audioHandler.rewind();
   }
 
-  Future<void> locateAudio(Album album, int songId,
-      {List<Song>? buffer}) async {
-    if (!_initialized) return;
-    List<Song>? songs = buffer ??
-        await ref.read(songRepositoryProvider).getSongsByAlbumId(album.id);
-    if (songs == null || songs.isEmpty) return;
-
-    final index = songs.indexWhere((s) => s.id == songId);
-    if (index == -1) return; // Song not found
-
-    final selectedSong = songs[index];
+  Future<void> locateAudio({required Album album, String? songId}) async {
+    debugPrint('Locating audio: album=${album.title}, songId=$songId');
+    // init needed variables
+    final buffer = album.songs;
+    if (!_initialized || buffer.isEmpty) return;
+    int index = 0;
+    if (songId != null) {
+      index = buffer.indexWhere((s) => s.id == songId);
+    }
+    final selectedSong = buffer[index];
     final position = selectedSong.playedInSecond;
 
-    // set an ideal baseline state so UI can render quickly
-    state =
-        AudioPlayerIdeal(MediaItem(id: '', title: ''), PlaybackState(), album);
-
-    await _audioHandler.locateAudio(
-      songs
+    // Locate and play
+    await _audioHandler.playAudio(
+      buffer
           .map((song) => MediaItem(
-                id: song.id.toString(),
+                id: song.id,
                 title: song.title,
                 album: album.title, // Use album title instead of ID
                 displayTitle: song.title,
@@ -259,8 +248,8 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
                 displayDescription: album.title,
                 artist: song.artist,
                 duration: Duration(seconds: song.length),
-                artUri: Uri.parse(
-                    'asset:///assets/default_cover.jpeg'), // Add artwork for Android Auto
+                // TODO: add artwork here
+                // artUri: Uri.parse('asset:///assets/default_cover.jpeg'),
                 extras: {
                   'albumId': album.id,
                   'songPath': song.path,
@@ -268,9 +257,9 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
                 },
               ))
           .toList(),
-      songs.map((song) => song.path).toList(),
-      index, // Pass the actual index of the selected song
-      position,
+      buffer.map((song) => song.path).toList(),
+      index: index, // Pass the actual index of the selected song
+      position: position,
     );
   }
 

@@ -63,17 +63,11 @@ class MediaLibraryFileRoot {
 
 class Album {
   // basic information
-  final int id;
+  final String id;
   final String title;
   final String author;
   final String sourcePath;
-  final int totalTracks;
-  final List<Song>? songs;
-
-// user history
-  final int? lastPlayedTime;
-  final int? lastPlayedIndex;
-  final int? playedTracks;
+  final List<Song> songs;
 
   // business logic field
   final String? regexPattern;
@@ -83,23 +77,45 @@ class Album {
     required this.title,
     required this.author,
     required this.sourcePath,
-    this.lastPlayedTime,
-    this.lastPlayedIndex,
-    required this.totalTracks,
-    this.playedTracks,
-    this.songs,
+    required this.songs,
     this.regexPattern,
   });
 
+  // basic info - totalTrackNum
+  int get totalTrackNum {
+    return songs.length;
+  }
+
+  // user history - lastPlayedSong
+  Song? get lastPlayedSong {
+    final played = songs.where((s) => s.lastPlayed != null).toList();
+    if (played.isEmpty) return null;
+    played.sort((a, b) => b.lastPlayed!.compareTo(a.lastPlayed!));
+    return played.first;
+  }
+
+  //  user history - lastPlayedTime
+  int? get lastPlayedTime {
+    final song = lastPlayedSong;
+    if (song == null) return null;
+    return song.lastPlayed?.millisecondsSinceEpoch;
+  }
+
+  // user history - playedTrackNum
+  int? get playedTrackNum {
+    return songs
+        .where((s) =>
+            s.lastPlayed != null ||
+            (s.playedInSecond != null && s.playedInSecond! > 0))
+        .length;
+  }
+
   Album copyWith({
-    int? id,
+    // basic information
+    String? id,
     String? title,
     String? author,
     String? sourcePath,
-    int? lastPlayedTime,
-    int? lastPlayedIndex,
-    int? totalTracks,
-    int? playedTracks,
     List<Song>? songs,
     String? regexPattern,
   }) =>
@@ -108,10 +124,6 @@ class Album {
         title: title ?? this.title,
         author: author ?? this.author,
         sourcePath: sourcePath ?? this.sourcePath,
-        lastPlayedTime: lastPlayedTime ?? this.lastPlayedTime,
-        lastPlayedIndex: lastPlayedIndex ?? this.lastPlayedIndex,
-        totalTracks: totalTracks ?? this.totalTracks,
-        playedTracks: playedTracks ?? this.playedTracks,
         songs: songs ?? this.songs,
         regexPattern: regexPattern ?? this.regexPattern,
       );
@@ -122,26 +134,18 @@ class Album {
         'author': author,
         'sourcePath': sourcePath,
         'lastPlayedTime': lastPlayedTime,
-        'lastPlayedIndex': lastPlayedIndex,
-        'totalTracks': totalTracks,
-        'playedTracks': playedTracks,
-        'songs': songs?.map((e) => e.toJson()).toList(),
+        'totalTracks': totalTrackNum,
+        'playedTracks': playedTrackNum,
+        'songs': songs.map((e) => e.toJson()).toList(),
         'regexPattern': regexPattern,
       };
 
   static Album fromJson(Map<String, dynamic> json) => Album(
-        id: json['id'] as int,
+        id: json['id'] as String,
         title: json['title'] as String,
         author: json['author'] as String,
         sourcePath: json['sourcePath'] as String,
-        // these fields were nullable in the model but previously cast as non-null
-        // causing decode to throw when keys were missing/null. Use nullable casts
-        // and sensible defaults where appropriate.
-        lastPlayedTime: json['lastPlayedTime'] as int?,
-        lastPlayedIndex: json['lastPlayedIndex'] as int?,
-        totalTracks: json['totalTracks'] as int? ?? 0,
-        playedTracks: json['playedTracks'] as int? ?? 0,
-        songs: ((json['songs'] as List?) ?? const [])
+        songs: (json['songs'] as List)
             .map((e) => Song.fromJson(e as Map<String, dynamic>))
             .toList()
             .cast<Song>(),
@@ -151,14 +155,14 @@ class Album {
 
 class Song {
   // basic fields
-  final int id;
+  final String id;
   final String artist;
   final String title;
   final int length;
   final String path;
 
   // user fields
-  final int? track;
+  final int? track; // track number
   final String? disc; // disc name
   final String? alias; // alias name
 
@@ -182,7 +186,7 @@ class Song {
   });
 
   Song copyWith({
-    int? id,
+    String? id,
     String? artist,
     String? title,
     int? length,
@@ -223,7 +227,7 @@ class Song {
       };
 
   static Song fromJson(Map<String, dynamic> json) => Song(
-        id: json['id'] as int,
+        id: json['id'] as String,
         artist: json['artist'] as String,
         title: json['title'] as String,
         length: json['length'] as int,
@@ -240,5 +244,3 @@ class Song {
             : null,
       );
 }
-
-// Covers are not stored persistently.

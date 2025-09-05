@@ -7,12 +7,10 @@ import 'package:lemon/features/playList/services/find_regex/models.dart';
 /// Dialog for finding regex patterns to clean up song titles
 class FindRegexDialog extends ConsumerStatefulWidget {
   final Album album;
-  final List<Song> songs;
 
   const FindRegexDialog({
     super.key,
     required this.album,
-    required this.songs,
   });
 
   @override
@@ -33,7 +31,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Analyze ${widget.songs.length} songs in "${widget.album.title}" to find a regex pattern that can split filenames into sequence numbers and clean titles.',
+              'Analyze ${widget.album.songs.length} songs in "${widget.album.title}" to find a regex pattern that can split filenames into sequence numbers and clean titles.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
@@ -52,7 +50,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: widget.songs
+                children: widget.album.songs
                     .take(5)
                     .map((song) => Text(
                           song.title,
@@ -177,7 +175,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
           style: Theme.of(context).textTheme.titleSmall,
         ),
         const SizedBox(height: 8),
-        ...widget.songs.take(3).map((song) {
+        ...widget.album.songs.take(3).map((song) {
           final testResult = response.testPattern(song.title);
           return Padding(
             padding: const EdgeInsets.only(bottom: 4),
@@ -206,7 +204,7 @@ class _FindRegexDialogState extends ConsumerState<FindRegexDialog> {
   }
 
   void _findRegexPattern() {
-    final fileNames = widget.songs.map((song) => song.title).toList();
+    final fileNames = widget.album.songs.map((song) => song.title).toList();
     ref.read(findRegexProvider.notifier).findRegexFromFiles(fileNames);
   }
 

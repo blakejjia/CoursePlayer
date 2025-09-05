@@ -65,7 +65,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     }
     // Avoid reading `settingsProvider` from inside its own notifier
     // (causes a self-dependency). Use the current state instead.
-    ref.read(albumProvider.notifier).loaddb(state.audioPath);
+    ref.read(albumsProvider.notifier).loaddb(state.audioPath);
   }
 
   void stateRebuilding() {
@@ -81,7 +81,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
         state.copyWith(dbRebuiltTime: DateTime.fromMicrosecondsSinceEpoch(0));
     // Use `state.audioPath` instead of reading the provider to avoid
     // a provider depending on itself.
-    ref.read(albumProvider.notifier).loaddb(state.audioPath);
+    ref.read(albumsProvider.notifier).loaddb(state.audioPath);
   }
 
   Future<void> updateRebuiltTime() async {

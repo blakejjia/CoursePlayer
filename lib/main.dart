@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/core/data/repositories/album_repository.dart';
 
 // Switch repositories to JSON-backed implementations
-import 'package:lemon/core/data/storage.dart';
-import 'package:lemon/core/data/repositories/album_repository.dart'
-    as json_repo;
-import 'package:lemon/core/data/repositories/song_repository.dart' as json_repo;
+import 'package:lemon/core/data/repositories/storage.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';
 import 'package:lemon/core/services/app_lifecycle_service.dart';
@@ -13,10 +11,8 @@ import 'package:lemon/core/services/media_library_file_watcher.dart';
 
 final jsonStoreProvider =
     Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
-final songRepositoryProvider = Provider<json_repo.SongRepository>(
-    (ref) => json_repo.SongRepository(ref.read(jsonStoreProvider), ref: ref));
-final albumRepositoryProvider = Provider<json_repo.AlbumRepository>(
-    (ref) => json_repo.AlbumRepository(ref.read(jsonStoreProvider), ref: ref));
+final albumRepositoryProvider = Provider<AlbumRepository>(
+    (ref) => AlbumRepository(ref.read(jsonStoreProvider), ref: ref));
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

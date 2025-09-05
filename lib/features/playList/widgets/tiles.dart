@@ -14,7 +14,7 @@ Widget songTileNormal(BuildContext context, Song song) {
 /// when selected, song tile look like this
 Widget selectIndicator(BuildContext context, Song song) {
   return Container(
-    color: Theme.of(context).colorScheme.primaryFixed.withAlpha(100),
+    color: Theme.of(context).colorScheme.primaryFixed,
     child: songTileNormal(context, song),
   );
 }

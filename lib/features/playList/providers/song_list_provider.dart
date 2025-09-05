@@ -1,32 +1,61 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_state.dart';
 import 'package:lemon/main.dart';
 
 class SongListNotifier extends StateNotifier<SongListState> {
   final Ref ref;
-  SongListNotifier(this.ref) : super(const SongListState.loading());
+  late final void Function() _removeAudioListener;
+
+  SongListNotifier(this.ref) : super(const SongListState(album: null)) {
+    // Listen to audio player provider and update current playing song id
+    final remove = ref.listen<AudioPlayerState>(
+      audioPlayerProvider,
+      (previous, next) {
+        // Only handle ideal state which contains mediaItem
+        if (next is AudioPlayerIdeal) {
+          final id = next.mediaItem.id;
+          // update state only if changed
+          if (state.currentPlayingSongId != id) {
+            state = state.copyWith(currentPlayingSongId: id);
+          }
+        } else {
+          // not playing
+          if (state.currentPlayingSongId != '') {
+            state = state.copyWith(currentPlayingSongId: '');
+          }
+        }
+      },
+    );
+    _removeAudioListener = () => remove.close();
+  }
 
   Future<void> locateAlbum(Album album) async {
-    state = const SongListState.loading();
-    final songs =
-        await ref.read(songRepositoryProvider).getSongsByAlbumId(album.id);
-    state = SongListState(
-      album: album,
-      buffer: songs,
-      isLoading: false,
-    );
+    state = SongListState(album: album);
+    await refreshSongs();
   }
 
   Future<void> refreshSongs() async {
-    final current = state;
-    if (!current.isReady || current.album == null) return;
-    final songs = await ref
-        .read(songRepositoryProvider)
-        .getSongsByAlbumId(current.album!.id);
+    if (state.album == null) return;
     final album =
-        await ref.read(albumRepositoryProvider).getAlbumById(current.album!.id);
-    state = current.copyWith(buffer: songs, album: album);
+        await ref.read(albumRepositoryProvider).getAlbumById(state.album!.id);
+    state = state.copyWith(album: album);
+  }
+
+  // audio
+  void playSong(Song song) {
+    if (state.album == null) return;
+    ref.read(audioPlayerProvider.notifier).locateAudio(
+          album: state.album!,
+          songId: song.id,
+        );
+  }
+
+  @override
+  void dispose() {
+    _removeAudioListener();
+    super.dispose();
   }
 }
 

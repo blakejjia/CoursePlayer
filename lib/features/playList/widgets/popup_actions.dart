@@ -21,7 +21,6 @@ class PopupMenu extends ConsumerWidget {
                 context: context,
                 builder: (context) => FindRegexDialog(
                   album: ready.album!,
-                  songs: ready.buffer!,
                 ),
               );
             }
@@ -32,7 +31,6 @@ class PopupMenu extends ConsumerWidget {
                 context: context,
                 builder: (context) => FindSequenceDialog(
                   album: ready.album!,
-                  songs: ready.buffer!,
                 ),
               );
             }

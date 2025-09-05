@@ -7,12 +7,9 @@ import 'package:lemon/features/playList/services/find_sequence/models.dart';
 /// Dialog for finding logical sequence/study order for course files
 class FindSequenceDialog extends ConsumerStatefulWidget {
   final Album album;
-  final List<Song> songs;
-
   const FindSequenceDialog({
     super.key,
     required this.album,
-    required this.songs,
   });
 
   @override
@@ -33,7 +30,7 @@ class _FindSequenceDialogState extends ConsumerState<FindSequenceDialog> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Analyze ${widget.songs.length} files in "${widget.album.title}" to infer a logical playback/study order and group adjacent files into segments.',
+              'Analyze ${widget.album.songs.length} files in "${widget.album.title}" to infer a logical playback/study order and group adjacent files into segments.',
               style: Theme.of(context).textTheme.bodyMedium,
             ),
             const SizedBox(height: 16),
@@ -52,7 +49,7 @@ class _FindSequenceDialogState extends ConsumerState<FindSequenceDialog> {
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: widget.songs
+                children: widget.album.songs
                     .take(5)
                     .map((song) => Text(
                           song.title,
@@ -288,7 +285,7 @@ class _FindSequenceDialogState extends ConsumerState<FindSequenceDialog> {
     final notifier = ref.read(findSequenceProvider.notifier);
 
     // Convert songs to the format expected by the service
-    final songsData = widget.songs
+    final songsData = widget.album.songs
         .map((song) => {
               'title': song.title,
               'path': song.path,

@@ -207,34 +207,34 @@ class MyAudioHandler extends BaseAudioHandler {
     }
   }
 
-  Future<void> locateAudio(
+  Future<void> playAudio(
     List<MediaItem> mediaItems,
-    List<String> paths,
+    List<String> paths, {
     int? index,
     int? position,
-  ) async {
-    // Keep our current queue for UI and mediaItem stream
+  }) async {
+    // set playlist
     _queue = mediaItems;
-
-    // Build a playlist with tags so audio_service can show metadata
     final children = <AudioSource>[];
     final count = mediaItems.length;
     for (var i = 0; i < count && i < paths.length; i++) {
       children.add(
-        AudioSource.uri(
-          Uri.file(paths[i]),
+        AudioSource.file(
+          paths[i],
           tag: mediaItems[i],
         ),
       );
     }
     final playlist = ConcatenatingAudioSource(children: children);
-
     await _player.setAudioSource(playlist);
+
+    // set position
     await _player.seek(Duration(seconds: position ?? 0), index: index ?? 0);
 
     // Update the queue in audio service for system UI
-    queue.add(_queue);
+    // queue.add(mediaItems); TODO: is this needed?
 
+    // play!
     await _player.play();
   }
 

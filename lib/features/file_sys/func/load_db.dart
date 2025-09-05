@@ -5,11 +5,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/core/data/repositories/album_repository.dart';
 import 'package:path/path.dart';
-
-import 'package:lemon/core/data/storage.dart';
+import 'package:uuid/uuid.dart';
 import '../../settings/providers/settings_provider.dart';
-import '../../../main.dart' show jsonStoreProvider;
+import '../../../main.dart' show albumRepositoryProvider;
 
 Future<void> loadDb(
   String path,
@@ -18,8 +18,7 @@ Future<void> loadDb(
 ) async {
   // init variables
   ref.read(settingsProvider.notifier).stateRebuilding();
-  final store = ref.read(jsonStoreProvider);
-  final batch = await MediaLibraryBatch.start(store);
+  final albumRepository = ref.read(albumRepositoryProvider);
   final root = Directory(path);
   if (!await root.exists()) throw Exception('Directory does not exist: $path');
 
@@ -30,17 +29,18 @@ Future<void> loadDb(
   await for (final e in root.list(recursive: false, followLinks: false)) {
     if ((e is Directory)) coursePaths.add(e.path);
   }
-  final currentAlbumns = batch.albums.map((e) => e.sourcePath).toSet();
+  final currentAlbumns =
+      (await albumRepository.albums).map((e) => e.sourcePath).toSet();
   final removed = currentAlbumns.difference(coursePaths);
   final toAdd = coursePaths.difference(currentAlbumns);
   onProgress({'totalFolder': toAdd.length});
 
   // remove albums that are no longer present
   for (final path in removed) {
-    final album = batch.albumByPath(path);
+    final album = await albumRepository.getAlbumByPath(path);
     if (album != null) {
-      batch.deleteAlbumById(album.id);
-      debugPrint('Deleted album not found on disk: ${path}');
+      await albumRepository.deleteAlbumById(album.id);
+      debugPrint('Deleted album not found on disk: $path');
     }
   }
 
@@ -50,8 +50,7 @@ Future<void> loadDb(
     try {
       await loadFolder(
         folder,
-        ref,
-        batch: batch,
+        repository: albumRepository,
         onProgress: onProgress,
       );
       idx++;
@@ -63,8 +62,7 @@ Future<void> loadDb(
     }
   }
 
-  // commit
-  await batch.commit();
+  // finish
   Fluttertoast.showToast(msg: 'Course updated successfully');
   ref.read(settingsProvider.notifier).updateRebuiltTime();
 }
@@ -76,9 +74,8 @@ Future<void> loadDb(
 /// batch unless [commit] is true. When [batch] is omitted the function will
 /// create its own batch and commit it at the end (unless commit=false).
 Future<int> loadFolder(
-  String baseFolderPath,
-  dynamic ref, {
-  required MediaLibraryBatch batch,
+  String baseFolderPath, {
+  required AlbumRepository repository,
   void Function(Map<String, int>)? onProgress,
 }) async {
   // init collection
@@ -102,7 +99,7 @@ Future<int> loadFolder(
       authors.add(artist);
 
       final song = Song(
-        id: batch.nextSongId(),
+        id: Uuid().v4(),
         artist: artist,
         title: _cleanFileName(basename(file.path)),
         length: tag?.duration ?? 0,
@@ -122,8 +119,8 @@ Future<int> loadFolder(
     }
   }
 
-  // create albumn
-  batch.insertAlbumWithSongs(
+  // create album
+  repository.insertAlbum(
     title: basename(courseFolder.path),
     author: _determineAlbumArtist(authors),
     sourcePath: courseFolder.path,

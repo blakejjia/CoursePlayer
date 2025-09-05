@@ -69,8 +69,8 @@ void _navigateToSongsListPage(BuildContext context, Album album) {
 }
 
 String formatAlbumProgress(Album album) {
-  final played = album.playedTracks ?? 0;
-  final total = album.totalTracks == 0 ? 1 : album.totalTracks;
+  final played = album.playedTrackNum ?? 0;
+  final total = album.totalTrackNum == 0 ? 1 : album.totalTrackNum;
   int progress = (played * 100 / total).round();
   return "$progress%";
 }

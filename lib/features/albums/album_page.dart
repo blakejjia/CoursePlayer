@@ -5,8 +5,6 @@ import 'package:lemon/features/albums/views/no_permission_view.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-
-import '../../core/audio/providers/audio/audio_player_provider.dart';
 import 'providers/album_provider.dart';
 
 part 'views/blank_view.dart';
@@ -22,24 +20,23 @@ class AlbumPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final state = ref.watch(albumProvider);
+    final state = ref.watch(albumsProvider);
     return Scaffold(
       appBar: AppBar(
         title: const Text('Courser'),
         leading: IconButton(
           icon: Icon(Icons.play_circle_filled),
           onPressed: () {
-            final playHistory = state.latestPlayed;
-            if (playHistory != null) {
+            if (state.lastPlayedAlbumId != null) {
               ref
-                  .read(audioPlayerProvider.notifier)
-                  .locateAudio(playHistory.album, playHistory.songId);
+                  .read(albumsProvider.notifier)
+                  .playAlbumById(state.lastPlayedAlbumId!);
             }
           },
         ),
         actions: [
           PopupMenuButton<String>(
-            onSelected: (_) => ref.read(albumProvider.notifier).toggleView(),
+            onSelected: (_) => ref.read(albumsProvider.notifier).toggleView(),
             itemBuilder: (BuildContext context) {
               return [
                 PopupMenuItem<String>(
@@ -51,7 +48,7 @@ class AlbumPage extends ConsumerWidget {
         ],
       ),
       body: RefreshIndicator(
-        onRefresh: () => ref.read(albumProvider.notifier).load(),
+        onRefresh: () => ref.read(albumsProvider.notifier).load(),
         child: state.isLoading
             ? const LoadingView()
             : (state.albums.isEmpty
@@ -59,7 +56,7 @@ class AlbumPage extends ConsumerWidget {
                 : AlbumsView(
                     isGridView: state.isGridView,
                     albums: state.albums,
-                    info: state.info,
+                    info: state.info ?? {},
                   )),
       ),
     );

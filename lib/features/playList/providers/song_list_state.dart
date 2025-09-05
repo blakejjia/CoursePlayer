@@ -4,37 +4,30 @@ import 'package:lemon/core/data/models/models.dart';
 
 class SongListState {
   final Album? album;
-  final List<Song>? buffer;
-  final bool isLoading;
+  final String currentPlayingSongId;
 
   const SongListState({
     required this.album,
-    required this.buffer,
-    required this.isLoading,
+    this.currentPlayingSongId = '',
   });
 
-  const SongListState.loading()
-      : album = null,
-        buffer = null,
-        isLoading = true;
-
-  bool get isReady => !isLoading && album != null;
+  bool get isReady => album != null;
 
   SongListState copyWith({
     Album? album,
     List<Song>? buffer,
     Uint8List? picture,
     bool? isLoading,
+    String? currentPlayingSongId,
   }) {
     return SongListState(
       album: album ?? this.album,
-      buffer: buffer ?? this.buffer,
-      isLoading: isLoading ?? this.isLoading,
+      currentPlayingSongId: currentPlayingSongId ?? this.currentPlayingSongId,
     );
   }
 
   @override
   String toString() {
-    return 'SongListState(album: $album, buffer: $buffer, isLoading: $isLoading)';
+    return 'SongListState(album: $album, currentPlayingSongId: $currentPlayingSongId)';
   }
 }
