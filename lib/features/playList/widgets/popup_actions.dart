@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:lemon/features/playList/services/find_regex/presentation/popup.dart';
-import 'package:lemon/features/playList/services/find_sequence/presentation/popup.dart';
+import 'package:lemon/main.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
-
 class PopupMenu extends ConsumerWidget {
   const PopupMenu({super.key});
 
@@ -15,24 +13,20 @@ class PopupMenu extends ConsumerWidget {
     return PopupMenuButton<String>(
       onSelected: (value) {
         switch (value) {
-          case 'find_regex':
+          case 'sort_by_creation_time':
             if (ready.isReady) {
-              showDialog(
-                context: context,
-                builder: (context) => FindRegexDialog(
-                  album: ready.album!,
-                ),
-              );
+              final albumId = ready.album!.id;
+              ref.read(albumRepositoryProvider).sortAlbumSongs(albumId, 'creation_time').then((_) {
+                 ref.read(songListProvider.notifier).refreshSongs();
+              });
             }
             break;
-          case 'find_sequence':
+          case 'sort_by_name':
             if (ready.isReady) {
-              showDialog(
-                context: context,
-                builder: (context) => FindSequenceDialog(
-                  album: ready.album!,
-                ),
-              );
+              final albumId = ready.album!.id;
+              ref.read(albumRepositoryProvider).sortAlbumSongs(albumId, 'name').then((_) {
+                 ref.read(songListProvider.notifier).refreshSongs();
+              });
             }
             break;
         }
@@ -40,20 +34,18 @@ class PopupMenu extends ConsumerWidget {
       itemBuilder: (BuildContext context) {
         return [
           const PopupMenuItem<String>(
-            value: 'find_regex',
+            value: 'sort_by_creation_time',
             child: ListTile(
-              leading: Icon(Icons.auto_fix_high),
-              title: Text('Find Regex Pattern'),
-              subtitle: Text('Auto-detect pattern to clean titles'),
+              leading: Icon(Icons.access_time),
+              title: Text('根据文件创建时间排序'),
               contentPadding: EdgeInsets.zero,
             ),
           ),
           const PopupMenuItem<String>(
-            value: 'find_sequence',
+            value: 'sort_by_name',
             child: ListTile(
-              leading: Icon(Icons.sort),
-              title: Text('Find Study Sequence'),
-              subtitle: Text('Infer logical playback/study order'),
+              leading: Icon(Icons.sort_by_alpha),
+              title: Text('根据文件名排序'),
               contentPadding: EdgeInsets.zero,
             ),
           ),

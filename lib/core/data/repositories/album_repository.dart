@@ -2,6 +2,7 @@ import 'package:lemon/core/data/repositories/storage.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:uuid/uuid.dart';
+import 'dart:io';
 
 class AlbumRepository {
   final MediaLibraryStore store;
@@ -81,6 +82,41 @@ class AlbumRepository {
   }
 
   /// ======================= business logic =========================
+  Future<int> sortAlbumSongs(String albumId, String sortType) async {
+    final root = await store.load();
+    final albums = [...root.albums];
+    final albumIndex = albums.indexWhere((a) => a.id == albumId);
+    if (albumIndex == -1) return 0;
+
+    final album = albums[albumIndex];
+    final songs = [...album.songs];
+
+    if (sortType == 'name') {
+      songs.sort((a, b) => a.title.compareTo(b.title));
+    } else if (sortType == 'creation_time') {
+      songs.sort((a, b) {
+        try {
+          final fA = File(a.path).statSync();
+          final fB = File(b.path).statSync();
+          // Fallback to modified if changed is not available/reliable on some platforms but changed is generally creation time on Windows
+          return fA.changed.compareTo(fB.changed);
+        } catch (_) {
+          return 0;
+        }
+      });
+    }
+
+    // re-assign tracks after sorting
+    for (var i = 0; i < songs.length; i++) {
+        songs[i] = songs[i].copyWith(track: i + 1);
+    }
+
+    final updatedAlbum = album.copyWith(songs: songs);
+    albums[albumIndex] = updatedAlbum;
+    await store.replace(root.copyWith(albums: albums));
+    return 1;
+  }
+
   /// Update song progress within an album
   Future<int> updateSongProgress(
       String albumId, String songId, int progress) async {
