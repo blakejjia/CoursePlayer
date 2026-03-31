@@ -23,7 +23,10 @@ class SongsListSettingsPage extends ConsumerWidget {
             onTap: () {
               if (ready.isReady) {
                 final albumId = ready.album!.id;
-                ref.read(albumRepositoryProvider).sortAlbumSongs(albumId, 'creation_time').then((_) {
+                ref
+                    .read(albumRepositoryProvider)
+                    .sortAlbumSongs(albumId, 'creation_time')
+                    .then((_) {
                   ref.read(songListProvider.notifier).refreshSongs();
                 });
               }
@@ -36,11 +39,59 @@ class SongsListSettingsPage extends ConsumerWidget {
             onTap: () {
               if (ready.isReady) {
                 final albumId = ready.album!.id;
-                ref.read(albumRepositoryProvider).sortAlbumSongs(albumId, 'name').then((_) {
+                ref
+                    .read(albumRepositoryProvider)
+                    .sortAlbumSongs(albumId, 'name')
+                    .then((_) {
                   ref.read(songListProvider.notifier).refreshSongs();
                 });
               }
               Navigator.of(context).pop();
+            },
+          ),
+          ListTile(
+            leading: const Icon(Icons.auto_awesome),
+            title: const Text('AI 辅助排序'),
+            subtitle: const Text('根据文件名智能识别排序'),
+            onTap: () async {
+              if (ready.isReady) {
+                final album = ready.album!;
+                final albumId = album.id;
+
+                // Show loading indicator
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (context) =>
+                      const Center(child: CircularProgressIndicator()),
+                );
+
+                try {
+                  final aiService = ref.read(aiSortServiceProvider);
+                  final ranks = await aiService.generateAiRanks(album.songs);
+
+                  await ref
+                      .read(albumRepositoryProvider)
+                      .updateSongsAiRank(albumId, ranks);
+                  await ref
+                      .read(albumRepositoryProvider)
+                      .sortAlbumSongs(albumId, 'ai_rank');
+                  await ref.read(songListProvider.notifier).refreshSongs();
+
+                  if (context.mounted)
+                    Navigator.of(context).pop(); // dismiss loading
+                  if (context.mounted)
+                    Navigator.of(context).pop(); // back to playlist
+                } catch (e) {
+                  if (context.mounted)
+                    Navigator.of(context).pop(); // dismiss loading
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('AI 排序失败: $e')),
+                    );
+                  }
+                }
+              }
             },
           ),
         ],

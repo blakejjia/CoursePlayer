@@ -40,9 +40,10 @@ dependencies:
   fluttertoast: ^8.2.12
   http: ^1.2.2
   uuid: ^4.5.1
-  firebase_core: ^3.11.0
-  cloud_functions: ^5.3.0
-  firebase_app_check: ^0.3.1+6
+  firebase_core: any
+  cloud_functions: any
+  firebase_app_check: any
+  firebase_ai: any
 
 dev_dependencies:
   flutter_test:

@@ -104,11 +104,13 @@ class AlbumRepository {
           return 0;
         }
       });
+    } else if (sortType == 'ai_rank') {
+      songs.sort((a, b) => (a.aiRank ?? 9999).compareTo(b.aiRank ?? 9999));
     }
 
     // re-assign tracks after sorting
     for (var i = 0; i < songs.length; i++) {
-        songs[i] = songs[i].copyWith(track: i + 1);
+      songs[i] = songs[i].copyWith(track: i + 1);
     }
 
     final updatedAlbum = album.copyWith(songs: songs);
@@ -147,6 +149,28 @@ class AlbumRepository {
     if (albumIndex == -1) return 0;
     final album = albums[albumIndex];
     final updatedAlbum = album.copyWith(playSpeed: speed);
+    albums[albumIndex] = updatedAlbum;
+    await store.replace(root.copyWith(albums: albums));
+    return 1;
+  }
+
+  Future<int> updateSongsAiRank(String albumId, Map<String, int> ranks) async {
+    final root = await store.load();
+    final albums = [...root.albums];
+    final albumIndex = albums.indexWhere((a) => a.id == albumId);
+    if (albumIndex == -1) return 0;
+
+    final album = albums[albumIndex];
+    final songs = [...album.songs];
+
+    for (var i = 0; i < songs.length; i++) {
+      final song = songs[i];
+      if (ranks.containsKey(song.id)) {
+        songs[i] = song.copyWith(aiRank: ranks[song.id]);
+      }
+    }
+
+    final updatedAlbum = album.copyWith(songs: songs);
     albums[albumIndex] = updatedAlbum;
     await store.replace(root.copyWith(albums: albums));
     return 1;

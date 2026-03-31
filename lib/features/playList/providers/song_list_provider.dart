@@ -3,7 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:lemon/features/playList/providers/song_list_state.dart';
+import 'package:lemon/features/playList/services/ai_sort_service.dart';
 import 'package:lemon/main.dart';
+
+final aiSortServiceProvider = Provider<AISortService>((ref) => AISortService());
 
 class SongListNotifier extends StateNotifier<SongListState> {
   final Ref ref;
