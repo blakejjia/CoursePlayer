@@ -8,6 +8,11 @@ import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';
 import 'package:lemon/core/services/media_library_file_watcher.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:flutter/foundation.dart';
+import 'firebase_options.dart';
+
 final jsonStoreProvider =
     Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
 final albumRepositoryProvider = Provider<AlbumRepository>(
@@ -15,6 +20,12 @@ final albumRepositoryProvider = Provider<AlbumRepository>(
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+  );
   runApp(const ProviderScope(child: MainApp()));
 }
 

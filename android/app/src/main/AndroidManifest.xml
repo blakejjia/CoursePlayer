@@ -54,6 +54,11 @@
         <meta-data
             android:name="com.google.android.gms.car.application"
             android:resource="@xml/automotive_app_desc" />
+        
+        <!-- App Check Debug Token -->
+        <meta-data
+            android:name="firebase_app_check_debug_token"
+            android:value="B9650EC0-C001-4841-A86C-388AFE89977F" />
     </application>
     
     <!-- Declare Android Auto capability -->

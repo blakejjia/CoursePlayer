@@ -1,0 +1,21 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "lemon-coursor",
+          "appId": "1:103570294069:android:99833d9a35e2b03523387c",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "lemon-coursor",
+          "configurations": {
+            "android": "1:103570294069:android:99833d9a35e2b03523387c"
+          }
+        }
+      }
+    }
+  }
+}

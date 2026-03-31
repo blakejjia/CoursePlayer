@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "103570294069",
+    "project_id": "lemon-coursor",
+    "storage_bucket": "lemon-coursor.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:103570294069:android:99833d9a35e2b03523387c",
+        "android_client_info": {
+          "package_name": "com.blake.courser"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAWF1vUqA-vr4CLVRbVXH-B4q9p7XqQeE8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
