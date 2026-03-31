@@ -24,7 +24,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
   await FirebaseAppCheck.instance.activate(
-    androidProvider: kDebugMode ? AndroidProvider.debug : AndroidProvider.playIntegrity,
+    providerAndroid: kDebugMode ? const AndroidDebugProvider() : const AndroidPlayIntegrityProvider(),
   );
   runApp(const ProviderScope(child: MainApp()));
 }
@@ -43,7 +43,7 @@ class MainApp extends ConsumerWidget {
       theme: ThemeData(
         colorSchemeSeed: settings.seedColor,
         useMaterial3: true,
-        sliderTheme: const SliderThemeData(year2023: false),
+        sliderTheme: const SliderThemeData(),
       ),
       debugShowCheckedModeBanner: false,
       routerConfig: router,

@@ -19,16 +19,21 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.blake.courser"
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    compileSdk = 36
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
     }
 
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_11.toString()
+        jvmTarget = JavaVersion.VERSION_17.toString()
+    }
+
+    dependencies {
+        // Import the Firebase BoM
+        implementation(platform("com.google.firebase:firebase-bom:34.11.0"))
     }
 
     defaultConfig {
@@ -46,10 +51,10 @@ android {
     signingConfigs {
         if (hasSigning) {
             create("release") {
-                keyAlias = keystoreProperties["keyAlias"] as String
-                keyPassword = keystoreProperties["keyPassword"] as String
+                keyAlias = keystoreProperties["keyAlias"] as String?
+                keyPassword = keystoreProperties["keyPassword"] as String?
                 storeFile = (keystoreProperties["storeFile"] as String?)?.let { file(it) }
-                storePassword = keystoreProperties["storePassword"] as String
+                storePassword = keystoreProperties["storePassword"] as String?
             }
         }
     }

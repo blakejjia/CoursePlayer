@@ -11,7 +11,7 @@
         android:label="courser"
         android:enableOnBackInvokedCallback="true"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:icon="@mipmap/ic_launcher">
         <activity
             android:name="com.ryanheise.audioservice.AudioServiceActivity"
             android:exported="true"
@@ -57,7 +57,7 @@
         
         <!-- App Check Debug Token -->
         <meta-data
-            android:name="firebase_app_check_debug_token"
+            android:name="com.google.firebase.appcheck.debug.token"
             android:value="B9650EC0-C001-4841-A86C-388AFE89977F" />
     </application>
     

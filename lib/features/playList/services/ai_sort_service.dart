@@ -28,7 +28,8 @@ Output Format:
 """;
 
     try {
-      final model = _firebaseAI.generativeModel(model: 'gemini-1.5-flash');
+      final model =
+          _firebaseAI.generativeModel(model: 'gemini-3.1-flash-lite-preview');
       final response = await model.generateContent([
         Content.text(prompt),
       ]);

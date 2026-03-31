@@ -9,6 +9,7 @@
 .history
 .svn/
 migrate_working_dir/
+android-bkup/
 
 # IntelliJ / Android Studio related
 *.iml
