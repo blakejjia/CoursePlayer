@@ -15,8 +15,9 @@ class MediaLibraryLoadingIndicator extends ConsumerWidget {
     return async.when(
       data: (state) {
         // Nothing to show when not rebuilding and no error.
-        if (!state.isRebuilding && state.error == null)
+        if (!state.isRebuilding && state.error == null) {
           return const SizedBox.shrink();
+        }
 
         final theme = Theme.of(context);
 

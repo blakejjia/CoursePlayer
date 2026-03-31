@@ -1,7 +1,6 @@
 import 'dart:async';
 export 'audio_player_state.dart';
 import 'package:audio_service/audio_service.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/albums/providers/album_provider.dart';
