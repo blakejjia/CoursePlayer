@@ -6,7 +6,6 @@ import 'package:lemon/core/data/repositories/album_repository.dart';
 import 'package:lemon/core/data/repositories/storage.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/router/app_router.dart';
-import 'package:lemon/core/services/app_lifecycle_service.dart';
 import 'package:lemon/core/services/media_library_file_watcher.dart';
 
 final jsonStoreProvider =
@@ -27,7 +26,6 @@ class MainApp extends ConsumerWidget {
     final settings = ref.watch(settingsProvider);
     final router = ref.watch(goRouterProvider);
 
-    ref.watch(appLifecycleServiceProvider);
     ref.watch(mediaLibraryFileWatcherProvider);
 
     return MaterialApp.router(
