@@ -1,5 +1,5 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
-import 'package:lemon/features/playList/widgets/popup_actions.dart';
+import 'package:lemon/features/playList/songs_list_settings_page.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -18,7 +18,18 @@ class SongsListPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(state.album?.title ?? 'Album'),
         actions: [
-          PopupMenu(),
+          Builder(
+            builder: (context) => IconButton(
+              icon: const Icon(Icons.more_vert),
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const SongsListSettingsPage(),
+                  ),
+                );
+              },
+            ),
+          ),
         ],
       ),
       bottomNavigationBar: const AudioBottomSheet(), //TODO: move to main page
