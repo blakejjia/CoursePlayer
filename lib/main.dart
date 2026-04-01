@@ -23,9 +23,15 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // Explicitly set a custom debug token for easier registration in the Firebase Console
+  const appCheckDebugToken = '2224a8e2-9316-41c8-a293-47ddb69a313b';
+
   await FirebaseAppCheck.instance.activate(
-    providerAndroid: kDebugMode ? const AndroidDebugProvider() : const AndroidPlayIntegrityProvider(),
+    providerAndroid: kDebugMode
+        ? const AndroidDebugProvider(debugToken: appCheckDebugToken)
+        : const AndroidPlayIntegrityProvider(),
   );
+
   runApp(const ProviderScope(child: MainApp()));
 }
 

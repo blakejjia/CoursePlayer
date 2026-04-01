@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:lemon/core/data/models/models.dart';
 
 class AISortService {
-  final FirebaseAI _firebaseAI = FirebaseAI.googleAI();
+  final FirebaseAI _firebaseAI = FirebaseAI.googleAI(
+    appCheck: FirebaseAppCheck.instance,
+  );
 
   Future<Map<String, int>> generateAiRanks(List<Song> songs) async {
     if (songs.isEmpty) return {};

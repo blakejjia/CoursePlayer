@@ -51,20 +51,49 @@ class SongsListSettingsPage extends ConsumerWidget {
           ),
           ListTile(
             leading: const Icon(Icons.auto_awesome),
+            trailing: ready.album?.isAiSorted == true
+                ? const Icon(Icons.check, color: Colors.green)
+                : null,
             title: const Text('AI 辅助排序'),
-            subtitle: const Text('根据文件名智能识别排序'),
+            subtitle: Text(ready.album?.isAiSorted == true
+                ? '已完成 AI 智能排序'
+                : '根据文件名智能识别排序'),
             onTap: () async {
               if (ready.isReady) {
                 final album = ready.album!;
                 final albumId = album.id;
 
+                if (album.isAiSorted == true) {
+                  final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('确认重新排序'),
+                          content: const Text('该列表已经是 AI 排序过的，是否确认再次重排？'),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(false),
+                              child: const Text('取消'),
+                            ),
+                            TextButton(
+                              onPressed: () => Navigator.of(context).pop(true),
+                              child: const Text('确认'),
+                            ),
+                          ],
+                        ),
+                      ) ??
+                      false;
+                  if (!confirm) return;
+                }
+
                 // Show loading indicator
-                showDialog(
-                  context: context,
-                  barrierDismissible: false,
-                  builder: (context) =>
-                      const Center(child: CircularProgressIndicator()),
-                );
+                if (context.mounted) {
+                  showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (context) =>
+                        const Center(child: CircularProgressIndicator()),
+                  );
+                }
 
                 try {
                   final aiService = ref.read(aiSortServiceProvider);
@@ -78,14 +107,13 @@ class SongsListSettingsPage extends ConsumerWidget {
                       .sortAlbumSongs(albumId, 'ai_rank');
                   await ref.read(songListProvider.notifier).refreshSongs();
 
-                  if (context.mounted)
-                    Navigator.of(context).pop(); // dismiss loading
-                  if (context.mounted)
-                    Navigator.of(context).pop(); // back to playlist
-                } catch (e) {
-                  if (context.mounted)
-                    Navigator.of(context).pop(); // dismiss loading
                   if (context.mounted) {
+                    Navigator.of(context).pop(); // dismiss loading
+                    Navigator.of(context).pop(); // back to playlist
+                  }
+                } catch (e) {
+                  if (context.mounted) {
+                    Navigator.of(context).pop(); // dismiss loading
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(content: Text('AI 排序失败: $e')),
                     );

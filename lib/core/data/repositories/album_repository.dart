@@ -91,6 +91,7 @@ class AlbumRepository {
     final album = albums[albumIndex];
     final songs = [...album.songs];
 
+    bool isAiSorted = false;
     if (sortType == 'name') {
       songs.sort((a, b) => a.title.compareTo(b.title));
     } else if (sortType == 'creation_time') {
@@ -106,6 +107,7 @@ class AlbumRepository {
       });
     } else if (sortType == 'ai_rank') {
       songs.sort((a, b) => (a.aiRank ?? 9999).compareTo(b.aiRank ?? 9999));
+      isAiSorted = true;
     }
 
     // re-assign tracks after sorting
@@ -113,7 +115,7 @@ class AlbumRepository {
       songs[i] = songs[i].copyWith(track: i + 1);
     }
 
-    final updatedAlbum = album.copyWith(songs: songs);
+    final updatedAlbum = album.copyWith(songs: songs, isAiSorted: isAiSorted);
     albums[albumIndex] = updatedAlbum;
     await store.replace(root.copyWith(albums: albums));
     return 1;
