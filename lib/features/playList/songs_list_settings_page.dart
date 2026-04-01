@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/main.dart';
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
 
 class SongsListSettingsPage extends ConsumerWidget {
   const SongsListSettingsPage({super.key});
@@ -47,6 +48,15 @@ class SongsListSettingsPage extends ConsumerWidget {
                 });
               }
               Navigator.of(context).pop();
+            },
+          ),
+          SwitchListTile(
+            secondary: const Icon(Icons.title),
+            title: const Text('使用 AI 优化后的标题'),
+            subtitle: const Text('由 AI 自动重命名，包含序号并去除广告'),
+            value: ref.watch(settingsProvider).useAiTitle,
+            onChanged: (value) {
+              ref.read(settingsProvider.notifier).changeUseAiTitle();
             },
           ),
           ListTile(
@@ -97,15 +107,16 @@ class SongsListSettingsPage extends ConsumerWidget {
 
                 try {
                   final aiService = ref.read(aiSortServiceProvider);
-                  final ranks = await aiService.generateAiRanks(album.songs);
+                  final metadata = await aiService.generateAiMetadata(album.songs);
 
                   await ref
                       .read(albumRepositoryProvider)
-                      .updateSongsAiRank(albumId, ranks);
+                      .updateSongsAiMetadata(albumId, metadata);
                   await ref
                       .read(albumRepositoryProvider)
                       .sortAlbumSongs(albumId, 'ai_rank');
                   await ref.read(songListProvider.notifier).refreshSongs();
+                  await ref.read(settingsProvider.notifier).setUseAiTitle(true);
 
                   if (context.mounted) {
                     Navigator.of(context).pop(); // dismiss loading

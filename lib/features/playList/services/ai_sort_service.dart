@@ -8,7 +8,8 @@ class AISortService {
     appCheck: FirebaseAppCheck.instance,
   );
 
-  Future<Map<String, int>> generateAiRanks(List<Song> songs) async {
+  Future<Map<String, ({int rank, String aiTitle})>> generateAiMetadata(
+      List<Song> songs) async {
     if (songs.isEmpty) return {};
 
     // Prepare the metadata for the AI
@@ -21,13 +22,22 @@ class AISortService {
         .toList();
 
     final prompt = """
-You are an expert music playlist organizer. Analyze the following list of song filenames and determine their most logical sequential order. Look for patterns such as track numbers, chronological prefixes, episode identifiers, or alphanumeric sorting that reflects the intended sequence. Return exactly one JSON object mapping each song's 'id' to its calculated 'rank' (an integer starting from 1). 
+You are an expert music playlist organizer. Analyze the following list of song filenames and determine their most logical sequential order. 
+For each song, provide:
+1. A 'rank' (an integer starting from 1) reflecting its position in the sequence.
+2. An 'aiTitle' which is a cleaned-up version of the filename. 
+   - Add the sequence number at the very beginning (e.g., "01. ", "02. ").
+   - Remove advertisements, website URLs, redundant prefixes/suffixes, and irrelevant metadata.
+   - Keep the core information of the song or course title.
+   - Ensure the title is concise and professional.
+
+Return exactly one JSON object mapping each song's 'id' to an object containing its 'rank' and 'aiTitle'.
 
 Input:
 ${jsonEncode(songData)}
 
 Output Format:
-{"id": rank, ...}
+{"id": {"rank": 1, "aiTitle": "01. Core Title"}, ...}
 """;
 
     try {
@@ -52,7 +62,11 @@ Output Format:
       cleanJson = cleanJson.trim();
 
       final Map<String, dynamic> decoded = jsonDecode(cleanJson);
-      return decoded.map((key, value) => MapEntry(key, value as int));
+      return decoded.map((key, value) {
+        final val = value as Map<String, dynamic>;
+        return MapEntry(
+            key, (rank: val['rank'] as int, aiTitle: val['aiTitle'] as String));
+      });
     } catch (e) {
       print("Error in AISortService: $e");
       rethrow;

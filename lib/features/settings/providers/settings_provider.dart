@@ -13,6 +13,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   static const _kCleanFileName = 'cleanFileName';
   static const _kSeedColor = 'seedColor';
   static const _kDefaultPlaybackSpeed = 'defaultPlaybackSpeed';
+  static const _kUseAiTitle = 'useAiTitle';
 
   SettingsNotifier(this.ref)
       : super(const SettingsState(
@@ -22,6 +23,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
           showCover: true,
           cleanFileName: true,
           defaultPlaybackSpeed: 1.0,
+          useAiTitle: false,
         )) {
     _loadFromPrefs(state);
   }
@@ -39,6 +41,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
           Color(prefs.getInt(_kSeedColor) ?? fallback.seedColor.toARGB32()),
       defaultPlaybackSpeed: prefs.getDouble(_kDefaultPlaybackSpeed) ??
           fallback.defaultPlaybackSpeed,
+      useAiTitle: prefs.getBool(_kUseAiTitle) ?? fallback.useAiTitle,
     );
     if (state != loaded) state = loaded;
   }
@@ -54,6 +57,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     await prefs.setBool(_kCleanFileName, s.cleanFileName);
     await prefs.setInt(_kSeedColor, s.seedColor.toARGB32());
     await prefs.setDouble(_kDefaultPlaybackSpeed, s.defaultPlaybackSpeed);
+    await prefs.setBool(_kUseAiTitle, s.useAiTitle);
   }
 
   Future<void> updatePath() async {
@@ -122,6 +126,19 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     int currentIndex = colors.indexOf(state.seedColor);
     int nextIndex = (currentIndex + 1) % colors.length;
     final next = state.copyWith(seedColor: colors[nextIndex]);
+    state = next;
+    await _persist(next);
+  }
+
+  Future<void> changeUseAiTitle() async {
+    final next = state.copyWith(useAiTitle: !state.useAiTitle);
+    state = next;
+    await _persist(next);
+  }
+
+  Future<void> setUseAiTitle(bool value) async {
+    if (state.useAiTitle == value) return;
+    final next = state.copyWith(useAiTitle: value);
     state = next;
     await _persist(next);
   }

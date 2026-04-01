@@ -8,6 +8,7 @@ class SettingsState {
   final bool cleanFileName;
   final Color seedColor;
   final double defaultPlaybackSpeed;
+  final bool useAiTitle;
 
   const SettingsState({
     required this.audioPath,
@@ -16,6 +17,7 @@ class SettingsState {
     required this.showCover,
     required this.seedColor,
     required this.defaultPlaybackSpeed,
+    required this.useAiTitle,
   });
 
   Map<String, dynamic> toMap() {
@@ -26,6 +28,7 @@ class SettingsState {
       'cleanFileName': cleanFileName,
       'seedColor': seedColor.toARGB32(),
       'defaultPlaybackSpeed': defaultPlaybackSpeed,
+      'useAiTitle': useAiTitle,
     };
   }
 
@@ -39,6 +42,7 @@ class SettingsState {
       showCover: map['showCover'] as bool,
       seedColor: Color(map['seedColor'] as int),
       defaultPlaybackSpeed: (map['defaultPlaybackSpeed'] as num).toDouble(),
+      useAiTitle: map['useAiTitle'] as bool? ?? false,
     );
   }
 
@@ -49,6 +53,7 @@ class SettingsState {
     bool? showCover,
     Color? seedColor,
     double? defaultPlaybackSpeed,
+    bool? useAiTitle,
   }) {
     return SettingsState(
       audioPath: audioPath ?? this.audioPath,
@@ -57,6 +62,7 @@ class SettingsState {
       showCover: showCover ?? this.showCover,
       seedColor: seedColor ?? this.seedColor,
       defaultPlaybackSpeed: defaultPlaybackSpeed ?? this.defaultPlaybackSpeed,
+      useAiTitle: useAiTitle ?? this.useAiTitle,
     );
   }
 }

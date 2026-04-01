@@ -156,7 +156,8 @@ class AlbumRepository {
     return 1;
   }
 
-  Future<int> updateSongsAiRank(String albumId, Map<String, int> ranks) async {
+  Future<int> updateSongsAiMetadata(
+      String albumId, Map<String, ({int rank, String aiTitle})> metadata) async {
     final root = await store.load();
     final albums = [...root.albums];
     final albumIndex = albums.indexWhere((a) => a.id == albumId);
@@ -167,8 +168,12 @@ class AlbumRepository {
 
     for (var i = 0; i < songs.length; i++) {
       final song = songs[i];
-      if (ranks.containsKey(song.id)) {
-        songs[i] = song.copyWith(aiRank: ranks[song.id]);
+      if (metadata.containsKey(song.id)) {
+        final data = metadata[song.id]!;
+        songs[i] = song.copyWith(
+          aiRank: data.rank,
+          aiTitle: data.aiTitle,
+        );
       }
     }
 

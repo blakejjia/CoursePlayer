@@ -4,10 +4,10 @@ import 'package:lemon/core/data/models/models.dart';
 
 /// format title to fit the screen
 /// - remove file extension
-String formatTitle(Song song) {
-  String title = song.title;
-  if (title.length > 20) {
-    return '${title.substring(0, 20)}...';
+String formatTitle(Song song, {bool useAiTitle = false}) {
+  String title = (useAiTitle && song.aiTitle != null) ? song.aiTitle! : song.title;
+  if (title.length > 30) {
+    return '${title.substring(0, 30)}...';
   }
   return title;
 }
@@ -42,10 +42,10 @@ String formatSubtitle(Song song) {
   return '${playedPercentage.isNotEmpty ? '$playedPercentage | ' : ''}${artist.isNotEmpty ? '$artist | ' : ''}$duration';
 }
 
-String continuePrompt(SongListState state) {
+String continuePrompt(SongListState state, {bool useAiTitle = false}) {
   Song? song = state.album?.lastPlayedSong;
   if (song == null) {
     return "start playing";
   }
-  return "continue: ${formatTitle(song)}";
+  return "continue: ${formatTitle(song, useAiTitle: useAiTitle)}";
 }

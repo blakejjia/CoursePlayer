@@ -172,7 +172,10 @@ class Song {
   final int? playedInSecond;
   final DateTime? lastPlayed;
   final DateTime? addedAt;
+
+  // ai generated fields
   final int? aiRank;
+  final String? aiTitle;
 
   const Song({
     required this.id,
@@ -187,6 +190,7 @@ class Song {
     this.lastPlayed,
     this.addedAt,
     this.aiRank,
+    this.aiTitle,
   });
 
   Song copyWith({
@@ -202,6 +206,7 @@ class Song {
     DateTime? lastPlayed,
     DateTime? addedAt,
     int? aiRank,
+    String? aiTitle,
   }) =>
       Song(
         id: id ?? this.id,
@@ -216,6 +221,7 @@ class Song {
         lastPlayed: lastPlayed ?? this.lastPlayed,
         addedAt: addedAt ?? this.addedAt,
         aiRank: aiRank ?? this.aiRank,
+        aiTitle: aiTitle ?? this.aiTitle,
       );
 
   Map<String, dynamic> toJson() => {
@@ -231,6 +237,7 @@ class Song {
         'lastPlayed': lastPlayed?.toIso8601String(),
         'addedAt': addedAt?.toIso8601String(),
         'aiRank': aiRank,
+        'aiTitle': aiTitle,
       };
   static Song fromJson(Map<String, dynamic> json) => Song(
         id: json['id'] as String,
@@ -249,5 +256,6 @@ class Song {
             ? DateTime.parse(json['addedAt'] as String)
             : null,
         aiRank: json['aiRank'] as int?,
+        aiTitle: json['aiTitle'] as String?,
       );
 }

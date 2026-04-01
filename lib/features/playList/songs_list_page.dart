@@ -1,5 +1,6 @@
 import 'package:lemon/features/playList/providers/song_list_provider.dart';
 import 'package:lemon/features/playList/songs_list_settings_page.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/core/data/models/models.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -74,7 +75,8 @@ class SongsListPage extends ConsumerWidget {
                             album.lastPlayedSong!,
                           );
                     },
-                    child: Text(continuePrompt(state)),
+                    child: Text(continuePrompt(state,
+                        useAiTitle: ref.watch(settingsProvider).useAiTitle)),
                   ),
                 ],
               );
@@ -110,7 +112,8 @@ class _SongTile extends ConsumerWidget {
                 ? Text("${song.track}",
                     style: Theme.of(context).textTheme.titleMedium)
                 : null,
-            title: Text(formatTitle(song)),
+            title: Text(formatTitle(song,
+                useAiTitle: ref.watch(settingsProvider).useAiTitle)),
             subtitle: Text(formatSubtitle(song))),
       );
     }));
