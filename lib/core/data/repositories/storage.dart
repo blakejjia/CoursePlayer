@@ -9,6 +9,7 @@ import '../models/models.dart';
 /// Handles reading/writing MediaLibrary.json with atomic writes.
 class MediaLibraryStore {
   final String jsonFileName;
+  final String? baseDirPath;
   // Covers are not persisted; load dynamically on demand.
 
   MediaLibraryFileRoot _cache = MediaLibraryFileRoot.empty();
@@ -18,14 +19,21 @@ class MediaLibraryStore {
 
   MediaLibraryStore({
     this.jsonFileName = 'MediaLibrary.json',
+    this.baseDirPath,
   });
 
   Stream<MediaLibraryFileRoot> get changes => _changes.stream;
 
   Future<File> _jsonFile() async {
+    if (baseDirPath != null && baseDirPath!.isNotEmpty) {
+      return File(p.join(baseDirPath!, jsonFileName));
+    }
     final dir = await getApplicationSupportDirectory();
     return File(p.join(dir.path, jsonFileName));
   }
+
+  /// Public getter for the database file
+  Future<File> getFile() => _jsonFile();
 
   /// Load JSON from disk into memory. Creates an empty one if missing or invalid.
   Future<MediaLibraryFileRoot> load() async {

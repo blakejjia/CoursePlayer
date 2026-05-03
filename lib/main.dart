@@ -13,10 +13,14 @@ import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:flutter/foundation.dart';
 import 'firebase_options.dart';
 
-final jsonStoreProvider =
-    Provider<MediaLibraryStore>((ref) => MediaLibraryStore());
-final albumRepositoryProvider = Provider<AlbumRepository>(
-    (ref) => AlbumRepository(ref.read(jsonStoreProvider), ref: ref));
+final jsonStoreProvider = Provider<MediaLibraryStore>((ref) {
+  final settings = ref.watch(settingsProvider);
+  return MediaLibraryStore(baseDirPath: settings.audioPath);
+});
+final albumRepositoryProvider = Provider<AlbumRepository>((ref) {
+  final store = ref.watch(jsonStoreProvider);
+  return AlbumRepository(store, ref: ref);
+});
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

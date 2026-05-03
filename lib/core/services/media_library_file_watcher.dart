@@ -2,8 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:path/path.dart' as p;
 
 import '../data/models/models.dart';
 import '../../main.dart';
@@ -24,12 +22,13 @@ class MediaLibraryFileWatcher {
     if (_isWatching) return;
 
     try {
-      // Get the MediaLibrary.json file path
-      final dir = await getApplicationDocumentsDirectory();
-      _jsonFile = File(p.join(dir.path, 'MediaLibrary.json'));
+      // Get the MediaLibrary.json file from the store
+      final store = ref.read(jsonStoreProvider);
+      _jsonFile = await store.getFile();
+      final dir = _jsonFile!.parent;
 
       if (!await _jsonFile!.exists()) {
-        debugPrint('MediaLibrary.json not found, will watch for creation');
+        debugPrint('MediaLibrary.json not found, will watch for creation in ${dir.path}');
         // Watch the directory for file creation
         _watchSubscription =
             dir.watch(events: FileSystemEvent.all).listen(_onFileEvent);
@@ -40,7 +39,7 @@ class MediaLibraryFileWatcher {
       }
 
       _isWatching = true;
-      debugPrint('Started watching MediaLibrary.json for changes');
+      debugPrint('Started watching MediaLibrary.json for changes at ${_jsonFile!.path}');
     } catch (e) {
       debugPrint('Error starting file watcher: $e');
     }
