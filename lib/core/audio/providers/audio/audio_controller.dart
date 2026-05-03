@@ -225,11 +225,14 @@ class MyAudioHandler extends BaseAudioHandler {
         ),
       );
     }
-    final playlist = ConcatenatingAudioSource(children: children);
-    await _player.setAudioSource(playlist);
+    await _player.setAudioSources(
+      children,
+      initialIndex: index ?? 0,
+      initialPosition: Duration(seconds: position ?? 0),
+    );
 
-    // set position
-    await _player.seek(Duration(seconds: position ?? 0), index: index ?? 0);
+    // set position - already handled in setAudioSource now
+    // await _player.seek(Duration(seconds: position ?? 0), index: index ?? 0);
 
     // Update the queue in audio service for system UI
     // queue.add(mediaItems); TODO: is this needed?

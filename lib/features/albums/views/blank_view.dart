@@ -49,7 +49,7 @@ class _BlankViewState extends State<BlankView> {
             : NoPermissionView(onPermissionChanged));
   }
 
-  onPermissionChanged(bool value) {
+  void onPermissionChanged(bool value) {
     setState(() {
       _isPermissionGranted = value;
     });

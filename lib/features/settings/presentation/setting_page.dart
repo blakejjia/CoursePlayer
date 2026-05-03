@@ -92,6 +92,14 @@ class SettingPage extends ConsumerWidget {
             ),
             onTap: () => ref.read(settingsProvider.notifier).changeSeedColor(),
           ),
+          ListTile(
+            leading: Icon(Icons.auto_awesome),
+            title: Text("Gemini API Key"),
+            subtitle: Text(state.geminiApiKey.isEmpty
+                ? "Not set"
+                : "••••••••${state.geminiApiKey.substring(state.geminiApiKey.length - 4 >= 0 ? state.geminiApiKey.length - 4 : 0)}"),
+            onTap: () => _showApiKeyDialog(context, ref, state.geminiApiKey),
+          ),
         ]),
 
         /// == GroupedTile: other ==
@@ -110,6 +118,40 @@ class SettingPage extends ConsumerWidget {
       ],
     );
   }
+}
+
+Future<void> _showApiKeyDialog(
+    BuildContext context, WidgetRef ref, String currentKey) async {
+  final controller = TextEditingController(text: currentKey);
+  return showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Enter Gemini API Key'),
+      content: TextField(
+        controller: controller,
+        decoration: const InputDecoration(
+          hintText: 'Paste your API key here',
+          helperText: 'Only Gemini AI Studio keys are supported.',
+        ),
+        obscureText: true,
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancel'),
+        ),
+        FilledButton(
+          onPressed: () {
+            ref
+                .read(settingsProvider.notifier)
+                .updateGeminiApiKey(controller.text.trim());
+            Navigator.of(context).pop();
+          },
+          child: const Text('Save'),
+        ),
+      ],
+    ),
+  );
 }
 
 // ================= utils ======================

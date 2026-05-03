@@ -14,6 +14,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   static const _kSeedColor = 'seedColor';
   static const _kDefaultPlaybackSpeed = 'defaultPlaybackSpeed';
   static const _kUseAiTitle = 'useAiTitle';
+  static const _kGeminiApiKey = 'geminiApiKey';
 
   SettingsNotifier(this.ref)
       : super(const SettingsState(
@@ -24,6 +25,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
           cleanFileName: true,
           defaultPlaybackSpeed: 1.0,
           useAiTitle: false,
+          geminiApiKey: '',
         )) {
     _loadFromPrefs(state);
   }
@@ -42,6 +44,7 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
       defaultPlaybackSpeed: prefs.getDouble(_kDefaultPlaybackSpeed) ??
           fallback.defaultPlaybackSpeed,
       useAiTitle: prefs.getBool(_kUseAiTitle) ?? fallback.useAiTitle,
+      geminiApiKey: prefs.getString(_kGeminiApiKey) ?? fallback.geminiApiKey,
     );
     if (state != loaded) state = loaded;
   }
@@ -58,10 +61,11 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
     await prefs.setInt(_kSeedColor, s.seedColor.toARGB32());
     await prefs.setDouble(_kDefaultPlaybackSpeed, s.defaultPlaybackSpeed);
     await prefs.setBool(_kUseAiTitle, s.useAiTitle);
+    await prefs.setString(_kGeminiApiKey, s.geminiApiKey);
   }
 
   Future<void> updatePath() async {
-    String? path = await FilePicker.platform.getDirectoryPath();
+    String? path = await FilePicker.getDirectoryPath();
     if (path != null) {
       final next = state.copyWith(audioPath: path);
       state = next;
@@ -139,6 +143,12 @@ class SettingsNotifier extends StateNotifier<SettingsState> {
   Future<void> setUseAiTitle(bool value) async {
     if (state.useAiTitle == value) return;
     final next = state.copyWith(useAiTitle: value);
+    state = next;
+    await _persist(next);
+  }
+
+  Future<void> updateGeminiApiKey(String key) async {
+    final next = state.copyWith(geminiApiKey: key);
     state = next;
     await _persist(next);
   }

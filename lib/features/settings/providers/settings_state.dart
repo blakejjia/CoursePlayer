@@ -9,6 +9,7 @@ class SettingsState {
   final Color seedColor;
   final double defaultPlaybackSpeed;
   final bool useAiTitle;
+  final String geminiApiKey;
 
   const SettingsState({
     required this.audioPath,
@@ -18,6 +19,7 @@ class SettingsState {
     required this.seedColor,
     required this.defaultPlaybackSpeed,
     required this.useAiTitle,
+    this.geminiApiKey = '',
   });
 
   Map<String, dynamic> toMap() {
@@ -29,6 +31,7 @@ class SettingsState {
       'seedColor': seedColor.toARGB32(),
       'defaultPlaybackSpeed': defaultPlaybackSpeed,
       'useAiTitle': useAiTitle,
+      'geminiApiKey': geminiApiKey,
     };
   }
 
@@ -43,6 +46,7 @@ class SettingsState {
       seedColor: Color(map['seedColor'] as int),
       defaultPlaybackSpeed: (map['defaultPlaybackSpeed'] as num).toDouble(),
       useAiTitle: map['useAiTitle'] as bool? ?? false,
+      geminiApiKey: map['geminiApiKey'] as String? ?? '',
     );
   }
 
@@ -54,6 +58,7 @@ class SettingsState {
     Color? seedColor,
     double? defaultPlaybackSpeed,
     bool? useAiTitle,
+    String? geminiApiKey,
   }) {
     return SettingsState(
       audioPath: audioPath ?? this.audioPath,
@@ -63,6 +68,7 @@ class SettingsState {
       seedColor: seedColor ?? this.seedColor,
       defaultPlaybackSpeed: defaultPlaybackSpeed ?? this.defaultPlaybackSpeed,
       useAiTitle: useAiTitle ?? this.useAiTitle,
+      geminiApiKey: geminiApiKey ?? this.geminiApiKey,
     );
   }
 }

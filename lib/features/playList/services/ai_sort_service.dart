@@ -1,23 +1,36 @@
 import 'dart:convert';
-import 'package:firebase_ai/firebase_ai.dart';
-import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:google_generative_ai/google_generative_ai.dart';
 import 'package:lemon/core/data/models/models.dart';
+import 'package:lemon/features/settings/providers/settings_provider.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter/foundation.dart';
 
 class AISortService {
-  final FirebaseAI _firebaseAI = FirebaseAI.googleAI(
-    appCheck: FirebaseAppCheck.instance,
-  );
+  final Ref _ref;
+
+  AISortService(this._ref);
 
   Future<Map<String, ({int rank, String aiTitle})>> generateAiMetadata(
       List<Song> songs) async {
     if (songs.isEmpty) return {};
 
+    final settings = _ref.read(settingsProvider);
+    final apiKey = settings.geminiApiKey;
+
+    if (apiKey.isEmpty) {
+      throw Exception("Gemini API key is not set. Please set it in Settings.");
+    }
+
+    final model = GenerativeModel(
+      model: 'gemini-flash-lite-latest',
+      apiKey: apiKey,
+    );
+
     // Prepare the metadata for the AI
     final songData = songs
         .map((s) => {
               'id': s.id,
-              'name': s
-                  .title, // using title which is usually the filename in this app
+              'name': s.title,
             })
         .toList();
 
@@ -41,8 +54,6 @@ Output Format:
 """;
 
     try {
-      final model =
-          _firebaseAI.generativeModel(model: 'gemini-3.1-flash-lite-preview');
       final response = await model.generateContent([
         Content.text(prompt),
       ]);
@@ -68,7 +79,7 @@ Output Format:
             key, (rank: val['rank'] as int, aiTitle: val['aiTitle'] as String));
       });
     } catch (e) {
-      print("Error in AISortService: $e");
+      debugPrint("Error in AISortService: $e");
       rethrow;
     }
   }
