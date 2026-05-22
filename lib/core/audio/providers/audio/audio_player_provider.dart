@@ -214,6 +214,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
   Future<void> setSpeed(double newSpeed) async {
     if (!_initialized) return;
     await _audioHandler.setSpeed(newSpeed);
+    await ref.read(settingsProvider.notifier).changeDefaultPlaybackSpeed(newSpeed);
   }
 
   Future<void> finished() async {
@@ -286,8 +287,7 @@ class AudioPlayerNotifier extends StateNotifier<AudioPlayerState>
 
     // Apply playback speed
     final settings = ref.read(settingsProvider);
-    final speedToSet = album.playSpeed ?? settings.defaultPlaybackSpeed;
-    await _audioHandler.setSpeed(speedToSet);
+    await _audioHandler.setSpeed(settings.defaultPlaybackSpeed);
   }
 
   Future<void> toggleShuffle() async {

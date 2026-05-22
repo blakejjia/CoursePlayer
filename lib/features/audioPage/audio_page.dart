@@ -5,7 +5,7 @@ import 'package:lemon/features/audioPage/utils/time_formatter.dart';
 import 'package:lemon/main.dart';
 
 import '../../core/audio/providers/audio/audio_player_provider.dart';
-import 'widgets/speed_selection_bs.dart';
+import 'package:lemon/features/settings/presentation/widgets/speed_selection_bs.dart';
 
 part 'widgets/buttons.dart';
 part 'widgets/progress_indicator.dart';

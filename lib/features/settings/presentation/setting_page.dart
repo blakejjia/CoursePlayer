@@ -4,6 +4,7 @@ import 'package:lemon/features/settings/presentation/widgets/grouped_tile.dart';
 import 'package:lemon/features/settings/presentation/widgets/speed_selection_bs.dart';
 import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lemon/core/audio/providers/audio/audio_player_provider.dart';
 
 /// This is settings page
 class SettingPage extends ConsumerWidget {
@@ -57,6 +58,9 @@ class SettingPage extends ConsumerWidget {
                           ref
                               .read(settingsProvider.notifier)
                               .changeDefaultPlaybackSpeed(newSpeed);
+                          ref
+                              .read(audioPlayerProvider.notifier)
+                              .setSpeed(newSpeed);
                         },
                       ),
                     ),

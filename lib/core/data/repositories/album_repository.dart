@@ -144,17 +144,7 @@ class AlbumRepository {
     return 1;
   }
 
-  Future<int> updateAlbumPlaySpeed(String albumId, double speed) async {
-    final root = await store.load();
-    final albums = [...root.albums];
-    final albumIndex = albums.indexWhere((a) => a.id == albumId);
-    if (albumIndex == -1) return 0;
-    final album = albums[albumIndex];
-    final updatedAlbum = album.copyWith(playSpeed: speed);
-    albums[albumIndex] = updatedAlbum;
-    await store.replace(root.copyWith(albums: albums));
-    return 1;
-  }
+
 
   Future<int> updateSongsAiMetadata(
       String albumId, Map<String, ({int rank, String aiTitle})> metadata) async {

@@ -70,7 +70,6 @@ class Album {
   final List<Song> songs;
 
   // user settings
-  final double? playSpeed;
   final bool? isAiSorted;
 
   const Album({
@@ -79,7 +78,6 @@ class Album {
     required this.author,
     required this.sourcePath,
     required this.songs,
-    this.playSpeed,
     this.isAiSorted,
   });
 
@@ -119,7 +117,6 @@ class Album {
     String? author,
     String? sourcePath,
     List<Song>? songs,
-    double? playSpeed,
     bool? isAiSorted,
   }) =>
       Album(
@@ -128,7 +125,6 @@ class Album {
         author: author ?? this.author,
         sourcePath: sourcePath ?? this.sourcePath,
         songs: songs ?? this.songs,
-        playSpeed: playSpeed ?? this.playSpeed,
         isAiSorted: isAiSorted ?? this.isAiSorted,
       );
 
@@ -138,7 +134,6 @@ class Album {
         'author': author,
         'sourcePath': sourcePath,
         'songs': songs.map((e) => e.toJson()).toList(),
-        'playSpeed': playSpeed,
         'isAiSorted': isAiSorted,
       };
   static Album fromJson(Map<String, dynamic> json) => Album(
@@ -150,7 +145,6 @@ class Album {
             .map((e) => Song.fromJson(e as Map<String, dynamic>))
             .toList()
             .cast<Song>(),
-        playSpeed: (json['playSpeed'] as num?)?.toDouble(),
         isAiSorted: json['isAiSorted'] as bool?,
       );
 }
