@@ -12,7 +12,7 @@ import 'package:lemon/features/settings/providers/settings_provider.dart';
 import 'package:lemon/main.dart';
 import 'audio_controller.dart';
 import 'audio_handler_provider.dart';
-import '../porgress/progress_update_provider.dart';
+import '../progress/progress_update_provider.dart';
 
 import 'audio_player_state.dart';
 

@@ -71,9 +71,11 @@ class SongsListPage extends ConsumerWidget {
                   ),
                   OutlinedButton(
                     onPressed: () {
-                      ref.read(songListProvider.notifier).playSong(
-                            album.lastPlayedSong!,
-                          );
+                      final songToPlay = album.lastPlayedSong ??
+                          (album.songs.isNotEmpty ? album.songs.first : null);
+                      if (songToPlay != null) {
+                        ref.read(songListProvider.notifier).playSong(songToPlay);
+                      }
                     },
                     child: Text(continuePrompt(state,
                         useAiTitle: ref.watch(settingsProvider).useAiTitle)),

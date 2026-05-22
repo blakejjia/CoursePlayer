@@ -28,7 +28,7 @@ class SettingPage extends ConsumerWidget {
         GroupedTile(title: "Index", children: [
           ListTile(
             leading: Icon(Icons.book_outlined),
-            title: Text("select dictionary"),
+            title: Text("select directory"),
             subtitle: Text(state.audioPath),
             onTap: () => ref.read(settingsProvider.notifier).updatePath(),
           ),
