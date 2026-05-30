@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:lemon/features/audioPage/utils/time_formatter.dart';
-import 'package:lemon/main.dart';
 
 import '../../core/audio/providers/audio/audio_player_provider.dart';
 import 'package:lemon/features/settings/presentation/widgets/speed_selection_bs.dart';

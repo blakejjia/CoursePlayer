@@ -21,6 +21,7 @@ dependencies:
   # audio service
   just_audio: ^0.10.5
   audio_service: ^0.18.18
+  audio_session: ^0.1.25
   rxdart: ^0.28.0
 
   # other audio related
